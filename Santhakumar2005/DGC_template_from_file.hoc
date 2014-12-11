@@ -20,8 +20,8 @@ create soma, dendrites[1]
 
 objref GCLidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref all, alldendrites, GCLs, PDs, MDs, DDs, ndendpts
-strdef dendrite_dims_filename, dendrite_points_filename
-strdef dendrite_soma_topology_filename, dendrite_topology_filename
+strdef dendrite_dims_fn, dendrite_points_fn
+strdef dendrite_soma_topology_fn, dendrite_topology_fn, spine_density_fn
 
 proc assert() { local test strdef errmsg
     
@@ -37,16 +37,18 @@ proc assert() { local test strdef errmsg
 proc init() {
     
     verbose = $1
-    dendrite_dims_filename     = $s2
-    dendrite_points_filename   = $s3
-    dendrite_topology_filename = $s4
-    dendrite_soma_topology_filename = $s5
+    dendrite_dims_fn     = $s2
+    dendrite_points_fn   = $s3
+    dendrite_topology_fn = $s4
+    dendrite_soma_topology_fn = $s5
+    spine_density_fn     = $s6
     
     if (verbose) {
-        printf ("dendrite dimensions filename = %s\n", dendrite_dims_filename)
-        printf ("dendrite points filename = %s\n", dendrite_points_filename)
-        printf ("dendrite topology filename = %s\n", dendrite_topology_filename)
-        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_filename)
+        printf ("dendrite dimensions fn = %s\n", dendrite_dims_fn)
+        printf ("dendrite points fn = %s\n", dendrite_points_fn)
+        printf ("dendrite topology fn = %s\n", dendrite_topology_fn)
+        printf ("dendrite/soma topology fn = %s\n", dendrite_soma_topology_fn)
+        printf ("dendrite spine density fn = %s\n", spine_density_fn)
     }
     
     
@@ -81,7 +83,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     f = new File ()
     
-    f.ropen (dendrite_dims_filename)
+    f.ropen (dendrite_dims_fn)
     dims = new Vector()
     dims.scanf (f)
     f.close()
@@ -120,7 +122,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     create dendrites[nDends]
     
-    f.ropen (dendrite_topology_filename)
+    f.ropen (dendrite_topology_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -141,7 +143,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         connect dendrites[j](0),dendrites[i](1)
     }
     
-    f.ropen (dendrite_soma_topology_filename)
+    f.ropen (dendrite_soma_topology_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -174,7 +176,7 @@ proc shape_from_file() { local i,j,k localobj f, m
     
     f = new File ()
     
-    f.ropen (dendrite_points_filename)
+    f.ropen (dendrite_points_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -237,6 +239,21 @@ func lambda_f() { local i, x1, x2, d1, d2, lam
 }
 
 
+proc geom_spines() { localobj spine_density, f
+    
+    f = new File()
+    f.ropen (spine_density_fn)
+    spine_density = new Vector()
+    spine_density.scanf (f)
+    f.close()
+
+    for (i = 0; i < nDends; i = i+1) dendrites[i] {
+        insert spines
+        scale_spines = spine_density.x[i]
+        
+    }
+}
+
 proc geom_nseg() { local freq, d_lambda
     
     freq = 100      // Hz, frequency at which AC length constant will be computed
@@ -252,10 +269,10 @@ proc geom_nseg() { local freq, d_lambda
 proc biophys() {
     soma {
         cm = 1
-        
+         
         insert ichan2  //ildikos ichan
-	gnatbar_ichan2=0.12  //original 0.030 to .055 
-	gkfbar_ichan2=0.016  //original 0.015
+	gnatbar_ichan2=0.12 // 0.030 to .055 
+	gkfbar_ichan2=0.016 // 0.015
 	gksbar_ichan2=0.006
 	gl_ichan2 = 0.00004
         
@@ -278,103 +295,104 @@ proc biophys() {
 	gkbar_CaBK=0.0006
     }
     forsec GCLs {
-        cm=1
+        
+        cm = 1 * scale_spines
         
         insert ichan2
-	gnatbar_ichan2=0.018  //original 0.015
-	gkfbar_ichan2=0.004
-	gksbar_ichan2=0.006
-	gl_ichan2 = 0.00004
+	gnatbar_ichan2=0.018 * scale_spines  //original 0.015
+	gkfbar_ichan2=0.004 * scale_spines
+	gksbar_ichan2=0.006 * scale_spines
+	gl_ichan2 = 0.00004 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.003  // check to modify- original 0.004
+	gncabar_CaN=0.003 * scale_spines  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0075
+	glcabar_CaL=0.0075 * scale_spines
         
 	insert CaT
-	gcatbar_CaT=0.000075
+	gcatbar_CaT=0.000075 * scale_spines
         
 	insert GSK
-	gskbar_GSK=0.0004
+	gskbar_GSK=0.0004 * scale_spines
         
 	insert CaBK
-	gkbar_CaBK=0.0006
+	gkbar_CaBK=0.0006 * scale_spines
     }
     forsec PDs {
-	cm=1.6
+	cm=1.6 * scale_spines
         
         insert ichan2
-	gnatbar_ichan2=0.013
-	gkfbar_ichan2=0.004
-	gksbar_ichan2=0.006
-	gl_ichan2 = 0.000063
+	gnatbar_ichan2=0.013 * scale_spines
+	gkfbar_ichan2=0.004 * scale_spines
+	gksbar_ichan2=0.006 * scale_spines
+	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
+	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0075
+	glcabar_CaL=0.0075 * scale_spines
         
 	insert CaT
-	gcatbar_CaT=0.00025
+	gcatbar_CaT=0.00025 * scale_spines
         
 	insert GSK
-	gskbar_GSK=0.0002
+	gskbar_GSK=0.0002 * scale_spines
         
 	insert CaBK
-	gkbar_CaBK=0.001
+	gkbar_CaBK=0.001 * scale_spines
         
     }
     forsec MDs {
-	cm=1.6
+	cm = 1.6 * scale_spines
 
         insert ichan2
-	gnatbar_ichan2=0.008
-	gkfbar_ichan2=0.001
-	gksbar_ichan2=0.006
-	gl_ichan2 = 0.000063
+	gnatbar_ichan2=0.008 * scale_spines
+	gkfbar_ichan2=0.001 * scale_spines
+	gksbar_ichan2=0.006 * scale_spines
+	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
+	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0005
+	glcabar_CaL=0.0005 * scale_spines
         
 	insert CaT
-	gcatbar_CaT=0.0005
+	gcatbar_CaT=0.0005 * scale_spines
         
 	insert GSK
-	gskbar_GSK=0.0
+	gskbar_GSK=0.0 * scale_spines
         
 	insert CaBK
-	gkbar_CaBK=0.0024
+	gkbar_CaBK=0.0024 * scale_spines
         
     }
     forsec DDs {
         
-	cm=1.6
+	cm=1.6 * scale_spines
         
         insert ichan2
 	gnatbar_ichan2=0.0
-	gkfbar_ichan2=0.001
-	gksbar_ichan2=0.008
-	gl_ichan2 = 0.000063
+	gkfbar_ichan2=0.001 * scale_spines
+	gksbar_ichan2=0.008 * scale_spines
+	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
+	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0
+	glcabar_CaL=0.0 * scale_spines
         
 	insert CaT
-	gcatbar_CaT=0.001
+	gcatbar_CaT=0.001 * scale_spines
         
 	insert GSK
-	gskbar_GSK=0.0
+	gskbar_GSK=0.0 * scale_spines
         
 	insert CaBK
-	gkbar_CaBK=0.0024
+	gkbar_CaBK=0.0024 * scale_spines
     }
 
     forsec all {
@@ -416,6 +434,7 @@ proc celldef() {
     topol()
     subsets()
     geom()
+    geom_spines()
     biophys()
     geom_nseg()
     
