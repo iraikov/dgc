@@ -1,0 +1,96 @@
+
+
+load_file("nrngui.hoc")
+load_file("DGC_protocol.ses")
+
+// Load the granule cell template
+xopen("DGC_template_from_file.hoc")
+
+
+objref gc
+gc = new DGC(1, "DGC_dims.dat","DGC_points.dat","DGC_dendrite_topology.dat","DGC_dendrite_soma_topology.dat")
+
+prelength = 1000
+mainlength = 600
+
+
+//**********************************************************************
+proc simulate() { local preDT, mainDT, logsize  localobj logfile, tlog, Vlog
+    
+    init()
+    
+    mainDT = 0.025
+    preDT = 0.025
+    
+    cvode_active (1)
+    
+    dt = preDT
+    tstop = prelength
+    run()
+    
+    if ( stoprun == 1) return
+    
+    dt = mainDT
+    continuerun(prelength + mainlength)
+    if ( stoprun == 1) return
+    
+    logfile=$o1
+    tlog=$o2
+    Vlog=$o3
+    
+    logsize = tlog.size()
+    
+    for i=0,tlog.size()-1 {
+	logfile.printf("%g %g\n", tlog.x[i], Vlog.x[i])
+    }
+
+}
+
+
+//*************User-Interface*******************************************
+
+nrnsecmenu(0.5, 1)
+
+xpanel("Spontaneous firing")
+xvalue("Time for Initialization", "prelength")
+xvalue("Main duration", "mainlength")
+
+xvalue("dt", "dt")
+xvalue("t", "t")
+xlabel("")
+xbutton("Start", "simulate()")
+xbutton("Stop", "stoprun = 1")
+xpanel()
+
+vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
+
+stimdur = 500
+
+objectvar stim1
+gc.soma stim1 = new IClamp(0.5)
+stim1.del = prelength
+stim1.dur = stimdur
+stim1.amp = 0.2
+
+/*
+objref  iklog
+iklog = new Vector(vec_sizes)
+iklog.record (&gc.soma.ik(0.5))
+*/
+
+objref  Vlog
+Vlog = new Vector(vec_sizes)
+Vlog.record (&gc.soma.v(0.5))
+
+objref tlog
+tlog = new Vector(vec_sizes,0)
+tlog.record (&t)
+
+objref logfile
+logfile = new File()
+logfile.wopen ( "GC_protocol.dat" )
+
+simulate(logfile,tlog,Vlog)
+logfile.close()
+
+
