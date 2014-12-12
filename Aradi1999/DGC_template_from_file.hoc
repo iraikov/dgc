@@ -20,8 +20,10 @@ create soma, axon[4], dendrites[1]
 
 objref GCLidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref all, allaxons, alldendrites, GCLs, PDs, MDs, DDs, ndendpts
-strdef dendrite_dims_filename, dendrite_points_filename
-strdef dendrite_soma_topology_filename, dendrite_topology_filename
+strdef dendrite_dims_fn, dendrite_points_fn
+strdef dendrite_soma_topology_fn, dendrite_topology_fn
+strdef spine_density_fn
+
 
 proc assert() { local test strdef errmsg
     
@@ -37,16 +39,18 @@ proc assert() { local test strdef errmsg
 proc init() {
     
     verbose = $1
-    dendrite_dims_filename     = $s2
-    dendrite_points_filename   = $s3
-    dendrite_topology_filename = $s4
-    dendrite_soma_topology_filename = $s5
+    dendrite_dims_fn     = $s2
+    dendrite_points_fn   = $s3
+    dendrite_topology_fn = $s4
+    dendrite_soma_topology_fn = $s5
+    spine_density_fn     = $s6
     
     if (verbose) {
-        printf ("dendrite dimensions filename = %s\n", dendrite_dims_filename)
-        printf ("dendrite points filename = %s\n", dendrite_points_filename)
-        printf ("dendrite topology filename = %s\n", dendrite_topology_filename)
-        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_filename)
+        printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
+        printf ("dendrite points filename = %s\n", dendrite_points_fn)
+        printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
+        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_fn)
+        printf ("spine density filename = %s\n", spine_density_fn)
     }
     
     
@@ -83,7 +87,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     f = new File ()
     
-    f.ropen (dendrite_dims_filename)
+    f.ropen (dendrite_dims_fn)
     dims = new Vector()
     dims.scanf (f)
     f.close()
@@ -122,7 +126,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     create dendrites[nDends]
     
-    f.ropen (dendrite_topology_filename)
+    f.ropen (dendrite_topology_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -143,7 +147,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         connect dendrites[j](0),dendrites[i](1)
     }
     
-    f.ropen (dendrite_soma_topology_filename)
+    f.ropen (dendrite_soma_topology_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -180,7 +184,7 @@ proc shape_from_file() { local i,j,k localobj f, m
     
     f = new File ()
     
-    f.ropen (dendrite_points_filename)
+    f.ropen (dendrite_points_fn)
     m = new Matrix()
     m.scanf (f)
     f.close()
@@ -253,6 +257,21 @@ func lambda_f() { local i, x1, x2, d1, d2, lam
 }
 
 
+proc geom_spines() { localobj spine_density, f
+    
+    f = new File()
+    f.ropen (spine_density_fn)
+    spine_density = new Vector()
+    spine_density.scanf (f)
+    f.close()
+
+    for (i = 0; i < nDends; i = i+1) dendrites[i] {
+        insert spines
+        scale_spines = spine_density.x[i]
+        
+    }
+}
+
 proc geom_nseg() { local freq, d_lambda
     
     freq = 100      // Hz, frequency at which AC length constant will be computed
@@ -268,7 +287,7 @@ proc geom_nseg() { local freq, d_lambda
 proc biophys() {
     forsec all {
         Ra = 210
-        cm = 1
+        cm = 1 
         insert pas
         g_pas = 2.5e-05
         e_pas = -70
@@ -305,9 +324,8 @@ proc biophys() {
         gskbar_CadepK = 0.0005
     }
     forsec GCLs {
-        cm = 1
-        insert pas
-        g_pas = 2.5e-05
+        cm = 1 * scale_spines 
+        g_pas = 2.5e-05 * scale_spines
         e_pas = -70
         insert Na
         gmax_Na = 0.018
@@ -324,6 +342,8 @@ proc biophys() {
         gskbar_CadepK = 0.0002
     }
     forsec PDs {
+        cm = cm * scale_spines
+        g_pas = 2.5e-05 * scale_spines
         insert Na
         gmax_Na = 0.013
         insert fKDR
@@ -339,6 +359,8 @@ proc biophys() {
         gskbar_CadepK = 0.0001
     }
     forsec MDs {
+        cm = cm * scale_spines
+        g_pas = 2.5e-05 * scale_spines
         insert Na
         gmax_Na = 0.008
         insert fKDR
@@ -355,6 +377,8 @@ proc biophys() {
 
     }
     forsec DDs {
+        cm = cm * scale_spines
+        g_pas = 2.5e-05 * scale_spines
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
@@ -390,6 +414,7 @@ proc celldef() {
     topol()
     subsets()
     geom()
+    geom_spines()
     biophys()
     geom_nseg()
     

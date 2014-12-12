@@ -21,7 +21,8 @@ create soma, dendrites[1]
 objref GCLidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref all, alldendrites, GCLs, PDs, MDs, DDs, ndendpts
 strdef dendrite_dims_fn, dendrite_points_fn
-strdef dendrite_soma_topology_fn, dendrite_topology_fn, spine_density_fn
+strdef dendrite_soma_topology_fn, dendrite_topology_fn
+strdef spine_density_fn
 
 proc assert() { local test strdef errmsg
     
