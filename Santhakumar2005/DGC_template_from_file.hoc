@@ -157,7 +157,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         i = m.getval(p,1)
         j = m.getval(p,0)
         if (verbose) {
-            printf ("connecting dendrites[%d] and soma\n", i, j)
+            printf ("connecting dendrites[%d] and soma\n", j)
         }
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
         connect dendrites[j](0),soma(1)
@@ -299,100 +299,102 @@ proc biophys() {
         cm = 1 * scale_spines
         
         insert ichan2
-	gnatbar_ichan2=0.018 * scale_spines  //original 0.015
-	gkfbar_ichan2=0.004 * scale_spines
-	gksbar_ichan2=0.006 * scale_spines
+	gnatbar_ichan2=0.018  //original 0.015
+	gkfbar_ichan2=0.004
+	gksbar_ichan2=0.006
 	gl_ichan2 = 0.00004 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.003 * scale_spines  // check to modify- original 0.004
+	gncabar_CaN=0.003  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0075 * scale_spines
+	glcabar_CaL=0.0075
         
 	insert CaT
-	gcatbar_CaT=0.000075 * scale_spines
+	gcatbar_CaT=0.000075
         
 	insert GSK
-	gskbar_GSK=0.0004 * scale_spines
+	gskbar_GSK=0.0004
         
 	insert CaBK
-	gkbar_CaBK=0.0006 * scale_spines
+	gkbar_CaBK=0.0006
     }
     forsec PDs {
-	cm=1.6 * scale_spines
+        
+	cm = 1.6 * scale_spines
         
         insert ichan2
-	gnatbar_ichan2=0.013 * scale_spines
-	gkfbar_ichan2=0.004 * scale_spines
-	gksbar_ichan2=0.006 * scale_spines
+	gnatbar_ichan2=0.013
+	gkfbar_ichan2=0.004
+	gksbar_ichan2=0.006
 	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
+	gncabar_CaN=0.001  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0075 * scale_spines
+	glcabar_CaL=0.0075
         
 	insert CaT
-	gcatbar_CaT=0.00025 * scale_spines
+	gcatbar_CaT=0.00025
         
 	insert GSK
-	gskbar_GSK=0.0002 * scale_spines
+	gskbar_GSK=0.0002
         
 	insert CaBK
-	gkbar_CaBK=0.001 * scale_spines
+	gkbar_CaBK=0.001
         
     }
     forsec MDs {
+        
 	cm = 1.6 * scale_spines
 
         insert ichan2
-	gnatbar_ichan2=0.008 * scale_spines
-	gkfbar_ichan2=0.001 * scale_spines
-	gksbar_ichan2=0.006 * scale_spines
+	gnatbar_ichan2=0.008
+	gkfbar_ichan2=0.001
+	gksbar_ichan2=0.006
 	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN // HAV-N- Ca channel
-	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
+	gncabar_CaN=0.001  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0005 * scale_spines
+	glcabar_CaL=0.0005
         
 	insert CaT
-	gcatbar_CaT=0.0005 * scale_spines
+	gcatbar_CaT=0.0005
         
 	insert GSK
-	gskbar_GSK=0.0 * scale_spines
+	gskbar_GSK=0.0
         
 	insert CaBK
-	gkbar_CaBK=0.0024 * scale_spines
+	gkbar_CaBK=0.0024
         
     }
     forsec DDs {
         
-	cm=1.6 * scale_spines
+	cm = 1.6 * scale_spines
         
         insert ichan2
 	gnatbar_ichan2=0.0
-	gkfbar_ichan2=0.001 * scale_spines
-	gksbar_ichan2=0.008 * scale_spines
+	gkfbar_ichan2=0.001
+	gksbar_ichan2=0.008
 	gl_ichan2 = 0.000063 * scale_spines
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001 * scale_spines  // check to modify- original 0.004
+	gncabar_CaN=0.001  // check to modify- original 0.004
         
 	insert CaL
-	glcabar_CaL=0.0 * scale_spines
+	glcabar_CaL=0.0
         
 	insert CaT
-	gcatbar_CaT=0.001 * scale_spines
+	gcatbar_CaT=0.001
         
 	insert GSK
-	gskbar_GSK=0.0 * scale_spines
+	gskbar_GSK=0.0
         
 	insert CaBK
-	gkbar_CaBK=0.0024 * scale_spines
+	gkbar_CaBK=0.0024
     }
 
     forsec all {
