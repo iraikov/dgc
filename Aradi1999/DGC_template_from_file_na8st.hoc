@@ -24,6 +24,15 @@ strdef dendrite_dims_fn, dendrite_points_fn
 strdef dendrite_soma_topology_fn, dendrite_topology_fn
 strdef spine_density_fn
 
+objref rates_soma, rates_axon, rates_seg
+objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
+
+
+celsius    = 24
+q10_g_pas  =  1.98 
+q10_Ra     =  0.80 
+
+q10_cm     =  0.96 
 
 proc assert() { local test strdef errmsg
     
@@ -56,10 +65,6 @@ proc init() {
     
     celldef()
     
-    forsec all {
-	if (ismembrane("Na")) { ena = 45 }
-	ek = -85
-    }
 }
 
 proc topol() { local i
@@ -225,13 +230,12 @@ proc subsets() { local i
 
 
 proc geom() {
-    forsec allaxons {  L = 50  }
+    forsec allaxons {  L = 10  }
     
     axon.diam = 0.9
     axon[1].diam = 0.7
     axon[2].diam = 0.5
     axon[3].diam = 0.4
-    axon[3] {  L = 1400  }
     
     soma {  L = 16.8  diam = 16.8  }
 }
@@ -254,6 +258,62 @@ func lambda_f() { local i, x1, x2, d1, d2, lam
         lam *= sqrt(2) * 1e-5*sqrt(4*PI*$1*Ra*cm)
 
         return L/lam
+}
+
+proc read_Na_rates() { localobj fileS, fileA
+    
+    rates_soma = new Vector()
+    rates_axon = new Vector()
+    
+    fileS = new File()
+    fileA = new File()
+    
+    fileS.ropen("./dat/soma_st8.dat")
+    fileA.ropen("./dat/axon_st8.dat")
+    
+    while (fileS.eof==0){
+	rates_soma.append( fileS.scanvar() )
+	rates_axon.append( fileA.scanvar() )
+    }
+    
+    fileS.close()
+    fileA.close()
+}
+
+
+func fsigm() {
+    // $1: x
+    // $2: amplitude
+    // $3: center
+    // $4: slope
+    return $2-$2/(1.0+exp(($1-$3)/$4))
+}
+
+
+func dens_func() {//(x, gNas, gNaa, a0, lambda2)
+    /*
+    Returns Nav conductance density (gNa) along the axon.
+
+    Arguments:
+    x       -- Axonal distance from soma
+    gNas    -- Somatic gNa
+    gNaa    -- Axonal density  forsec "dend" {for i=0, n3d()-1 {pt3dchange(i, diam3d(i)*$1)}  
+nseg*=3 nseg/=3}
+  printf ("Dendritic 3d diameter changed to %g percent.\n", $1*100)
+    a0      -- Scaling factor
+    lambda2 -- Axonal decay length constant
+
+    Returns:
+    Axonal gNa
+    */
+    lambda1 = 5.0
+    return $2 + ($3-$2) * (1.0-exp(-$1/lambda1)) * (1.0 + $4*exp(-$1/$5))
+}
+
+
+func tempScale() { local scale
+	// $1: Q10
+	return $1^((celsius-24)/10)
 }
 
 
@@ -280,35 +340,49 @@ proc geom_nseg() { local freq, d_lambda
     soma area(0.5)
     forall { nseg = int((L/(d_lambda*lambda_f(freq))+0.9)/2)*2 + 1  }
     
-
+    
 }
 
 
 proc biophys() {
+    
+    Ra_soma = 200
+    Ra_axon = 120
+    
+    gnabar_prox_axon = 94.0
+    gnabar_distal_axon = 38.6152
+    gna_soma = 18.8
+    gENa = 75.0
+    
+    gnabar_distal_dend = gna_soma * 0.2
+    
+    lambda2 = 10.0
+    dend_50 = 80.0
+    dend_slope = 40.0
+    amp_gauss= 18.015027
+    
+    center = 2.0
+    slope = 2.0
+    
     forsec all {
         Ra = 210
         cm = 1 
         insert pas
-        g_pas = 2.5e-05
+        g_pas = 1e-04
         e_pas = -70
     }
     forsec alldendrites {
         cm = 1.6
-        insert pas
-        g_pas = 4e-05
-        e_pas = -70
     }
     forsec allaxons {
-        insert Na
-        gmax_Na = 0.21
+        insert na8st
         insert fKDR
         gmax_fKDR = 0.028
         insert KA
         gmax_KA = 0.004
     }
     soma {
-        insert Na
-        gmax_Na = 0.12
+        insert na8st
         insert fKDR
         gmax_fKDR = 0.016
         insert sKDR
@@ -325,9 +399,8 @@ proc biophys() {
     }
     forsec GCLs {
         cm = 1 * scale_spines 
-        g_pas = 4e-05 * scale_spines
-        insert Na
-        gmax_Na = 0.018
+        g_pas = 1e-04 * scale_spines
+        insert na8st
         insert fKDR
         gmax_fKDR = 0.004
         insert sKDR
@@ -342,9 +415,8 @@ proc biophys() {
     }
     forsec PDs {
         cm = cm * scale_spines
-        g_pas = 4e-05 * scale_spines
-        insert Na
-        gmax_Na = 0.013
+        g_pas = 1e-04 * scale_spines
+        insert na8st
         insert fKDR
         gmax_fKDR = 0.004
         insert sKDR
@@ -359,8 +431,8 @@ proc biophys() {
     }
     forsec MDs {
         cm = cm * scale_spines
-        g_pas = 4e-05 * scale_spines
-        insert Na
+        g_pas = 1e-04 * scale_spines
+        insert na8st
         gmax_Na = 0.008
         insert fKDR
         gmax_fKDR = 0.001
@@ -377,7 +449,7 @@ proc biophys() {
     }
     forsec DDs {
         cm = cm * scale_spines
-        g_pas = 4e-05 * scale_spines
+        g_pas = 1e-04 * scale_spines
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
@@ -390,6 +462,166 @@ proc biophys() {
         gbkbar_CadepK = 0.0012
         gskbar_CadepK = 0.0
     }
+    
+    printf ("entering biophys\n")
+        
+    soma {
+        distance()
+        
+	for (x,0) {
+            
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                if (verbose) {
+                    printf ("soma distance = %g\n", dist)
+                    printf ("soma rates_seg = ")
+                    rates_seg.printf()
+                }
+            }
+            
+	    a1_0_na8st(x)= rates_seg.x[0]
+	    a1_1_na8st(x)= rates_seg.x[1]
+	    
+	    b1_0_na8st(x)= rates_seg.x[2]
+	    b1_1_na8st(x)= rates_seg.x[3]
+            
+	    a2_0_na8st(x)= rates_seg.x[4]
+	    a2_1_na8st(x)= rates_seg.x[5]
+            
+	    b2_0_na8st(x)= rates_seg.x[6]
+	    b2_1_na8st(x)= rates_seg.x[7]
+            
+	    a3_0_na8st(x)= rates_seg.x[8]
+	    a3_1_na8st(x)= rates_seg.x[9]
+            
+	    b3_0_na8st(x)= rates_seg.x[10]
+	    b3_1_na8st(x)= rates_seg.x[11]
+            
+	    bh_0_na8st(x)= rates_seg.x[12]
+	    bh_1_na8st(x)= rates_seg.x[13]
+	    bh_2_na8st(x)= rates_seg.x[14]
+            
+	    ah_0_na8st(x)= rates_seg.x[15]
+	    ah_1_na8st(x)= rates_seg.x[16]
+	    ah_2_na8st(x)= rates_seg.x[17]
+	    
+	    vShift_inact_local_na8st = 0
+            
+        }
+        
+    }
+    
+    forsec allaxons {
+        
+	dist = distance(0.5)
+	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50)) * tempScale(q10_Ra) 
+        
+	for (x,0) {
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                printf ("axon distance = %g\n", dist)
+                printf ("axon Ra = %g\n", Ra)
+                printf ("soma rates_seg = ")
+                rates_seg.printf()
+            }
+
+	    a1_0_na8st(x)= rates_seg.x[0]
+	    a1_1_na8st(x)= rates_seg.x[1]
+	    
+	    b1_0_na8st(x)= rates_seg.x[2]
+	    b1_1_na8st(x)= rates_seg.x[3]
+            
+	    a2_0_na8st(x)= rates_seg.x[4]
+	    a2_1_na8st(x)= rates_seg.x[5]
+            
+	    b2_0_na8st(x)= rates_seg.x[6]
+	    b2_1_na8st(x)= rates_seg.x[7]
+            
+	    a3_0_na8st(x)= rates_seg.x[8]
+	    a3_1_na8st(x)= rates_seg.x[9]
+            
+	    b3_0_na8st(x)= rates_seg.x[10]
+	    b3_1_na8st(x)= rates_seg.x[11]
+            
+	    bh_0_na8st(x)= rates_seg.x[12]
+	    bh_1_na8st(x)= rates_seg.x[13]
+	    bh_2_na8st(x)= rates_seg.x[14]
+            
+	    ah_0_na8st(x)= rates_seg.x[15]
+	    ah_1_na8st(x)= rates_seg.x[16]
+	    ah_2_na8st(x)= rates_seg.x[17]
+	    
+	    vShift_inact_local_na8st = 0
+            
+	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
+	    gbar_na8st(x) = gnabar_gauss
+	}
+        
+    }
+    
+    
+    forsec alldendrites {
+        
+	for (x,0) {
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                printf ("dendrite distance = %g\n", dist)
+                printf ("dendrite Ra = %g\n", Ra)
+                printf ("dendrites rates_seg = ")
+                rates_seg.printf()
+            }
+            
+            if (ismembrane("na8st")) { 
+                
+	        a1_0_na8st(x)= rates_seg.x[0]
+	        a1_1_na8st(x)= rates_seg.x[1]
+	        
+	        b1_0_na8st(x)= rates_seg.x[2]
+	        b1_1_na8st(x)= rates_seg.x[3]
+                
+	        a2_0_na8st(x)= rates_seg.x[4]
+	        a2_1_na8st(x)= rates_seg.x[5]
+                
+	        b2_0_na8st(x)= rates_seg.x[6]
+	        b2_1_na8st(x)= rates_seg.x[7]
+                
+	        a3_0_na8st(x)= rates_seg.x[8]
+	        a3_1_na8st(x)= rates_seg.x[9]
+                
+	        b3_0_na8st(x)= rates_seg.x[10]
+	        b3_1_na8st(x)= rates_seg.x[11]
+                
+	        bh_0_na8st(x)= rates_seg.x[12]
+	        bh_1_na8st(x)= rates_seg.x[13]
+	        bh_2_na8st(x)= rates_seg.x[14]
+                
+	        ah_0_na8st(x)= rates_seg.x[15]
+	        ah_1_na8st(x)= rates_seg.x[16]
+	        ah_2_na8st(x)= rates_seg.x[17]
+	        
+	        vShift_inact_local_na8st = 0
+                
+	        gnabar_dend = gna_soma - fsigm(dist, gna_soma-gnabar_distal_dend, dend_50, dend_slope)
+	        gbar_na8st(x) = gnabar_dend
+            }
+	}
+    }
+
 }
 
     
@@ -410,12 +642,18 @@ proc celldef() {
     MDs  = new SectionList()
     DDs  = new SectionList()
     
+    read_Na_rates()
     topol()
     subsets()
     geom()
     geom_spines()
-    biophys()
     geom_nseg()
+    biophys()
+    
+    forsec all {
+	if (ismembrane("na8st")) { ena = 75 }
+	ek = -85
+    }
     
 }
 

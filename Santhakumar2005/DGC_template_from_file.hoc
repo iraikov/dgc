@@ -55,9 +55,13 @@ proc init() {
     
     celldef()
     
-    forsec all {
+    forsec alldendrites {
 	if (ismembrane("Na")) { ena = 45 }
-	ek = -85
+	ek = -90
+    }
+    soma {
+	if (ismembrane("Na")) { ena = 45 }
+	ek = -90
     }
 }
 
@@ -217,6 +221,7 @@ proc subsets() { local i
 
 proc geom() {
     soma {  L = 16.8  diam = 16.8  }
+    
 }
 
 
@@ -398,13 +403,27 @@ proc biophys() {
 	gkbar_CaBK=0.0024
     }
 
-    forsec all {
+    soma {
         Ra = 210
         
         enat = 45 
         ekf  = -90 
         eks  = -90  
-        ek   = -90  
+        elca = 130 
+        etca = 130	 
+	el_ichan2 = -70
+        esk = -90
+        
+	insert CaConc
+	catau_CaConc = 10
+	caiinf_CaConc = 5.e-6
+    }
+    forsec alldendrites {
+        Ra = 210
+        
+        enat = 45 
+        ekf  = -90 
+        eks  = -90  
         elca = 130 
         etca = 130	 
 	el_ichan2 = -70
