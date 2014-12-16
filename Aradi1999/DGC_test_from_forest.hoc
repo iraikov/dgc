@@ -1,0 +1,89 @@
+
+
+// Load the granule cell template
+xopen("DGC_template_from_file.hoc")
+
+
+
+//**********************************************************************
+proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog
+    
+    init()
+    
+    prelength = $1
+    mainlength = $2
+    logfile=$o3
+    tlog=$o4
+    Vlog=$o5
+    
+    mainDT = 0.025
+    preDT = 0.025
+    
+    cvode_active (1)
+    
+    dt = preDT
+    tstop = prelength
+    run()
+    
+    if ( stoprun == 1) return
+    
+    dt = mainDT
+    continuerun(prelength + mainlength)
+    if ( stoprun == 1) return
+    
+    
+    logsize = tlog.size()
+    
+    for i=0,tlog.size()-1 {
+	logfile.printf("%g %g\n", tlog.x[i], Vlog.x[i])
+    }
+
+}
+
+
+proc test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog, tlog, logfile strdef forest_path 
+    
+    forest_path = $s1
+    ncells = $2
+    
+    strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
+    
+    prelength = 1000
+    mainlength = 2000
+    
+    vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
+    
+    stimdur = 500
+
+    for cell_i = 1, ncells {
+        
+        sprint(dims_fn, "%s/DGC_dims_%03d.dat", forest_path, cell_i)
+        sprint(points_fn, "%s/DGC_dendrite_points_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%03d.dat", forest_path, cell_i)
+        sprint(spine_density_fn, "%s/DGC_spine_density_%03d.dat", forest_path, cell_i)
+        
+        gc = new DGC(1, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+        
+        gc.soma stim1 = new IClamp(0.5)
+        stim1.del = prelength
+        stim1.dur = stimdur
+        stim1.amp = 0.2
+        
+        Vlog = new Vector(vec_sizes)
+        Vlog.record (&gc.soma.v(0.5))
+        
+        tlog = new Vector(vec_sizes,0)
+        tlog.record (&t)
+        
+        logfile = new File()
+        sprint (log_fn, "GC_protocol_%03d.dat", cell_i )
+        logfile.wopen ( log_fn )
+        
+        simulate(prelength,mainlength,logfile,tlog,Vlog)
+        logfile.close()
+    }
+}
+
+
+test ("/home/igr/src/model/DGC_forest", 10)
