@@ -373,7 +373,7 @@ proc biophys() {
         Ra = Ra_soma
         cm = 1 
         insert pas
-        g_pas = 2.5e-05
+        g_pas = 1e-04
         e_pas = -80
     }
     forsec allaxons {
@@ -403,7 +403,6 @@ proc biophys() {
     }
     forsec GCLs {
         cm = 1 * scale_spines 
-        g_pas = 1e-04 * scale_spines
         insert na8st
         insert fKDR
         gmax_fKDR = 0.004
@@ -419,7 +418,6 @@ proc biophys() {
     }
     forsec PDs {
         cm = 1.6 * scale_spines
-        g_pas = 1e-04 * scale_spines
         insert na8st
         insert fKDR
         gmax_fKDR = 0.004
@@ -435,7 +433,6 @@ proc biophys() {
     }
     forsec MDs {
         cm = 1.6 * scale_spines
-        g_pas = 1e-04 * scale_spines
         insert na8st
         gmax_Na = 0.008
         insert fKDR
@@ -453,7 +450,6 @@ proc biophys() {
     }
     forsec DDs {
         cm = 1.6 * scale_spines
-        g_pas = 1e-04 * scale_spines
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
