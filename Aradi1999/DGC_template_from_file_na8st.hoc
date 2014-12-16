@@ -232,10 +232,10 @@ proc subsets() { local i
 proc geom() {
     forsec allaxons {  L = 10  }
     
-    axon.diam = 0.9
-    axon[1].diam = 0.7
-    axon[2].diam = 0.5
-    axon[3].diam = 0.4
+    axon[0].diam = 2.3
+    axon[1].diam = 1.2
+    axon[2].diam = 0.8
+    axon[3].diam = 0.3
     axon[3] { L = 1000 }
     
     soma {  L = 16.8  diam = 16.8  }
@@ -353,9 +353,13 @@ proc biophys() {
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
+    gnabar_distal_dend = gna_soma * 0.2
     gENa = 75.0
     
-    gnabar_distal_dend = gna_soma * 0.2
+    gk_axon = 0.001
+    gk_distal_axon = 0.010
+    
+    gk_soma = 0.004
     
     lambda2 = 10.0
     dend_50 = 80.0
@@ -369,18 +373,20 @@ proc biophys() {
         Ra = Ra_soma
         cm = 1 
         insert pas
-        g_pas = 1e-04
-        e_pas = -70
+        g_pas = 2.5e-05
+        e_pas = -80
     }
     forsec allaxons {
         insert na8st
-        insert fKDR
-        gmax_fKDR = 0.028
+        insert KIn
         insert KA
-        gmax_KA = 0.004
+        gmax_KA = 0.016
+        insert fKDR
+        gmax_fKDR = 0.002
     }
     soma {
         insert na8st
+        insert KIn
         insert fKDR
         gmax_fKDR = 0.016
         insert sKDR
@@ -508,6 +514,10 @@ proc biophys() {
 	    
 	    vShift_inact_local_na8st = 0
             
+	    gkbar_KIn = gk_soma
+	    scale_a_KIn = 1.0
+	    scale_i_KIn = 1.0e-9
+            
         }
         
     }
@@ -561,6 +571,9 @@ proc biophys() {
             
 	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	    gbar_na8st(x) = gnabar_gauss
+            
+            gkbar_ax = gk_axon + fsigm(dist, (gk_distal_axon - gk_axon), 200.0, 100.0)
+            gkbar_KIn(x)  = gkbar_ax
 	}
         
     }
@@ -647,7 +660,7 @@ proc celldef() {
     biophys()
     
     forsec all {
-	if (ismembrane("na8st")) { ena = 75 }
+	if (ismembrane("na8st")) { ena = gENa }
 	ek = -95
     }
     
