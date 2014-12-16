@@ -236,6 +236,7 @@ proc geom() {
     axon[1].diam = 0.7
     axon[2].diam = 0.5
     axon[3].diam = 0.4
+    axon[3] { L = 1000 }
     
     soma {  L = 16.8  diam = 16.8  }
 }
@@ -365,14 +366,11 @@ proc biophys() {
     slope = 2.0
     
     forsec all {
-        Ra = 210
+        Ra = Ra_soma
         cm = 1 
         insert pas
         g_pas = 1e-04
         e_pas = -70
-    }
-    forsec alldendrites {
-        cm = 1.6
     }
     forsec allaxons {
         insert na8st
@@ -414,7 +412,7 @@ proc biophys() {
         gskbar_CadepK = 0.0002
     }
     forsec PDs {
-        cm = cm * scale_spines
+        cm = 1.6 * scale_spines
         g_pas = 1e-04 * scale_spines
         insert na8st
         insert fKDR
@@ -430,7 +428,7 @@ proc biophys() {
         gskbar_CadepK = 0.0001
     }
     forsec MDs {
-        cm = cm * scale_spines
+        cm = 1.6 * scale_spines
         g_pas = 1e-04 * scale_spines
         insert na8st
         gmax_Na = 0.008
@@ -448,7 +446,7 @@ proc biophys() {
 
     }
     forsec DDs {
-        cm = cm * scale_spines
+        cm = 1.6 * scale_spines
         g_pas = 1e-04 * scale_spines
         insert fKDR
         gmax_fKDR = 0.001
@@ -463,8 +461,6 @@ proc biophys() {
         gskbar_CadepK = 0.0
     }
     
-    printf ("entering biophys\n")
-        
     soma {
         distance()
         
@@ -652,7 +648,7 @@ proc celldef() {
     
     forsec all {
 	if (ismembrane("na8st")) { ena = 75 }
-	ek = -85
+	ek = -95
     }
     
 }
