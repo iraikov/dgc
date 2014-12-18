@@ -68,7 +68,7 @@ proc test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur lo
         gc.soma stim1 = new IClamp(0.5)
         stim1.del = prelength
         stim1.dur = stimdur
-        stim1.amp = 0.2
+        stim1.amp = 0.3
         
         Vlog = new Vector(vec_sizes)
         Vlog.record (&gc.soma.v(0.5))

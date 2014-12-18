@@ -14,7 +14,7 @@ objref gc
 gc = new DGC(1, "/home/igr/src/model/DGC_forest/DGC_dims_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_points_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_topology_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_soma_topology_002.dat","/home/igr/src/model/DGC_forest/DGC_spine_density_002.dat")
 
 prelength = 1000
-mainlength = 2000
+mainlength = 600
 vinit = -75
 
 //**********************************************************************
@@ -68,19 +68,13 @@ xpanel()
 
 vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
 
-stimdur = 1000
+stimdur = 500.0
 
 objectvar stim1
 gc.soma stim1 = new IClamp(0.5)
 stim1.del = prelength
 stim1.dur = stimdur
-stim1.amp = 0.3
-
-objref nil, nc, spikelog
-spikelog = new Vector()
-gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
-nc.threshold = -43.5
-nc.record(spikelog)
+stim1.amp = -0.1
 
 /*
 objref  iklog
@@ -108,11 +102,14 @@ print "DC input resistance of cell is ", rn(gc), "MOhm"
 simulate(logfile,tlog,Vlog_soma,Vlog_axon)
 logfile.close()
 
+// attempt to compute membrane time constant
+vrest  = -75.0
+vmin   = Vlog_soma.min()
+vmax   = vrest
+amp23  = 0.67 * abs (vmax - vmin)
+vtau0  = vrest - amp23
+tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
 
-print "number of spikes is ", spikelog.size()
-objref spikefile
-spikefile = new File()
-spikefile.wopen ( "GC_spikes.dat" )
-spikefile.close()
-
-
+print "vmin of cell is ", vmin, "mV"
+print "vtau0 of cell is ", vtau0, "mV"
+print "tau0 of cell is ", tau0, "ms"

@@ -356,7 +356,7 @@ proc biophys() {
     gnabar_distal_dend = gna_soma * 0.2
     gENa = 75.0
     
-    gk_axon = 0.001
+    gk_axon = 0.004
     gk_distal_axon = 0.010
     
     gk_soma = 0.004
@@ -373,33 +373,32 @@ proc biophys() {
         Ra = Ra_soma
         cm = 1 
         insert pas
-        g_pas = 1e-04
-        e_pas = -80
+        g_pas = 4e-05
+        e_pas = -75
     }
     forsec allaxons {
         insert na8st
         insert KIn
-        insert KA
-        gmax_KA = 0.016
         insert fKDR
-        gmax_fKDR = 0.002
+        gmax_fKDR = 0.004
+        insert KA
+        gmax_KA = 0.01
     }
     soma {
         insert na8st
-        insert KIn
         insert fKDR
         gmax_fKDR = 0.016
         insert sKDR
         gmax_sKDR = 0.003
         insert KA
-        gmax_KA = 0.012
+        gmax_KA = 0.005
         insert Ca
         gtcabar_Ca = 0.0015
         gncabar_Ca = 0.002
         glcabar_Ca = 0.010
         insert CadepK
-        gbkbar_CadepK = 0.0003
-        gskbar_CadepK = 0.0005
+        gbkbar_CadepK = 0.003
+        gskbar_CadepK = 0.00075
     }
     forsec GCLs {
         cm = 1 * scale_spines 
@@ -433,8 +432,8 @@ proc biophys() {
     }
     forsec MDs {
         cm = 1.6 * scale_spines
+        g_pas = 7.5e-05
         insert na8st
-        gmax_Na = 0.008
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
@@ -450,6 +449,7 @@ proc biophys() {
     }
     forsec DDs {
         cm = 1.6 * scale_spines
+        g_pas = 8e-05
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
@@ -509,10 +509,6 @@ proc biophys() {
 	    ah_2_na8st(x)= rates_seg.x[17]
 	    
 	    vShift_inact_local_na8st = 0
-            
-	    gkbar_KIn = gk_soma
-	    scale_a_KIn = 1.0
-	    scale_i_KIn = 1.0e-9
             
         }
         
@@ -626,7 +622,13 @@ proc biophys() {
             }
 	}
     }
-
+    
+    forsec all {
+	if (ismembrane("na8st")) { ena = gENa }
+	ek = -95
+        v = -75.0
+    }
+    
 }
 
     
@@ -654,11 +656,6 @@ proc celldef() {
     geom_spines()
     geom_nseg()
     biophys()
-    
-    forsec all {
-	if (ismembrane("na8st")) { ena = gENa }
-	ek = -95
-    }
     
 }
 

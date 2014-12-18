@@ -15,6 +15,7 @@ gc = new DGC(1, "/home/igr/src/model/DGC_forest/DGC_dims_002.dat","/home/igr/src
 
 prelength = 1000
 mainlength = 2000
+
 vinit = -75
 
 //**********************************************************************
@@ -68,19 +69,15 @@ xpanel()
 
 vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
 
-stimdur = 1000
+stimdur = 1.0
 
 objectvar stim1
 gc.soma stim1 = new IClamp(0.5)
 stim1.del = prelength
 stim1.dur = stimdur
-stim1.amp = 0.3
+stim1.amp = 1.0
 
-objref nil, nc, spikelog
-spikelog = new Vector()
-gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
-nc.threshold = -43.5
-nc.record(spikelog)
+finitialize(vinit)
 
 /*
 objref  iklog
@@ -105,14 +102,62 @@ logfile = new File()
 logfile.wopen ( "GC_protocol.dat" )
 
 print "DC input resistance of cell is ", rn(gc), "MOhm"
+
 simulate(logfile,tlog,Vlog_soma,Vlog_axon)
 logfile.close()
 
+vmax = Vlog_soma.max()
+print "maximum Vsoma of cell is ", vmax, "mV"
 
-print "number of spikes is ", spikelog.size()
-objref spikefile
-spikefile = new File()
-spikefile.wopen ( "GC_spikes.dat" )
-spikefile.close()
+//
+// AP threshold estimation based on Kress et al. J Neurophysiol 2008
+//
+// AP threshold is the somatic membrane potential corresponding to 5%
+// of the first peak amplitude in the second derivative of V w.r.t to time
+// (i.e. d^2 V/d^2 t)
+//
+
+objref vderiv, vderiv2
+vderiv = new Vector()
+vderiv2 = new Vector()
+
+vderiv.deriv (Vlog_soma, 0.1, 2)
+vderiv2.deriv (vderiv, 0.1, 2)
+vd2max = vderiv2.max()
+vd2spike = 0.05 * vd2max
+vd2max_index = vderiv2.indwhere (">=", vd2max)
+
+print "minimum of vderiv2 is ", vderiv2.min()
+print "maximum of vderiv2 is ", vderiv2.max()
+print "5% of maximum of vderiv2 is ", vd2spike
+print "maximum of vderiv2 is at t = ", tlog.x[vd2max_index], "ms, ", Vlog_soma.x[vd2max_index], "mV"
+
+// Attempt to locate the index where vderiv2[x] ~= vd2spike 
+// (i.e. 5% of the maximum d^2 V / d^2 t)
+
+i = vd2max_index
+vd2spike_index = -1
+while (i > 0) {
+    
+    if (vderiv2.x[i] > vd2spike) {
+        i = i-1
+    } else {
+        vd2spike_index = i
+        break
+    }
+}
+
+if (!(vd2spike_index > 0)) {
+    execerror ("Unable to find vd2spike value")
+}
+
+print "5% of maximum of vderiv2 is at t = ", tlog.x[vd2spike_index], "ms, ", Vlog_soma.x[vd2spike_index], "mV"
+
+vthresh = Vlog_soma.x[vd2spike_index]
+
+print "AP amplitude relative to threshold is ", vmax - vthresh, "mV"
+
+
+
 
 

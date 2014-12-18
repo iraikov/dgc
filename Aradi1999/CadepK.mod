@@ -32,7 +32,6 @@ ASSIGNED {
 	ek		(mV)
 	ik		(mA/cm2)
 	ica		(mA/cm2)
-	area		(microm2)
         gbk		(S/cm2)
         gsk		(S/cm2)
 }
