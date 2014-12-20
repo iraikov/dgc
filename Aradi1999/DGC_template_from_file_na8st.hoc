@@ -239,7 +239,11 @@ proc geom() {
     axon[3] { L = 1000 }
     
     soma {  L = 16.8  diam = 16.8  }
+    
+    forsec all define_shape()
+    
 }
+
 
 
 func lambda_f() { local i, x1, x2, d1, d2, lam
@@ -340,7 +344,6 @@ proc geom_nseg() { local freq, d_lambda
     
     soma area(0.5)
     forall { nseg = int((L/(d_lambda*lambda_f(freq))+0.9)/2)*2 + 1  }
-    
     
 }
 

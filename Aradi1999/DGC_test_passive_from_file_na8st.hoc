@@ -11,7 +11,7 @@ xopen("DGC_template_from_file_na8st.hoc")
 
 objref gc
 //gc = new DGC(1, "DGC_dims.dat","DGC_points.dat","DGC_dendrite_topology.dat","DGC_dendrite_soma_topology.dat","DGC_spine_density.dat")
-gc = new DGC(1, "/home/igr/src/model/DGC_forest/DGC_dims_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_points_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_topology_002.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_soma_topology_002.dat","/home/igr/src/model/DGC_forest/DGC_spine_density_002.dat")
+gc = new DGC(1, "/home/igr/src/model/DGC_forest/DGC_dims_004.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_points_004.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_topology_004.dat","/home/igr/src/model/DGC_forest/DGC_dendrite_soma_topology_004.dat","/home/igr/src/model/DGC_forest/DGC_spine_density_004.dat")
 
 prelength = 1000
 mainlength = 600
