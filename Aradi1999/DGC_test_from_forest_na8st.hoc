@@ -2,24 +2,28 @@
 
 // Load the granule cell template
 xopen("DGC_template_from_file_na8st.hoc")
+xopen ("rn.hoc")
 
 vinit = -75.0
 
 //**********************************************************************
-proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog
+proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
     
-    finitialize(vinit)
     
     prelength = $1
     mainlength = $2
     logfile=$o3
     tlog=$o4
-    Vlog=$o5
+    Vlog_soma=$o5
+    Vlog_axon=$o6
     
     mainDT = 0.025
     preDT = 0.025
     
+    finitialize(vinit)
+    
     cvode_active (1)
+    
     
     dt = preDT
     tstop = prelength
@@ -31,17 +35,188 @@ proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj 
     continuerun(prelength + mainlength)
     if ( stoprun == 1) return
     
-    
     logsize = tlog.size()
     
     for i=0,tlog.size()-1 {
-	logfile.printf("%g %g\n", tlog.x[i], Vlog.x[i])
+	logfile.printf("%g %g %g\n", tlog.x[i], Vlog_soma.x[i], Vlog_axon.x[i])
     }
-
+    
 }
 
 
-proc test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog, tlog, logfile, nil, nc, spikelog, spikefile strdef forest_path 
+proc passive_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile strdef forest_path 
+    
+    forest_path = $s1
+    ncells = $2
+    
+    strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
+    
+    prelength = 1000
+    mainlength = 2000
+    
+    vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
+    
+    stimdur = 500.0
+    
+    for cell_i = 1, ncells {
+        
+        sprint(dims_fn, "%s/DGC_dims_%03d.dat", forest_path, cell_i)
+        sprint(points_fn, "%s/DGC_dendrite_points_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%03d.dat", forest_path, cell_i)
+        sprint(spine_density_fn, "%s/DGC_spine_density_%03d.dat", forest_path, cell_i)
+        
+        gc = new DGC(1, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+        
+        gc.soma stim1 = new IClamp(0.5)
+        stim1.del = prelength
+        stim1.dur = stimdur
+        stim1.amp = -0.1
+        
+        Vlog_soma = new Vector(vec_sizes)
+        Vlog_soma.record (&gc.soma.v(0.5))
+        
+        Vlog_axon = new Vector(vec_sizes)
+        Vlog_axon.record (&gc.axon[2].v(0.8))
+        
+        tlog = new Vector(vec_sizes,0)
+        tlog.record (&t)
+        
+        logfile = new File()
+        sprint (log_fn, "DGC_passive_%03d.dat", cell_i )
+        logfile.wopen ( log_fn )
+        
+        simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
+        logfile.close()
+        
+        // attempt to compute membrane time constant
+        vrest  = -75.0
+        vmin   = Vlog_soma.min()
+        vmax   = vrest
+        amp23  = 0.67 * abs (vmax - vmin)
+        vtau0  = vrest - amp23
+        tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
+        
+        logfile = new File()
+        sprint (log_fn, "DGC_passive_results_%03d.dat", cell_i )
+        logfile.wopen ( log_fn )
+        
+        logfile.printf ("DC input resistance: %g MOhm\n", rn(gc))
+        logfile.printf ("vmin: %g mV\n", vmin)
+        logfile.printf ("vtau0: %g mV\n", vtau0)
+        logfile.printf ("tau0: %g ms\n", tau0)
+        
+        logfile.close()
+    }
+    
+} 
+
+
+proc single_ap_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, vderiv, vderiv2 strdef forest_path 
+    
+    forest_path = $s1
+    ncells = $2
+    
+    strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
+    
+    prelength = 1000
+    mainlength = 2000
+    
+    vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
+    
+    stimdur = 1.0
+    
+    for cell_i = 1, ncells {
+        
+        sprint(dims_fn, "%s/DGC_dims_%03d.dat", forest_path, cell_i)
+        sprint(points_fn, "%s/DGC_dendrite_points_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%03d.dat", forest_path, cell_i)
+        sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%03d.dat", forest_path, cell_i)
+        sprint(spine_density_fn, "%s/DGC_spine_density_%03d.dat", forest_path, cell_i)
+        
+        gc = new DGC(0, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+        
+        gc.soma stim1 = new IClamp(0.5)
+        stim1.del = prelength
+        stim1.dur = stimdur
+        stim1.amp = 1.0
+        
+        Vlog_soma = new Vector(vec_sizes)
+        Vlog_soma.record (&gc.soma.v(0.5))
+        
+        Vlog_axon = new Vector(vec_sizes)
+        Vlog_axon.record (&gc.axon[2].v(0.8))
+        
+        tlog = new Vector(vec_sizes,0)
+        tlog.record (&t)
+        
+        logfile = new File()
+        sprint (log_fn, "DGC_single_ap_%03d.dat", cell_i )
+        logfile.wopen ( log_fn )
+        
+        simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
+        logfile.close()
+        
+        vmax = Vlog_soma.max()
+        vmin = Vlog_soma.min()
+        
+        //
+        // AP threshold estimation based on Kress et al. J Neurophysiol 2008
+        //
+        // AP threshold is the somatic membrane potential corresponding to 5%
+        // of the first peak amplitude in the second derivative of V w.r.t to time
+        // (i.e. d^2 V/d^2 t)
+        //
+        
+        vderiv = new Vector()
+        vderiv2 = new Vector()
+        
+        vderiv.deriv (Vlog_soma, 0.1, 2)
+        vderiv2.deriv (vderiv, 0.1, 2)
+        vd2max = vderiv2.max()
+        vd2spike = 0.05 * vd2max
+        vd2max_index = vderiv2.indwhere (">=", vd2max)
+        
+        // Attempt to locate the index where vderiv2[x] ~= vd2spike 
+        // (i.e. 5% of the maximum d^2 V / d^2 t)
+        
+        i = vd2max_index
+        vd2spike_index = -1
+        while (i > 0) {
+            
+            if (vderiv2.x[i] > vd2spike) {
+                i = i-1
+            } else {
+                vd2spike_index = i
+                break
+            }
+        }
+        
+        if (!(vd2spike_index > 0)) {
+            execerror ("Unable to find vd2spike value")
+        }
+        
+        vthresh = Vlog_soma.x[vd2spike_index]
+        
+        logfile = new File()
+        sprint (log_fn, "DGC_single_ap_results_%03d.dat", cell_i )
+        logfile.wopen ( log_fn )
+        
+        logfile.printf ("maximum Vsoma: %g mV\n", vmax)
+        logfile.printf ("minumum Vsoma: %g mV\n", vmin)
+
+        logfile.printf ("5%% of maximum of vderiv2: t = %g ms, Vsoma = %g mV\n", (tlog.x[vd2spike_index]), (Vlog_soma.x[vd2spike_index]))
+        
+        logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
+        logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-vinit)
+        
+        logfile.close()
+    }
+    
+}
+
+
+proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, nil, nc, spikelog, spikefile strdef forest_path 
     
     forest_path = $s1
     ncells = $2
@@ -63,9 +238,7 @@ proc test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur lo
         sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%03d.dat", forest_path, cell_i)
         sprint(spine_density_fn, "%s/DGC_spine_density_%03d.dat", forest_path, cell_i)
         
-        gc = new DGC(1, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
-        
-        print "DC input resistance of cell is ", rn(gc), "MOhm"
+        gc = new DGC(0, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
         
         gc.soma stim1 = new IClamp(0.5)
         stim1.del = prelength
@@ -77,29 +250,34 @@ proc test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur lo
         nc.threshold = -43.5
         nc.record(spikelog)
         
-        Vlog = new Vector(vec_sizes)
-        Vlog.record (&gc.soma.v(0.5))
+        Vlog_soma = new Vector(vec_sizes)
+        Vlog_soma.record (&gc.soma.v(0.5))
+        
+        Vlog_axon = new Vector(vec_sizes)
+        Vlog_axon.record (&gc.axon[2].v(0.8))
         
         tlog = new Vector(vec_sizes,0)
         tlog.record (&t)
         
         logfile = new File()
-        sprint (log_fn, "GC_protocol_%03d.dat", cell_i )
+        sprint (log_fn, "DGC_ap_rate_%03d.dat", cell_i )
         logfile.wopen ( log_fn )
         
-        simulate(prelength,mainlength,logfile,tlog,Vlog)
+        simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
         logfile.close()
         
-        print "number of spikes is ", spikelog.size()
         spikefile = new File()
-        sprint (spikelog_fn, "GC_spikes_%03d.dat", cell_i )
+        sprint (spikelog_fn, "DGC_spikes_%03d.dat", cell_i )
         spikefile.wopen ( spikelog_fn )
         for i=0,spikelog.size()-1 {
             spikefile.printf("%g\n", spikelog.x[i])
         }
         spikefile.close()
+        
+        print cell_i, ": number of spikes is ", spikelog.size()
     }
 }
 
-
-test ("/home/igr/src/model/DGC_forest", 10)
+passive_test ("/home/igr/src/model/DGC_forest", 10)
+single_ap_test ("/home/igr/src/model/DGC_forest", 10)
+ap_rate_test ("/home/igr/src/model/DGC_forest", 10)
