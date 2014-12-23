@@ -216,7 +216,7 @@ proc single_ap_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, 
 }
 
 
-proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, nil, nc, spikelog, spikefile strdef forest_path 
+proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path 
     
     forest_path = $s1
     ncells = $2
@@ -275,9 +275,23 @@ proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, st
         spikefile.close()
         
         print cell_i, ": number of spikes is ", spikelog.size()
+        
+        isivect = new Vector(spikelog.size()-1, 0.0)
+        tspike = spikelog.x[0]
+        for i=1,spikelog.size()-1 {
+            isivect.x[i-1] = spikelog.x[i]-tspike
+            tspike = spikelog.x[i]
+        }
+        
+        isimean = isivect.mean()
+        isivar = isivect.var()
+        isistdev = isivect.stdev()
+        
+        print cell_i, ": FR mean: ", 1/isimean, " ISI mean: ", isimean, " variance: ", isivar, " stdev: ", isistdev, "adaptation: ", isivect.x[0]/isimean
+        
     }
 }
 
-passive_test ("/home/igr/src/model/DGC_forest", 10)
-single_ap_test ("/home/igr/src/model/DGC_forest", 10)
-ap_rate_test ("/home/igr/src/model/DGC_forest", 10)
+//passive_test ("/home/igr/src/model/DGC_forest", 10)
+//single_ap_test ("/home/igr/src/model/DGC_forest", 10)
+ap_rate_test ("/home/igr/src/model/DGC_forest", 1)
