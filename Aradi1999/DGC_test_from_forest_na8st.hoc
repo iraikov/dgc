@@ -272,7 +272,6 @@ proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, st
         for i=0,spikelog.size()-1 {
             spikefile.printf("%g\n", spikelog.x[i])
         }
-        spikefile.close()
         
         print cell_i, ": number of spikes is ", spikelog.size()
         
@@ -287,11 +286,12 @@ proc ap_rate_test() { local cell_i, ncells, prelength, mainlength, vec_sizes, st
         isivar = isivect.var()
         isistdev = isivect.stdev()
         
-        print cell_i, ": FR mean: ", 1/isimean, " ISI mean: ", isimean, " variance: ", isivar, " stdev: ", isistdev, "adaptation: ", isivect.x[0]/isimean
+        spikefile.printf ("## FR mean: %g ISI mean: %g variance: %g stdev: %g adaptation: %g\n", 1/isimean, isimean, isivar, isistdev, isivect.x[0]/isimean)
+        spikefile.close()
         
     }
 }
 
-//passive_test ("/home/igr/src/model/DGC_forest", 10)
-//single_ap_test ("/home/igr/src/model/DGC_forest", 10)
-ap_rate_test ("/home/igr/src/model/DGC_forest", 1)
+passive_test ("/home/igr/src/model/DGC_forest", 10)
+single_ap_test ("/home/igr/src/model/DGC_forest", 10)
+ap_rate_test ("/home/igr/src/model/DGC_forest", 10)
