@@ -5,8 +5,8 @@
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-#$ -N DGC_forest_test
-#$ -o ./results/forest_test_run.$JOB_ID.o
+#$ -N DGC_forest_test_Aradi1999_na8st
+#$ -o ./results/forest_test_Aradi1999_na8st.$JOB_ID.o
 #$ -R y
 
 module load neuron/7.3
