@@ -6,10 +6,10 @@
 #$ -j y
 #$ -S /bin/bash
 #$ -N DGC_forest_test
-#$ -o ./jobscripts/forest_test_run.$JOB_ID.o
+#$ -o ./results/forest_test_run.$JOB_ID.o
 #$ -R y
 
 module load neuron/7.3
 mpiexec -np 64 nrniv -mpi -nobanner -nogui ./DGC_test_from_forest_na8st.hoc
-#cp ./jobscripts/testrun02* ./results/testrun02/
+
 
