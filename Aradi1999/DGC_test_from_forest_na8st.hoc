@@ -55,7 +55,7 @@ iterator pcitr() {local i2, startgid
 
 
 //**********************************************************************
-proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
+proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
     
     
     prelength = $1
@@ -64,6 +64,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj 
     tlog=$o4
     Vlog_soma=$o5
     Vlog_axon=$o6
+    Vlog_dends=$o7
     
     mainDT = 0.025
     preDT = 0.025
@@ -71,7 +72,6 @@ proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj 
     finitialize(vinit)
     
     cvode_active (1)
-    
     
     dt = preDT
     tstop = prelength
@@ -86,18 +86,28 @@ proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj 
     logsize = tlog.size()
     
     for i=0,tlog.size()-1 {
-	logfile.printf("%g %g %g\n", tlog.x[i], Vlog_soma.x[i], Vlog_axon.x[i])
+	logfile.printf("%g %g %g", tlog.x[i], Vlog_soma.x[i], Vlog_axon.x[i])
+        if (Vlog_dends.count() > 0) {
+            for j=0,Vlog_dends.count()-1 {
+                Vlog_dend = Vlog_dends.object(j)
+                logfile.printf(" %g", Vlog_dend.x[i])
+            }
+        }
+        logfile.printf("\n")
     }
     
 }
 
 
-proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile strdef forest_path, results_path
+proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile strdef forest_path, results_path
+    
     
     forest_path = $s1
     results_path = $s2
     gid = $3
     
+    print "passive_test: gid = ", gid
+
     strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
     
     prelength = 1000
@@ -126,6 +136,8 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
     Vlog_axon = new Vector(vec_sizes)
     Vlog_axon.record (&gc.axon[2].v(0.8))
     
+    Vlog_dends = new List()
+
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
@@ -133,7 +145,7 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
     sprint (log_fn, "%s/DGC_passive_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
+    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     // attempt to compute membrane time constant
@@ -159,12 +171,14 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
 
 
 
-proc single_ap_test() { local gid, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, vderiv, vderiv2 strdef forest_path , results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
     gid = $3
     
+    print "single_ap_test: gid = ", gid
+
     strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
     
     prelength = 1000
@@ -193,6 +207,38 @@ proc single_ap_test() { local gid, prelength, mainlength, vec_sizes, stimdur loc
     Vlog_axon = new Vector(vec_sizes)
     Vlog_axon.record (&gc.axon[2].v(0.8))
     
+    // Record from several dendritic locations, 
+    // approximately dendlog_interval apart
+    Vlog_dends = new List()
+    dendlog_interval = 80 //um
+    dendlog_distance = dendlog_interval //um
+    dendlog_found = 0
+    for i=0,2 {
+        
+        Vlog_dend = new Vector(vec_sizes)
+        Vlog_dends.append(Vlog_dend)
+        
+        gc.soma { distance() }
+        
+        for j=0, gc.nDends-1 gc.dendrites[j] { 
+	    for (x,0) {
+                dist = distance(x)
+                if (dist >= dendlog_distance) {
+                    printf ("Vlog_dend: dist = %g\n", dist)
+                    Vlog_dend.record (&gc.dendrites[j].v(0.5))
+                    dendlog_found = 1
+                    pop_section()
+                    break
+                }
+            }
+            if (dendlog_found) {
+                dendlog_found = 0
+                break
+            }
+        }
+        dendlog_distance = dendlog_distance + dendlog_interval
+    }
+    
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
@@ -200,7 +246,7 @@ proc single_ap_test() { local gid, prelength, mainlength, vec_sizes, stimdur loc
     sprint (log_fn, "%s/DGC_single_ap_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
+    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     vmax = Vlog_soma.max()
@@ -244,6 +290,16 @@ proc single_ap_test() { local gid, prelength, mainlength, vec_sizes, stimdur loc
     
     vthresh = Vlog_soma.x[vd2spike_index]
     
+    vdend_max = new Vector(Vlog_dends.count())
+    vdend_min = new Vector(Vlog_dends.count())
+    
+    for i=0,Vlog_dends.count()-1 {
+        
+        Vlog_dend = Vlog_dends.object(i)
+        vdend_max.x[i] = Vlog_dend.max()
+        vdend_min.x[i] = Vlog_dend.min()
+    }
+    
     logfile = new File()
     sprint (log_fn, "%s/DGC_single_ap_results_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
@@ -256,16 +312,24 @@ proc single_ap_test() { local gid, prelength, mainlength, vec_sizes, stimdur loc
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
     logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-vinit)
     
+    vsoma_amp = vmax-vmin
+    for i=0,vdend_max.size()-1 { 
+        vdend_amp = vdend_max.x[i]-vdend_min.x[i]
+        logfile.printf ("Relative amplitude of AP in dendrite %d: %g\n", i, vdend_amp/vsoma_amp)
+    }
+    
     logfile.close()
     
 }
 
 
-proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
-    ncells = $3
+    gid = $3
+    
+    print "ap_rate_test: gid = ", gid
     
     strdef spikelog_fn, log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
     
@@ -300,6 +364,8 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     Vlog_axon = new Vector(vec_sizes)
     Vlog_axon.record (&gc.axon[2].v(0.8))
     
+    Vlog_dends = new List()
+
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
@@ -307,7 +373,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     sprint (log_fn, "%s/DGC_ap_rate_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon)
+    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     spikefile = new File()
@@ -347,6 +413,8 @@ proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     
     parallelizer (ncells)
     
+    print "pc.nhost = ", pc.nhost
+    
     sprint (local_forest_path, "%s/%03d", forest_path, pc.id)
     sprint (local_results_path, "%s/%03d", results_path, pc.id)
     
@@ -354,6 +422,8 @@ proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     system(cmd)
     
     for pcitr(&i, &ij, &gid, 0, ncells-1) {
+        
+        print "i = ", i, "ij = ", ij, "gid = ", gid
         
         passive_test (local_forest_path, local_results_path, gid)
         single_ap_test (local_forest_path, local_results_path, gid)
