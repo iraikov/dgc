@@ -42,9 +42,6 @@ PARAMETER {
 	abar = .28	(/ms)
 	bbar = .48	(/ms)
         st=1            (1)
-	lcai		(mV)
-	ncai		(mV)
-	tcai		(mV)
 }
 
 ASSIGNED {
@@ -52,10 +49,12 @@ ASSIGNED {
 	oinf
 	otau		(ms)
         gkca          (mho/cm2)
+	lcai		(mV)
+	ncai		(mV)
+	tcai		(mV)
 }
 
 INITIAL {
-	cai= ncai + lcai + tcai
         rate(v,cai)
         o=oinf
 }
@@ -69,6 +68,7 @@ BREAKPOINT {
 }
 
 DERIVATIVE state {	: exact when v held constant; integrates over dt step
+	cai = ncai + lcai + tcai
 	rate(v, cai)
 	o' = (oinf - o)/otau
 }
