@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-#$ -q som,asom,pub64,free64
-#$ -pe openmp 64
+#$ -q free64
+#$ -t 1-20
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
@@ -10,6 +10,6 @@
 #$ -R y
 
 module load neuron/7.3
-mpiexec -np 64 nrniv -mpi -nobanner -nogui ./DGC_test_from_forest_na8st.hoc
+nrniv -nobanner -nogui -c "batch_size=20" -c "task_id=$SGE_TASK_ID - 1" ./DGC_test_from_forest_na8st.hoc
 
 
