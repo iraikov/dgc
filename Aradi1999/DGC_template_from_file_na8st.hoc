@@ -37,8 +37,8 @@ q10_cm     =  0.96
 
 proc assert() { local test strdef errmsg
     
-    test = $2
-    sprint(errmsg, "gid %d: %s", gid, $s3)
+    test = $1
+    sprint(errmsg, "gid %d: %s", gid, $s2)
     
     if (!test) {
         execerror ("Assertion failed: ", errmsg)

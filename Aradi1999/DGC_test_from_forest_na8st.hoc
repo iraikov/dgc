@@ -78,7 +78,7 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(1, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+    gc = new DGC(1, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -149,7 +149,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(0, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -301,7 +301,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(0, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -375,7 +375,7 @@ proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     sprint(cmd, "mkdir -p %s", local_results_path)
     system(cmd)
     
-    for (gid=task_id; gid < ncells; gid += batch_size)  {
+    for (gid=task_id; gid <= ncells; gid += batch_size)  {
         
         passive_test (local_forest_path, local_results_path, gid)
         single_ap_test (local_forest_path, local_results_path, gid)
