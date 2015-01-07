@@ -13,6 +13,7 @@ public soma, axon, dendrites
 public nDends, nGCL, nPD, nMD, nDD
 public ndendpts
 public verbose
+public gid
 
 verbose = 0
 
@@ -36,8 +37,8 @@ q10_cm     =  0.96
 
 proc assert() { local test strdef errmsg
     
-    test = $1
-    errmsg = $s2
+    test = $2
+    sprint(errmsg, "gid %d: %s", gid, $s3)
     
     if (!test) {
         execerror ("Assertion failed: ", errmsg)
@@ -48,11 +49,12 @@ proc assert() { local test strdef errmsg
 proc init() {
     
     verbose = $1
-    dendrite_dims_fn     = $s2
-    dendrite_points_fn   = $s3
-    dendrite_topology_fn = $s4
-    dendrite_soma_topology_fn = $s5
-    spine_density_fn     = $s6
+    gid = $2
+    dendrite_dims_fn     = $s3
+    dendrite_points_fn   = $s4
+    dendrite_topology_fn = $s5
+    dendrite_soma_topology_fn = $s6
+    spine_density_fn     = $s7
     
     if (verbose) {
         printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
