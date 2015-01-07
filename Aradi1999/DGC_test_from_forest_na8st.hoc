@@ -8,51 +8,6 @@ xopen ("rn.hoc")
 
 vinit = -75.0
 
-objref pnm, pc
-
-proc parallelizer() { local ncells
-    
-    ncells = $1
-    
-    pnm = new ParallelNetManager(ncells) // Set up a parallel net manager for all the cells
-    pc = pnm.pc
-    pnm.round_robin()
-}
-
-
-iterator pcitr() {local i2, startgid	
-    // Create iterator for use as a standard 'for' loop
-    //  throughout given # cells usage:
-    //  for pcitr(&i1, &i2, &gid, it_start, it_end) {do stuff}
-    //  it_start and it_end let you define range over
-    //  which to iterate
-    //  i1 is the index of the cell on the cell list for that host
-    //  i2 is the index of that cell for that cell type on that host
-    numcycles = int($4/pc.nhost)
-    extra = $4%pc.nhost
-    addcycle=0
-    if (extra>pc.id) {addcycle=1}
-    startgid=(numcycles+addcycle)*pc.nhost+pc.id
-    i1 = numcycles+addcycle // the index into the cell # on this host.
-    i2 = 0 // the index of the cell in that cell type's list on that host
-    if (startgid<=$5) {
-	for (i3=startgid; i3 <= $5; i3 += pc.nhost) {	// Just iterate through the cells on
-	    //  this host(this simple statement
-	    //  iterates through all the cells on
-	    //  this host and only these cells because 
-	    //  the roundrobin call made earlier dealt
-	    //  the cells among the processors in an
-	    //  orderly manner (like a deck of cards)
-	    $&1 = i1
-	    $&2 = i2
-	    $&3 = i3
-	    iterator_statement
-	    i1 += 1
-	    i2 += 1
-	}
-    }
-}
-
 
 //**********************************************************************
 proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
@@ -409,26 +364,22 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
 
 proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     
+    // task_id and batch_size are variables that should be set on the
+    // command line, e.g. nrniv -c "task_id=1" -c "batch_size=20"
+    
     load_file ("DGC_test_from_forest_config.hoc")
     
-    parallelizer (ncells)
-    
-    print "pc.nhost = ", pc.nhost
-    
-    sprint (local_forest_path, "%s/%03d", forest_path, pc.id)
-    sprint (local_results_path, "%s/%03d", results_path, pc.id)
+    sprint (local_forest_path, "%s/%03d", forest_path, task_id)
+    sprint (local_results_path, "%s/%03d", results_path, task_id)
     
     sprint(cmd, "mkdir -p %s", local_results_path)
     system(cmd)
     
-    for pcitr(&i, &ij, &gid, 0, ncells-1) {
-        
-        print "i = ", i, "ij = ", ij, "gid = ", gid
+    for (gid=task_id; gid < ncells; gid += batch_size)  {
         
         passive_test (local_forest_path, local_results_path, gid)
         single_ap_test (local_forest_path, local_results_path, gid)
         ap_rate_test (local_forest_path, local_results_path, gid)
-        
     }
 }
 
