@@ -126,10 +126,12 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         DDidxs.printf()
         printf ("Dendritic compartment point counts = ")
         ndendpts.printf()
+        printf ("Total number of dendritic compartments = %d\n", nDends)
         printf ("Total dendritic compartment point count = %d\n", ndendpts.sum ())
+        printf ("Length of dendritic compartment point count vector = %d\n", ndendpts.size ())
     }
     
-    assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the number of dendritic compartments")
+    assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the total number of dendritic compartments")
     
     create dendrites[nDends]
     
