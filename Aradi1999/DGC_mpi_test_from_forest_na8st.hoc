@@ -305,7 +305,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     logfile.wopen ( log_fn )
     
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
-    logfile.printf ("minumum Vsoma: %g mV\n", vmin)
+    logfile.printf ("minimum Vsoma: %g mV\n", vmin)
     
     logfile.printf ("5%% of maximum of vderiv2: t = %g ms, Vsoma = %g mV\n", (tlog.x[vd2spike_index]), (Vlog_soma.x[vd2spike_index]))
     
