@@ -1,6 +1,8 @@
 xopen("DGC_tests_na8st.hoc")
 load_file("netparmpi.hoc")
 
+objref pnm, pc
+
 proc parallelizer() { local ncells
     
     ncells=$1
