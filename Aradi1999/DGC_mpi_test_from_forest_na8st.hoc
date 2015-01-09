@@ -1,10 +1,10 @@
 
 xopen("DGC_tests_na8st.hoc")
 
-proc main() { local i, ij, gid strdef cmd, forest_config, local_forest_path, local_results_path
+proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     
     // forest_config is a variable that should be set on the
-    // command line, e.g. nrniv -c "forest_config=config.hoc"
+    // command line, e.g. nrniv -c "strdef forest_config" -c "forest_config=\"config.hoc\""
 
     load_file (forest_config)
     

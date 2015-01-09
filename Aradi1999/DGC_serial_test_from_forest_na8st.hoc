@@ -3,10 +3,11 @@ xopen("DGC_tests_na8st.hoc")
 
 proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
     
-    // task_id and batch_size are variables that should be set on the
-    // command line, e.g. nrniv -c "task_id=1" -c "batch_size=20"
+    // forest_config and task_id and batch_size are variables that
+    // should be set on the command line, e.g. nrniv -c "task_id=1" 
+    // -c "batch_size=20" -c "strdef forest_config" -c "forest_config=\"config.hoc\""
     
-    load_file ("DGC_test_from_forest_config.hoc")
+    load_file (forest_config)
     
     sprint (local_forest_path, "%s/%03d", forest_path, task_id)
     sprint (local_results_path, "%s/%03d", results_path, task_id)
