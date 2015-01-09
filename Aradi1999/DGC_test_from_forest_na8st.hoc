@@ -306,7 +306,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.3
+    stim1.amp = 0.4
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -355,33 +355,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.printf ("## ISI mean: %g\n", isimean) 
     spikefile.printf ("## ISI variance: %g\n", isivar)
     spikefile.printf ("## ISI stdev: %g\n", isistdev)
-    spikefile.printf ("## ISI adaptation: %g\n", (isivect.x[0]/isimean))
+    spikefile.printf ("## ISI adaptation 1: %g\n", (isivect.x[0]/isimean))
     
     spikefile.close()
     
 }
-
-
-proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
-    
-    // task_id and batch_size are variables that should be set on the
-    // command line, e.g. nrniv -c "task_id=1" -c "batch_size=20"
-    
-    load_file ("DGC_test_from_forest_config.hoc")
-    
-    sprint (local_forest_path, "%s/%03d", forest_path, task_id)
-    sprint (local_results_path, "%s/%03d", results_path, task_id)
-    
-    sprint(cmd, "mkdir -p %s", local_results_path)
-    system(cmd)
-    
-    for (gid=task_id; gid <= ncells; gid += batch_size)  {
-        
-        passive_test (local_forest_path, local_results_path, gid)
-        single_ap_test (local_forest_path, local_results_path, gid)
-        ap_rate_test (local_forest_path, local_results_path, gid)
-    }
-}
-
-main()
 
