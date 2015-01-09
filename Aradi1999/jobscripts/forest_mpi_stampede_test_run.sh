@@ -8,4 +8,4 @@
 #SBATCH --mail-user=ivan.g.raikov@gmail.com # where to send notifications
 #SBATCH --mail-type=ALL # types of mail notifications to receive
 
-ibrun tacc_affinity  x86_64/special -mpi ./DGC_mpi_test_from_forest_na8st.hoc
+ibrun tacc_affinity x86_64/special -mpi ./DGC_mpi_test_from_forest_na8st.hoc
