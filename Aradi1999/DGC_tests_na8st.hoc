@@ -10,19 +10,16 @@ vinit = -75.0
 
 
 //**********************************************************************
-proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
+proc simulate() { local prelength, mainlength, preDT, mainDT
     
     
     prelength = $1
     mainlength = $2
-    logfile=$o3
-    tlog=$o4
-    Vlog_soma=$o5
-    Vlog_axon=$o6
-    Vlog_dends=$o7
     
     mainDT = 0.025
     preDT = 0.025
+    
+    t = 0
     
     finitialize(vinit)
     
@@ -37,6 +34,16 @@ proc simulate() { local prelength, mainlength, preDT, mainDT, logsize  localobj 
     dt = mainDT
     continuerun(prelength + mainlength)
     if ( stoprun == 1) return
+    
+}
+
+proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
+    
+    logfile=$o1
+    tlog=$o2
+    Vlog_soma=$o3
+    Vlog_axon=$o4
+    Vlog_dends=$o5
     
     logsize = tlog.size()
     
@@ -100,7 +107,8 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
     sprint (log_fn, "%s/DGC_passive_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    simulate(prelength,mainlength)
+    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     // attempt to compute membrane time constant
@@ -126,7 +134,7 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
 
 
 
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil, Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -155,6 +163,11 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     stim1.del = prelength
     stim1.dur = stimdur
     stim1.amp = 1.0
+    
+    spikelog = new Vector()
+    gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
+    nc.threshold = 0.0
+    nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
@@ -201,7 +214,21 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     sprint (log_fn, "%s/DGC_single_ap_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    // Increase the injected current until a spike occurs
+    while (spikelog.size() == 0) {
+        simulate(prelength,mainlength)
+        if (spikelog.size() == 0) {
+            stim1.amp = stim1.amp + 0.2
+            tlog.clear()
+            Vlog_soma.clear()
+            Vlog_axon.clear()
+            for i=0,Vlog_dends.count()-1 {
+                Vlog_dend = Vlog_dends.object(i)
+                Vlog_dend.clear()
+            }
+        }
+    }
+    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     vmax = Vlog_soma.max()
@@ -328,7 +355,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     sprint (log_fn, "%s/DGC_ap_rate_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    simulate(prelength,mainlength,logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    simulate(prelength,mainlength)
+    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+
     logfile.close()
     
     spikefile = new File()
@@ -345,17 +374,27 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         isivect.x[i-1] = spikelog.x[i]-tspike
         tspike = spikelog.x[i]
     }
+    isivect.printf()
     
     isimean = isivect.mean()
     isivar = isivect.var()
     isistdev = isivect.stdev()
     
+    isilast = isivect.size()-1
+    if (isivect.size() > 10) {
+        isi10th = 10 
+    } else {
+        isi10th = isilast
+    }
+
     spikefile.printf ("## number of spikes: %g\n", spikelog.size())
     spikefile.printf ("## FR mean: %g\n", 1/isimean)
     spikefile.printf ("## ISI mean: %g\n", isimean) 
     spikefile.printf ("## ISI variance: %g\n", isivar)
     spikefile.printf ("## ISI stdev: %g\n", isistdev)
     spikefile.printf ("## ISI adaptation 1: %g\n", (isivect.x[0]/isimean))
+    spikefile.printf ("## ISI adaptation 2: %g\n", (isivect.x[0]/isivect.x[isilast]))
+    spikefile.printf ("## ISI adaptation 3: %g\n", (isivect.x[0]/isivect.x[isi10th]))
     
     spikefile.close()
     
