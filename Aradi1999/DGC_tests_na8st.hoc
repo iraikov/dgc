@@ -1,6 +1,5 @@
 
 load_file("nrngui.hoc")
-load_file("netparmpi.hoc")
 
 // Load the granule cell template
 xopen("DGC_template_from_file_na8st.hoc")
