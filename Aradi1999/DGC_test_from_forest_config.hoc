@@ -1,5 +1,5 @@
 strdef forest_path, results_path
 
-ncells = 10
+ncells = 332
 forest_path = "/home/igr/src/model/DGC_forest/dat"
 results_path = "results"

@@ -109,7 +109,7 @@ logfile.close()
 vmax = Vlog_soma.max()
 vmin = Vlog_soma.min()
 print "maximum Vsoma of cell is ", vmax, "mV"
-print "minumum Vsoma of cell is ", vmin, "mV"
+print "minimum Vsoma of cell is ", vmin, "mV"
 
 //
 // AP threshold estimation based on Kress et al. J Neurophysiol 2008

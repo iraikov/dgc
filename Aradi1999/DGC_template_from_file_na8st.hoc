@@ -83,9 +83,11 @@ func vector_slice() { local p, n localobj src, dest
     dest = $o1
     
     n = src.x[p]
-    
-    dest.copy (src, p+1, p+n)
-    
+
+    if (n > 0) {    
+      dest.copy (src, p+1, p+n)
+    }
+  
     return p+n+1
 }
 
@@ -126,10 +128,12 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         DDidxs.printf()
         printf ("Dendritic compartment point counts = ")
         ndendpts.printf()
+        printf ("Total number of dendritic compartments = %d\n", nDends)
         printf ("Total dendritic compartment point count = %d\n", ndendpts.sum ())
+        printf ("Length of dendritic compartment point count vector = %d\n", ndendpts.size ())
     }
     
-    assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the number of dendritic compartments")
+    assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the total number of dendritic compartments")
     
     create dendrites[nDends]
     
