@@ -250,6 +250,8 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     vd2spike = 0.05 * vd2max
     vd2max_index = vderiv2.indwhere (">=", vd2max)
     
+    
+    
     // Attempt to locate the index where vderiv2[x] ~= vd2spike 
     // (i.e. 5% of the maximum d^2 V / d^2 t)
     
@@ -288,6 +290,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
     
+    logfile.printf ("maximum of vderiv2: %g, 5%% of maximum of vderiv2: %g\n", vd2max, vd2spike)
     logfile.printf ("5%% of maximum of vderiv2: t = %g ms, Vsoma = %g mV\n", (tlog.x[vd2spike_index]), (Vlog_soma.x[vd2spike_index]))
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)

@@ -13,7 +13,7 @@ ncells=1000
 
 path_prefix="/home/igr/src/model/DGC_forest/results/110/20150109"
 
-echo "## gid,DC_input_resistance,vmin,vtau0,tau0,maximum_Vsoma,minimum_Vsoma,threshold,AP_amplitude_rel_threshold,AHP,Rel_AP_amplitude_dendrite_0,Rel_AP_amplitude_dendrite_1,Rel_AP_amplitude_dendrite_2,number_of_spikes,mean_FR,mean_ISI,stdev_ISI,adaptation_ISI" > $tblpath
+echo "## gid,DC_input_resistance,vmin,vtau0,tau0,maximum_Vsoma,minimum_Vsoma,threshold,AP_amplitude_rel_threshold,AHP,Rel_AP_amplitude_dendrite_0,Rel_AP_amplitude_dendrite_1,Rel_AP_amplitude_dendrite_2,number_of_spikes,mean_FR,mean_ISI,stdev_ISI,adaptation_ISI1,adaptation_ISI2,adaptation_ISI3" > $tblpath
 
 for (( i = 0; i < ncells; i++ )) do
 
@@ -42,10 +42,12 @@ for (( i = 0; i < ncells; i++ )) do
     mean_FR=`grep "FR mean" $spikes_path | cut -f4 -d' '`
     mean_ISI=`grep "ISI mean" $spikes_path | cut -f4 -d' '`
     stdev_ISI=`grep "ISI stdev" $spikes_path | cut -f4 -d' '`
-    adaptation_ISI=`grep "ISI adaptation" $spikes_path | cut -f4 -d' '`
+    adaptation_ISI1=`grep "ISI adaptation 1" $spikes_path | cut -f5 -d' '`
+    adaptation_ISI2=`grep "ISI adaptation 2" $spikes_path | cut -f5 -d' '`
+    adaptation_ISI3=`grep "ISI adaptation 3" $spikes_path | cut -f5 -d' '`
     
 
-    echo $i,$DC_input_resistance,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI >> $tblpath
+    echo $i,$DC_input_resistance,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI1,$adaptation_ISI2,$adaptation_ISI3 >> $tblpath
     
 done
 

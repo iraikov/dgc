@@ -175,7 +175,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
             printf ("connecting dendrites[%d] and soma\n", i, j)
         }
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
-        connect dendrites[j](0),soma(1)
+        connect dendrites[j](0),soma(0)
     }
 
 }
