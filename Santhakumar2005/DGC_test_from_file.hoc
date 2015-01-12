@@ -70,7 +70,7 @@ objectvar stim1
 gc.soma stim1 = new IClamp(0.5)
 stim1.del = prelength
 stim1.dur = stimdur
-stim1.amp = 0.2
+stim1.amp = 0.35
 
 /*
 objref  iklog
@@ -88,7 +88,7 @@ tlog.record (&t)
 
 objref logfile
 logfile = new File()
-logfile.wopen ( "GC_protocol.dat" )
+logfile.wopen ( "DGC_protocol.dat" )
 
 simulate(logfile,tlog,Vlog)
 logfile.close()

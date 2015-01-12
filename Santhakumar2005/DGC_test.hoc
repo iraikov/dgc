@@ -13,12 +13,13 @@ gc = new DGC()
 prelength = 1000
 mainlength = 5000
 
+vinit = -75.0
 
 //**********************************************************************
 proc simulate() { local preDT, mainDT, logsize  localobj logfile, tlog, Vlog, iklog, ikslog
     
     
-    init()
+    finitialize(vinit)
     
     mainDT = 0.025
     preDT = 0.025
@@ -69,13 +70,13 @@ xpanel()
 
 vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
 
-stimdur = 2000
+stimdur = 500
 
 objectvar stim1
 gc.soma stim1 = new IClamp(0.5)
 stim1.del = prelength
 stim1.dur = stimdur
-stim1.amp = 0.25
+stim1.amp = 1.25
 
 objref  iklog
 iklog = new Vector(vec_sizes)
