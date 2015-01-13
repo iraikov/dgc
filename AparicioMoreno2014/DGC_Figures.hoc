@@ -1,0 +1,97 @@
+///////////////// Figures 6A and 6B //////////////////
+
+double xylimits[4]
+
+strdef drug1, drug2
+proc figparas() {      //$1 is the figure # (6A or B)
+	Initialize()         //$2 is the treatment:
+	gbarsAHP = 0         //0	control
+	drug1 = " gM = 0"    //1	gM = 0
+	drug2 = "gSK = 0"    //2	gSK = 0
+	v_init = -62
+	if ($1 == 1) {
+		dur1 = 50
+		dur2 = 100
+		dur3 = 1000
+	}else{
+		dur1 = 50
+		dur2 = 1500
+		dur3 = 0
+	}
+	if ($2 == 0) {
+		ihold = 56.751
+    if ($1 == 1) {
+			amplitude = 450
+		}else{
+			amplitude = 4
+		}
+	}
+	if ($2 == 1) {
+		gMaxon = 0
+		ihold = 55.231
+    if ($1 == 1) {
+			amplitude = 370
+		}else{
+			amplitude = 3.635
+		}
+	}
+	if ($2 == 2) {
+ 		gsksoma = 0
+		gskprox = 0
+		gskGCLs = 0
+		ihold = 56.739
+    if ($1 == 1) {
+			amplitude = 400
+		}else{
+			amplitude = 3.99
+		}
+	}
+}
+
+n = 1000
+objref tcon, vcon, tdrug1, vdrug1, tdrug2, vdrug2, gfig
+proc plotfig() {
+	figparas($1,0)           //Run the simulations using
+  tcon = new Vector(n)     //parameters in proc figparas.
+  tcon.record(&t)          //Record the voltage and time
+	vcon = new Vector(n)     //in vectors for plotting.
+	vcon.record(&v(0.5))
+	run()
+	tcon.play_remove()
+	vcon.play_remove()
+	figparas($1,1)
+	tdrug1 = new Vector(n)
+  tdrug1.record(&t)
+	vdrug1 = new Vector(n)
+	vdrug1.record(&v(0.5))
+	run()
+	tdrug1.play_remove()
+	vdrug1.play_remove()
+	figparas($1,2)
+	tdrug2 = new Vector(n)
+  tdrug2.record(&t)
+	vdrug2 = new Vector(n)
+	vdrug2.record(&v(0.5))
+	run()
+
+	gfig = new Graph()
+	gfig.label(0.75,.95, "V (mV) vs t (ms)")
+	gfig.color(1)
+	vcon.line(gfig, tcon)
+	gfig.label("Control")
+	gfig.color(9)
+	gfig.label(drug1)
+	vdrug1.line(gfig, tdrug1)
+  gfig.color(5)
+	gfig.label(drug2)
+	vdrug2.line(gfig, tdrug2)
+ 	gfig.size(&xylimits)
+ 	gfig.size(dur1,xylimits[1],xylimits[2],xylimits[3])
+	gfig.flush()
+	Initialize()
+}
+
+xpanel("Figures",1)
+  xbutton("Figure 6A","plotfig(1)")
+  xbutton("Figure 6B","plotfig(2)")
+xpanel(220,845)

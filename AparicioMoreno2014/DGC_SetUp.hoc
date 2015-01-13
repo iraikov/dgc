@@ -1,0 +1,129 @@
+/////////////// Setup, stimulus and run /////////// //
+
+proc Initialize() {
+	Parameters()
+  finitialize(v_init)
+}
+
+proc doStop() {
+  stoprun = 1
+	graphList[0].remove_all()
+}
+
+objref stim, hold, git, gvit
+proc run() {
+	graphList[0].remove_all()
+  stoprun = 0
+
+  geom()
+	forall {Ra = Ra0  cm = cm0}
+	forall nseg = int((L/(0.1*lambda_f(100))+0.9)/2)*2 + 1
+	InsertChannels()
+
+	objref stim, hold
+	access soma
+	hold = new holdingi(0.5)
+	hold.ic = 0.001*ihold      			//nA
+
+	savedt = dt
+	cvode.active(0)
+	tstop = 1e10
+	dt = 0.1*tstop
+	finitialize(v_init)
+	continuerun(tstop)              //Initial steady state
+  dt = savedt
+
+	stim = new IClamp(0.5)
+	stim.del = dur1
+	stim.dur = dur2
+	stim.amp = 0.001*amplitude      //nA
+	tstop = dur1 + dur2 + dur3
+
+	git = new Graph(0)
+  git.view(0, 0, tstop, 0.002*amplitude, 0, 450, 370, 155)
+	git.label(0.9,0,"t(ms)")
+	git.label(0,0.8, "I(nA)")
+	git.addvar("stim.i")
+	git.family(1)
+	graphList[0].append(git)
+
+	gvit = new Graph(0)
+  gvit.view(0, -80, tstop, 120, 0, 150, 370, 155)
+	gvit.label(0.9,0.04,"t(ms)")
+	gvit.label(0,0.8, "V(mV)")
+	gvit.addvar("v(0.5)")
+	gvit.family(1)
+	graphList[0].append(gvit)
+
+	cvode.active(1)
+	cvode.atol(1e-4)
+  finitialize()
+	continuerun(tstop)
+}
+
+xpanel("DGC model parameters")
+xvalue("Initialization V(mV)", "v_init",1)
+xvalue("Holding current (pA)", "ihold",1)
+xvalue("Test-pulse I    (pA)", "amplitude",1)
+xvalue("Duraion 1       (ms)", "dur1",1)
+xvalue("Duraion 2       (ms)", "dur2",1)
+xvalue("Duraion 3       (ms)", "dur3",1)
+xbutton("Initialize","Initialize()")
+xbutton("Start","run()")
+xpvalue("t", &t)
+xbutton("Stop","doStop()")
+xvalue("Cm         (uF/um^2)", "cm0", 1)
+xvalue("Rm       (kOhm-cm^2)", "Rm0", 1,"gpas = 1/(Rm0*1e3)")
+xvalue("Ra          (Ohm-cm)", "Ra0", 1)
+xvalue("EK              (mV)", "EK", 1)
+xvalue("gMaxon     (pS/um^2)", "gMaxon", 1)
+xvalue("1/slope         (mV)", "kKM", 1)
+xvalue("M Vshift        (mV)", "VshiftKM", 1)
+xvalue("V0-EK           (mV)", "v0erevKM", 1)
+xvalue("kVM             (mV)", "kVM", 1)
+xvalue("gamma               ", "gammaKM", 1)
+xvalue("tauM = tauM/        ", "taudivKM", 1)
+xvalue("DtauM1 = DtauM1*    ", "Dtaumult1", 1)
+xvalue("DtauM2 = DtauM2*    ", "Dtaumult2", 1)
+xvalue("tau0M = tau0M*      ", "tau0mult", 1)
+xvalue("gKDR multipier      ", "KDRmult", 1)
+xvalue("V0KDR           (mV)", "V0KDR", 1)
+xvalue("tauKDR = tauKDR*    ", "taumultKDR", 1)
+xvalue("gsksoma     (S/cm^2)", "gsksoma", 1)
+xvalue("gskprox     (S/cm^2)", "gskprox", 1)
+xvalue("gskGCLs     (S/cm^2)", "gskGCLs", 1)
+xvalue("ESK             (mV)", "erevSK", 1)
+xvalue("tausk = tausk/      ", "tauskdiv", 1)
+xvalue("BK multipier        ", "BKmult", 1)
+xvalue("EBK             (mV)", "erevBK", 1)
+xvalue("CaT multipier       ", "CaTmult", 1)
+xvalue("CaN multipier       ", "CaNmult", 1)
+xvalue("CaL multipier       ", "CaLmult", 1)
+xvalue("CaT V shift     (mV)", "Vshift", 1)
+xvalue("tauCaT = tauCaT/    ", "tauctdiv", 1)
+xvalue("gNaT_mult           ", "gNaT_mult", 1)
+xvalue("ENa             (mV)", "ENa", 1)
+xvalue("mtauNa = mtauNa*    ", "taumultNa", 1)
+xvalue("htauNa = htauNa*    ", "htaumultNa", 1)
+xvalue("gA_axon     (S/cm^2)", "gKAa", 1)
+xvalue("gA_soma     (S/cm^2)", "gKAs", 1)
+xvalue("tauCa = tauCa/      ", "taucadiv", 1)
+xvalue("[Ca2+]i(0)      (mM)", "ca0", 1)
+xvalue("gbar_sAHP   (S/cm^2)", "gbarsAHP", 1)
+xvalue("tau1Ref_sAHP    (ms)", "tau1RefsAHP", 1)
+xvalue("tau2_sAHP       (ms)", "tau2sAHP", 1)
+xvalue("c1inf_sAHP          ", "c1infsAHP", 1)
+xvalue("oinf_sAHP           ", "oinfsAHP", 1)
+xvalue("CaRef_sAHP      (mM)", "CaRefsAHP", 1)
+xvalue("[Ca2+]half      (mM)", "cahsAHP", 1)
+xvalue("k[Ca2+]         (mM)", "kcasAHP", 1)
+xvalue("n for IsAHP    (O^n)", "nsAHP", 1)
+xvalue("gbarUK     (pS/um^2)", "gbarUK", 1)
+xvalue("EUK             (mV)", "erevUK", 1)
+xvalue("VhalfUK         (mV)", "VhalfUK", 1)
+xvalue("kUK             (mV)", "kUK", 1)
+xvalue("pUK                 ", "pUK", 1)
+xvalue("tauUK           (ms)", "tauUK", 1)
+xvalue("kCaUK           (mM)", "kcaUK", 1)
+xpanel(750,0)
+

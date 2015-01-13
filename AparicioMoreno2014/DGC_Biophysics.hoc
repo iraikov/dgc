@@ -1,0 +1,195 @@
+/*//////////////////// Biophysics ////////////////////
+
+Channel mechanisms:
+
+  pas = passive leak conductance
+   KM = M conductance                  (DGC_M.mod)
+   KA = A-type conductance             (Aradi_KA.mod)
+ fKDR = fast delayed rectifier         (Aradi_KDRf.mod)
+ sKDR = fast delayed rectifier         (Aradi_KDRs.mod)
+CaDep = SK and BK channels             (Aradi_CadepK.mod)
+ sAHP = slow AHP conductance           (DGC_sAHP.mod)
+   Na = transient Na conductance       (Aradi_Na.mod)
+   Ca = T, N and L -type Ca channels   (Aradi_Ca.mod)
+   UK = ad-hoc unknown conductance     (DGC_UK.mod)
+
+"g...bar" indicates a specific conductance while
+"mult" and "div" indicate multipliers and divisors. See
+the .mod files and the panel in "SetUp.hoc" for units.
+
+/*////////////////////////////////////////////////////
+
+
+proc InsertChannels() {
+
+	forsec all {
+    insert pas
+      g_pas = gpas
+      e_pas = Epas
+  }
+
+  forsec dendrites {
+    cm = 1.6*cm0
+    insert pas
+      g_pas = 4e-05
+      e_pas = Epas
+  }
+
+  forsec GCLs {
+    insert Ca
+      gtcabar_Ca = CaTmult*0.0003
+      gncabar_Ca = CaNmult*0.003
+      glcabar_Ca = CaLmult*0.015
+    insert CadepK
+      gbkbar_CadepK = BKmult*0.0003
+      gskbar_CadepK = gskGCLs
+    insert Na
+      gbar_Na = gNaT_mult*0.018
+    insert fKDR
+      gbar_fKDR = 0.004
+    insert sKDR
+      gbar_sKDR = 0.003
+  }
+
+  forsec proxs {
+    insert Ca
+      gtcabar_Ca = CaTmult*0.001
+      gncabar_Ca = CaNmult*0.001
+      glcabar_Ca = CaLmult*0.015
+    insert CadepK
+      gbkbar_CadepK = BKmult*0.0005
+      gskbar_CadepK = gskprox
+    insert Na
+      gbar_Na = gNaT_mult*0.013
+    insert fKDR
+      gbar_fKDR = 0.004
+    insert sKDR
+      gbar_sKDR = 0.003
+  }
+
+  forsec middles {
+    insert Ca
+      gtcabar_Ca = CaTmult*0.002
+      gncabar_Ca = CaNmult*0.001
+      glcabar_Ca = CaLmult*0.001
+    insert CadepK
+      gbkbar_CadepK = BKmult*0.0012
+      gskbar_CadepK = 0.0
+    insert Na
+      gbar_Na = gNaT_mult*0.008
+    insert fKDR
+      gbar_fKDR = 0.001
+    insert sKDR
+      gbar_sKDR = 0.003
+  }
+
+  forsec distals {
+    insert Ca
+      gtcabar_Ca = CaTmult*0.002
+      gncabar_Ca = CaNmult*0.001
+      glcabar_Ca = 0.0
+    insert CadepK
+      gbkbar_CadepK = BKmult*0.0012
+      gskbar_CadepK = 0.0
+    insert fKDR
+      gbar_fKDR = 0.001
+    insert sKDR
+      gbar_sKDR = 0.004
+  }
+
+  forsec allaxon {
+    insert Na
+      gbar_Na = gNaT_mult*0.21	//0.04  (S-H)
+    insert fKDR
+      gbar_fKDR = 0.028
+    insert KA
+			gbar_KA = gKAa	//0.004
+    insert KM
+    	k_KM = kKM
+    	v0erev_KM = v0erevKM
+    	kV_KM = kVM
+    	gamma_KM = gammaKM
+    	taudiv_KM = taudivKM
+    	Dtaumult1_KM = Dtaumult1
+    	Dtaumult2_KM = Dtaumult2
+    	Vshift_KM = VshiftKM
+			tau0mult_KM = tau0mult
+			gbar_KM = gMaxon
+  }
+
+  soma {
+    insert Ca
+      gtcabar_Ca = CaTmult*0.00015
+      gncabar_Ca = CaNmult*0.002
+      glcabar_Ca = CaLmult*0.01
+    insert CadepK
+      gbkbar_CadepK = BKmult*0.0003
+      gskbar_CadepK = gsksoma
+    insert Na
+      gbar_Na = gNaT_mult*0.12
+    insert fKDR
+      gbar_fKDR = 0.016
+    insert sKDR
+      gbar_sKDR = 0.003
+    insert KA
+    	gbar_KA = gKAs
+    insert UK
+    	gbar_UK = gbarUK
+    insert sAHP
+    	gbar_sAHP = gbarsAHP
+  }
+
+  forsec all {
+		if (ismembrane("Na")) {
+			ena = ENa
+			taumult_Na = taumultNa
+		}
+		if (ismembrane("UK")) {
+			erev_UK = erevUK
+			p_UK = pUK
+			tau_UK = tauUK
+			Vhalf_UK = VhalfUK
+			k_UK = kUK
+			taucadiv_UK = taucadiv
+			kca_UK = kcaUK
+			ca0_UK = ca0
+		}
+		if (ismembrane("Ca")) {
+			taucadiv_Ca = taucadiv
+			tauctdiv_Ca = tauctdiv
+			Vshift_Ca = Vshift
+			ca0_Ca = ca0
+		}
+		if (ismembrane("CadepK")) { ek = EK
+			erevSK_CadepK = erevSK
+			tauskdiv_CadepK = tauskdiv
+			taucadiv_CadepK = taucadiv
+			erevBK_CadepK = erevBK
+			ca0_CadepK = ca0
+		}
+		if (ismembrane("KM")) {erev_KM = EK}
+		if (ismembrane("KA")) {erev_KA = EK}
+		if (ismembrane("fKDR")) {
+			erev_fKDR = EK
+			gbar_fKDR = KDRmult*gbar_fKDR
+			v0_fKDR = V0KDR
+			taumult_fKDR = taumultKDR
+		}
+		if (ismembrane("sKDR")) {
+			erev_sKDR = EK
+			gbar_sKDR = KDRmult*gbar_sKDR
+		}
+		if (ismembrane("sAHP")) {
+			ek = EK
+			tau1Ref_sAHP = tau1RefsAHP
+			tau2_sAHP = tau2sAHP
+			c1inf_sAHP = c1infsAHP
+			oinf_sAHP = oinfsAHP
+			CaRef_sAHP = CaRefsAHP
+			kca_sAHP = kcasAHP
+			cah_sAHP = cahsAHP
+			n_sAHP = nsAHP
+		}
+	}
+}
+

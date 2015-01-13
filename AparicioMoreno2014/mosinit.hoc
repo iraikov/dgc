@@ -1,0 +1,6 @@
+load_file("nrngui.hoc")
+load_file("DGC_Morphology.hoc")
+load_file("DGC_Biophysics.hoc")
+load_file("DGC_Parameters.hoc")
+load_file("DGC_SetUp.hoc")
+load_file("DGC_Figures.hoc")

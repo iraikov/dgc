@@ -1,0 +1,87 @@
+///////////////////// Parameters /////////////////////
+
+proc Parameters() {
+
+celsius = 32
+v_init = -62
+ihold = 57				//pA
+amplitude = 450		//pA
+dur1 = 50         //ms
+dur2 = 100
+dur3 = 1000
+
+//Passive properties
+Ra0 = 210         //Ohm.cm
+cm0 = 1           //uF/cm2
+gpas = 2.5e-05    //S/cm2
+Rm0 = 1e-3/gpas   //kOhm.cm2
+Epas = -75        //mV
+EK = -100         //mV
+
+//The M conductance
+gMaxon = 20       //pS/um2; for other units see the .mod
+kKM = 9           //files and the panel in "SetUp.hoc".
+v0erevKM = 65
+kVM = 40
+gammaKM = 0.5
+taudivKM = 1
+Dtaumult1 = 30
+Dtaumult2 = 30
+tau0mult = 1
+VshiftKM = 0
+
+//The SK and BK conductances
+gsksoma = 0.0001
+gskprox = 0.00001
+gskGCLs = 0.00001
+erevSK = EK
+tauskdiv = 2
+erevBK = EK
+BKmult = 0.3
+
+//The sAHP conductance
+gbarsAHP = 10
+tau1RefsAHP = 400
+tau2sAHP = 200
+c1infsAHP = 0.25
+oinfsAHP = 0.5
+CaRefsAHP = 0.002
+cahsAHP = 0.01
+kcasAHP = 0.001
+nsAHP = 4
+msAHP = 1
+
+//The ad-hoc unknown conductance
+gbarUK = 200
+erevUK = -55
+pUK = 4
+tauUK = 10
+VhalfUK =  -55
+kUK = 1
+kcaUK = 0.01
+
+//The delayed rectifier and A conductances
+KDRmult = 0.8
+V0KDR = 23
+taumultKDR = 1
+gKAs = 0.012
+gKAa = 0.004
+
+//Calcium channels
+CaTmult = 1.75
+CaNmult = 1
+CaLmult = 1
+ca0 = .00007
+tauctdiv = 1
+taucadiv = 1
+Vshift = 0
+
+//The transient Na conductance
+gNaT_mult = 1.5
+taumultNa = 1
+htaumultNa = 1
+ENa = 42
+
+}
+
+Parameters()
