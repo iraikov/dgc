@@ -15,6 +15,9 @@ public ndendpts
 public verbose
 
 verbose = 0
+varSoma = 0
+seed1 = 1
+seed2 = 2
 
 create soma, dendrites[1]
 
@@ -38,11 +41,15 @@ proc assert() { local test strdef errmsg
 proc init() {
     
     verbose = $1
-    dendrite_dims_fn     = $s2
-    dendrite_points_fn   = $s3
-    dendrite_topology_fn = $s4
-    dendrite_soma_topology_fn = $s5
-    spine_density_fn     = $s6
+    gid = $2
+    dendrite_dims_fn     = $s3
+    dendrite_points_fn   = $s4
+    dendrite_topology_fn = $s5
+    dendrite_soma_topology_fn = $s6
+    spine_density_fn     = $s7
+    varSoma = $8
+    seed1 = $9
+    seed2 = $10
     
     if (verbose) {
         printf ("dendrite dimensions fn = %s\n", dendrite_dims_fn)
@@ -219,8 +226,43 @@ proc subsets() { local i
 }
 
 
-proc geom() {
-    soma {  L = 16.8  diam = 16.8  }
+proc geom() { local somaDiam, somaL localobj r
+    
+    r = $o1
+
+    // Soma size from Claiborne et al., 1990 (N = 48)
+    // Soma width (um): 10.3  +/- 0.3 SEM (6 - 15 um range)
+    // Soma length (um): 18.6  +/- 0.5 SEM (15 - 30 um range)
+    
+    // SD = SEM * sqrt(N)
+    
+    if (varSoma > 0) {
+        
+        SDsomaDiam = 0.3 * 6.9282    
+        somaDiam = r.normal(10.3, SDsomaDiam)
+        if (somaDiam < 6.0) {
+            somaDiam = 6.0
+        }
+        if (somaDiam > 15.0) {
+            somaDiam = 15.0
+        }
+        
+        SDsomaL = 0.5 * 6.9282    
+        somaL = r.normal(18.6, SDsomaL)
+        if (somaL < 15.0) {
+            somaL = 15.0
+        }
+        if (somaL > 30.0) {
+            somaL = 30.0
+        }
+        
+        soma {  diam = somaDiam  L = somaL   }
+    } else {
+        
+        soma {  diam = 10.3  L = 18.6   }
+
+    }
+    
     
 }
 
@@ -276,8 +318,8 @@ proc biophys() {
     soma {
         cm = 1
          
-        insert ichan2  //ildikos ichan
-	gnatbar_ichan2=0.12 // 0.030 to .055 
+        insert ichan2
+	gnatbar_ichan2=0.14 // 0.030 to .055 
 	gkfbar_ichan2=0.016 // 0.015
 	gksbar_ichan2=0.006
 	gl_ichan2 = 0.00004
@@ -286,7 +328,7 @@ proc biophys() {
 	gkabar_BGKA=0.012
         
 	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.002  // check to modify- original 0.004
+	gncabar_CaN=0.004  // check to modify- original 0.004
         
 	insert CaL
 	glcabar_CaL=0.005
@@ -298,7 +340,7 @@ proc biophys() {
 	gskbar_GSK=0.001
         
 	insert CaBK
-	gkbar_CaBK=0.0006
+	gkbar_CaBK=0.001
     }
     forsec GCLs {
         
@@ -418,6 +460,7 @@ proc biophys() {
 	catau_CaConc = 10
 	caiinf_CaConc = 5.e-6
     }
+    
     forsec alldendrites {
         Ra = 210
         
@@ -438,7 +481,12 @@ proc biophys() {
 
     
 
-proc celldef() {
+proc celldef() { localobj r
+    
+    if (varSoma > 0) {
+        r = new Random()
+        r.Random123(seed1, seed2)
+    }
     
     GCLidxs = new Vector()
     PDidxs  = new Vector()
@@ -455,7 +503,7 @@ proc celldef() {
     
     topol()
     subsets()
-    geom()
+    geom(r)
     geom_spines()
     biophys()
     geom_nseg()
