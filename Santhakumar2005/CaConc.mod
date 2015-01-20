@@ -64,7 +64,7 @@ INITIAL {
 
 
 BREAKPOINT {
-    SOLVE integrate METHOD derivimplicit
+    SOLVE integrate METHOD cnexp
 }
 
 DERIVATIVE integrate {

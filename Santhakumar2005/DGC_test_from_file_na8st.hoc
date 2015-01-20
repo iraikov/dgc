@@ -1,0 +1,23 @@
+
+
+load_file("nrngui.hoc")
+load_file("DGC_protocol.ses")
+
+// Load the granule cell template
+xopen("DGC_tests_na8st.hoc")
+
+strdef local_forest_path, local_results_path
+
+gid = 827
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
+local_results_path = "results"
+
+gid = 1
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
+local_results_path = "results"
+
+passive_test (gid, local_forest_path, local_results_path, 0)
+single_ap_test (gid, local_forest_path, local_results_path, 0)
+ap_rate_test (gid, local_forest_path, local_results_path, 0)
+
+

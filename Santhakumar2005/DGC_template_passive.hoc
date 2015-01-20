@@ -1,0 +1,305 @@
+
+begintemplate DGC
+
+public pre_list, connect_pre
+public vbc2gc, vmc2gc, vhc2gc, vgc2bc, vbc2bc, vmc2bc, vhc2bc, vgc2mc, vbc2mc, vmc2mc, vhc2mc, vgc2hc, vmc2hc
+public soma, gcdend1, gcdend2
+public all, gcldend, pdend, mdend, ddend
+
+ndend1=4
+ndend2=4
+nstim=10
+
+objectvar stim[nstim]
+double stimdur[nstim], stimdel[nstim], stimamp[nstim]
+
+public stim, stimdur, stimamp, stimdel
+create soma, gcdend1[ndend1], gcdend2[ndend2]
+objref syn, pre_list
+
+    proc init() {
+	pre_list = new List()
+	subsets()
+	gctemp()
+	synapse()
+    }
+    
+    objref all, gcldend, pdend, mdend, ddend
+    
+    proc subsets(){ local i
+        
+        objref all, gcldend, pdend, mdend, ddend
+        
+        all = new SectionList()
+        soma all.append()
+        
+        for i=0, 3 gcdend1 [i] all.append()
+        for i=0, 3 gcdend2 [i] all.append()
+        
+        gcldend  = new SectionList()
+        gcdend1 [0] gcldend.append()
+        gcdend2 [0] gcldend.append()
+        
+        pdend  = new SectionList()
+        gcdend1 [1] pdend.append()
+        gcdend2 [1] pdend.append()
+        
+        mdend  = new SectionList()
+        gcdend1 [2] mdend.append()
+        gcdend2 [2] mdend.append()
+        
+        ddend  = new SectionList()
+        gcdend1 [3] ddend.append()
+        gcdend2 [3] ddend.append()
+    }
+    
+    proc gctemp() {
+        
+        soma {nseg=1 L=16.8 diam=16.8} // changed L & diam
+        
+        gcdend1 [0] {nseg=1 L=50 diam=3}
+        for i = 1, 3 gcdend1 [i] {nseg=1 L=150 diam=3}
+        
+        gcdend2 [0] {nseg=1 L=50 diam=3}
+        for i = 1, 3 gcdend2 [i] {nseg=1 L=150 diam=3}	 	
+        
+        
+        forsec all {
+	    insert CaConc
+	    catau_CaConc = 10
+	    caiinf_CaConc = 5.e-6
+	    Ra=210
+        }
+        
+        
+        soma {
+            
+            insert ichan2  //ildikos ichan
+	    gnatbar_ichan2=0  //original 0.030 to .055 
+	    gkfbar_ichan2=0  //original 0.015
+	    gksbar_ichan2=0
+	    gl_ichan2 = 0.00004
+            
+	    insert BGKA
+	    gkabar_BGKA=0
+            
+	    insert CaN  // HAV-N- Ca channel
+	    gncabar_CaN=0  // check to modify- original 0.004
+            
+	    insert CaL
+	    glcabar_CaL=0
+            
+	    insert CaT
+	    gcatbar_CaT=0
+            
+	    insert GSK
+	    gskbar_GSK=0
+            
+	    insert CaBK
+	    gkbar_CaBK=0
+            
+	    cm=1
+            esk  = -90
+            
+        } 
+        
+        
+        forsec gcldend {
+            
+            insert ichan2
+	    gnatbar_ichan2=0  //original 0.015
+	    gkfbar_ichan2=0
+	    gksbar_ichan2=0
+	    gl_ichan2 = 0.00004
+            
+	    insert CaN  // HAV-N- Ca channel
+	    gncabar_CaN=0  // check to modify- original 0.004
+            
+	    insert CaL
+	    glcabar_CaL=0
+            
+	    insert CaT
+	    gcatbar_CaT=0
+            
+	    insert GSK
+	    gskbar_GSK=0
+            
+	    insert CaBK
+	    gkbar_CaBK=0
+            
+            cm=1
+        }
+        
+        forsec pdend {
+            
+            insert ichan2
+	    gnatbar_ichan2=0
+	    gkfbar_ichan2=0
+	    gksbar_ichan2=0
+	    gl_ichan2 = 0.000063
+            
+	    insert CaN  // HAV-N- Ca channel
+	    gncabar_CaN=0  // check to modify- original 0.004
+            
+	    insert CaL
+	    glcabar_CaL=0
+            
+	    insert CaT
+	    gcatbar_CaT=0
+            
+	    insert GSK
+	    gskbar_GSK=0
+            
+	    insert CaBK
+	    gkbar_CaBK=0
+            
+	    cm=1.6
+        }
+        
+        
+        forsec mdend {
+            insert ichan2
+	    gnatbar_ichan2=0
+	    gkfbar_ichan2=0
+	    gksbar_ichan2=0
+	    gl_ichan2 = 0.000063
+            
+	    insert CaN // HAV-N- Ca channel
+	    gncabar_CaN=0.001  // check to modify- original 0.004
+            
+	    insert CaL
+	    glcabar_CaL=0
+            
+	    insert CaT
+	    gcatbar_CaT=0
+            
+	    insert GSK
+	    gskbar_GSK=0
+            
+	    insert CaBK
+	    gkbar_CaBK=0
+            
+	    cm=1.6
+        }
+        
+        forsec ddend {
+            
+            insert ichan2
+	    gnatbar_ichan2=0.0
+	    gkfbar_ichan2=0
+	    gksbar_ichan2=0
+	    gl_ichan2 = 0.000063
+            
+	    insert CaN  // HAV-N- Ca channel
+	    gncabar_CaN=0  // check to modify- original 0.004
+            
+	    insert CaL
+	    glcabar_CaL=0.0
+            
+	    insert CaT
+	    gcatbar_CaT=0
+            
+	    insert GSK
+	    gskbar_GSK=0.0
+            
+	    insert CaBK
+	    gkbar_CaBK=0
+            
+	    cm=1.6
+        }
+        
+        
+        connect gcdend1[0](0), soma(1)
+        connect gcdend2[0](0), soma(1)
+        
+        for i=1,3 {
+	    connect gcdend1[i](0), gcdend1[i-1](1)
+        }
+        for i=1,3 {
+	    connect gcdend2[i](0), gcdend2[i-1](1)
+        }
+        
+        
+        forsec all {
+            
+            enat = 45 
+            ekf  = -90 
+            eks  = -90  
+            ek   = -90  
+            elca = 130 
+            etca = 130	 
+	    el_ichan2 = -70
+            esk = -90
+            
+            cao_CaConc = 2
+            
+        }  // make catau slower70e-3 	cao=2 cai=50.e-6 
+        
+        // current injection
+        // for i=0,0 {
+            
+        //     stimdel[i]=500
+        //     stimdur[i]=200
+        //     stimamp[i]=0.2
+            
+        //     soma stim[i] = new IClamp(0.5)
+        //     stim.del[i]=stimdel[i]
+        //     stim.dur[i]=stimdur[i]
+        //     stim.amp[i]=stimamp[i]
+        // }
+        
+        
+    }
+    
+    proc connect_pre() {  // $o1 target point process, $o2 returned NetCon
+        
+        soma $o2 = new NetCon (&v(1), $o1)
+        //alternative statement		$o1.soma pre_list.append(new NetCon(soma.v(1),syn,0,Delsyn,0))
+    }
+    
+    objref syn
+    proc synapse() {
+        
+        gcdend1[3] syn = new Exp2Syn(0.5) // PP syn based on Greg and Staley
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+        gcdend2[3] syn = new Exp2Syn(0.5) // PPsyn based on Greg and Staley
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+        gcdend1[1] syn = new Exp2Syn(0.5) // MC syn *** Estimated
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+        gcdend2[1] syn = new Exp2Syn(0.5) // MC syn   *** Estimated
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+        gcdend1[3] syn = new Exp2Syn(0.5) // HIPP  syn based on Harney and Jones corrected for temp
+        syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
+        pre_list.append(syn)
+        
+        gcdend2[3] syn = new Exp2Syn(0.5) // HIPP syn based on Harney and Jones corrected for temp
+        syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
+        pre_list.append(syn)
+        
+        soma syn = new Exp2Syn(0.5) // BC  syn syn based on Bartos
+        syn.tau1 = 0.26	syn.tau2 = 5.5	syn.e = -70
+        pre_list.append(syn)
+        
+        gcdend1[1] syn = new Exp2Syn(0.5) // Sprouted Syn
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+        gcdend2[1] syn = new Exp2Syn(0.5) // Sprouted Syn
+        syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        pre_list.append(syn)
+        
+    
+    // Total of 7 synapses per GC 0,1 PP; 	2,3 MC;	4,5 HIPP and 	6 BC	7,8 Sprout
+}
+
+
+endtemplate DGC
+
