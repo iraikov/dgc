@@ -36,17 +36,23 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     
 }
 
-proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_dends, Vlog_dend
+proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_dends, Vlog_dend, Ilog_ik, Ilog_ina, Ilog_ica
     
     logfile=$o1
     tlog=$o2
+    
+    
     Vlog_soma=$o3
     Vlog_dends=$o4
+    
+    Ilog_ik=$o5
+    Ilog_ina=$o6
+    Ilog_ica=$o7
     
     logsize = tlog.size()
     
     for i=0,tlog.size()-1 {
-	logfile.printf("%g %g", tlog.x[i], Vlog_soma.x[i])
+	logfile.printf("%g %g %g %g %g", tlog.x[i], Vlog_soma.x[i], Ilog_ik.x[i], Ilog_ina.x[i], Ilog_ica.x[i])
         if (Vlog_dends.count() > 0) {
             for j=0,Vlog_dends.count()-1 {
                 Vlog_dend = Vlog_dends.object(j)
@@ -59,7 +65,7 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_dend
 }
 
 
-proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_dends, tlog, logfile strdef forest_path, results_path
+proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_dends, Ilog_ik, Ilog_ina, Ilog_ica, tlog, logfile strdef forest_path, results_path
     
     
     gid = $1
@@ -91,6 +97,15 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     stim1.dur = stimdur
     stim1.amp = -0.1
     
+    Ilog_ik = new Vector(vec_sizes)
+    Ilog_ik.record (&gc.soma.ik(0.5))
+
+    Ilog_ina = new Vector(vec_sizes)
+    Ilog_ina.record (&gc.soma.inat(0.5))
+
+    Ilog_ica = new Vector(vec_sizes)
+    Ilog_ica.record (&gc.soma.ica(0.5))
+
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
     
@@ -104,7 +119,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.wopen ( log_fn )
     
     simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_dends)
+    write_trace(logfile,tlog,Vlog_soma,Vlog_dends,Ilog_ik,Ilog_ina,Ilog_ica)
     logfile.close()
     
     // attempt to compute membrane time constant
@@ -130,7 +145,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
 
 
 
-proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil, Vlog_soma, Vlog_dend, Vlog_dends, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil, Vlog_soma, Vlog_dend, Vlog_dends, Ilog_ik, Ilog_ina, Ilog_ica, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
     
     gid = $1
     forest_path = $s2
@@ -165,6 +180,15 @@ proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_siz
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
     nc.threshold = 0.0
     nc.record(spikelog)
+    
+    Ilog_ik = new Vector(vec_sizes)
+    Ilog_ik.record (&gc.soma.ik(0.5))
+
+    Ilog_ina = new Vector(vec_sizes)
+    Ilog_ina.record (&gc.soma.inat(0.5))
+
+    Ilog_ica = new Vector(vec_sizes)
+    Ilog_ica.record (&gc.soma.ica(0.5))
     
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
@@ -221,7 +245,7 @@ proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_siz
             }
         }
     }
-    write_trace(logfile,tlog,Vlog_soma,Vlog_dends)
+    write_trace(logfile,tlog,Vlog_soma,Vlog_dends,Ilog_ik,Ilog_ina,Ilog_ica)
     logfile.close()
     
     vmax = Vlog_soma.max()
@@ -301,7 +325,7 @@ proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_siz
 }
 
 
-proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_dends, Ilog_ik, Ilog_ina, Ilog_ica, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
     
     gid = $1
     forest_path = $s2
@@ -317,7 +341,7 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
     
-    stimdur = 1000
+    stimdur = 1000.0
     
     sprint(dims_fn, "%s/DGC_dims_%06d.dat", forest_path, gid)
     sprint(points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
@@ -330,7 +354,7 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 1.25
+    stim1.amp = 0.35
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -339,6 +363,15 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
+    
+    Ilog_ik = new Vector(vec_sizes)
+    Ilog_ik.record (&gc.soma.ik(0.5))
+
+    Ilog_ina = new Vector(vec_sizes)
+    Ilog_ina.record (&gc.soma.inat(0.5))
+
+    Ilog_ica = new Vector(vec_sizes)
+    Ilog_ica.record (&gc.soma.ica(0.5))
     
     Vlog_dends = new List()
 
@@ -350,7 +383,7 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.wopen ( log_fn )
     
     simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_dends)
+    write_trace(logfile,tlog,Vlog_soma,Vlog_dends,Ilog_ik,Ilog_ina,Ilog_ica)
 
     logfile.close()
     
