@@ -322,7 +322,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
     
-    stimdur = 1000
+    stimdur = 500
     
     sprint(dims_fn, "%s/DGC_dims_%06d.dat", forest_path, gid)
     sprint(points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)

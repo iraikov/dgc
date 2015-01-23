@@ -391,12 +391,12 @@ proc biophys() {
         insert fKDR
         gmax_fKDR = 0.004
         insert KA
-        gmax_KA = 0.01
+        gmax_KA = 0.006
     }
     soma {
         insert na8st
         insert fKDR
-        gmax_fKDR = 0.016
+        gmax_fKDR = 0.006
         insert sKDR
         gmax_sKDR = 0.003
         insert KA
@@ -413,9 +413,9 @@ proc biophys() {
         cm = 1 * scale_spines 
         insert na8st
         insert fKDR
-        gmax_fKDR = 0.004
+        gmax_fKDR = 0.002
         insert sKDR
-        gmax_sKDR = 0.003
+        gmax_sKDR = 0.002
         insert Ca
         gtcabar_Ca = 0.0003
         gncabar_Ca = 0.003
@@ -428,7 +428,7 @@ proc biophys() {
         cm = 1.6 * scale_spines
         insert na8st
         insert fKDR
-        gmax_fKDR = 0.004
+        gmax_fKDR = 0.003
         insert sKDR
         gmax_sKDR = 0.003
         insert Ca
@@ -444,9 +444,9 @@ proc biophys() {
         g_pas = 7.5e-05
         insert na8st
         insert fKDR
-        gmax_fKDR = 0.001
+        gmax_fKDR = 0.002
         insert sKDR
-        gmax_sKDR = 0.003
+        gmax_sKDR = 0.004
         insert Ca
         gtcabar_Ca = 0.002
         gncabar_Ca = 0.001
