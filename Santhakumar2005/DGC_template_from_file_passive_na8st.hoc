@@ -604,7 +604,7 @@ proc biophys() {
         if (ismembrane("CaT")) { etca = 130 }
     }
     
-    forsec soma {
+    soma {
         
         ek  = -90
         
