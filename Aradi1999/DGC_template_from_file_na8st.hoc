@@ -428,7 +428,7 @@ proc biophys() {
         cm = 1.6 * scale_spines
         insert na8st
         insert fKDR
-        gmax_fKDR = 0.003
+        gmax_fKDR = 0.002
         insert sKDR
         gmax_sKDR = 0.003
         insert Ca
