@@ -16,6 +16,9 @@ public verbose
 public gid
 
 verbose = 0
+varSoma = 0
+seed1 = 1
+seed2 = 2
 
 create soma, axon[4], dendrites[1]
 
@@ -55,7 +58,10 @@ proc init() {
     dendrite_topology_fn = $s5
     dendrite_soma_topology_fn = $s6
     spine_density_fn     = $s7
-    
+    varSoma = $8
+    seed1 = $9
+    seed2 = $10
+
     if (verbose) {
         printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
         printf ("dendrite points filename = %s\n", dendrite_points_fn)
@@ -235,7 +241,11 @@ proc subsets() { local i
 }
 
 
-proc geom() {
+
+proc geom() { local somaDiam, somaL localobj r
+    
+    r = $o1
+    
     forsec allaxons {  L = 10  }
     
     axon[0].diam = 2.3
@@ -243,12 +253,45 @@ proc geom() {
     axon[2].diam = 0.8
     axon[3].diam = 0.3
     axon[3] { L = 1000 }
+
+    // Soma size from Claiborne et al., 1990 (N = 48)
+    // Soma width (um): 10.3  +/- 0.3 SEM (6 - 15 um range)
+    // Soma length (um): 18.6  +/- 0.5 SEM (15 - 30 um range)
     
-    soma {  L = 16.8  diam = 16.8  }
+    // SD = SEM * sqrt(N)
+    
+    if (varSoma > 0) {
+        
+        SDsomaDiam = 0.3 * 6.9282    
+        somaDiam = r.normal(10.3, SDsomaDiam)
+        if (somaDiam < 6.0) {
+            somaDiam = 6.0
+        }
+        if (somaDiam > 15.0) {
+            somaDiam = 15.0
+        }
+        
+        SDsomaL = 0.5 * 6.9282    
+        somaL = r.normal(18.6, SDsomaL)
+        if (somaL < 15.0) {
+            somaL = 15.0
+        }
+        if (somaL > 30.0) {
+            somaL = 30.0
+        }
+        
+        soma {  diam = somaDiam  L = somaL   }
+    } else {
+        
+        soma {  diam = 16.8  L = 16.8   }
+        
+    }
     
     forsec all define_shape()
+
     
 }
+
 
 
 
@@ -462,7 +505,7 @@ proc biophys() {
         insert fKDR
         gmax_fKDR = 0.001
         insert sKDR
-        gmax_sKDR = 0.004
+        gmax_sKDR = 0.005
         insert Ca
         gtcabar_Ca = 0.002
         gncabar_Ca = 0.001
@@ -642,8 +685,13 @@ proc biophys() {
 
     
 
-proc celldef() {
+proc celldef() { localobj r
     
+    if (varSoma > 0) {
+        r = new Random()
+        r.Random123(seed1, seed2)
+    }
+
     GCLidxs = new Vector()
     PDidxs  = new Vector()
     MDidxs  = new Vector()
@@ -661,7 +709,7 @@ proc celldef() {
     read_Na_rates()
     topol()
     subsets()
-    geom()
+    geom(r)
     geom_spines()
     geom_nseg()
     biophys()
