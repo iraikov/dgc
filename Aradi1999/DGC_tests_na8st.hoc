@@ -60,12 +60,13 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
 }
 
 
-proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile strdef forest_path, results_path
+proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile strdef forest_path, results_path
     
     
     forest_path = $s1
     results_path = $s2
     gid = $3
+    varSoma = $4
     
     print "passive_test: gid = ", gid
 
@@ -84,7 +85,7 @@ proc passive_test() { local gid, prelength, mainlength, vec_sizes, stimdur local
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(1, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, 0, 0, 0)
+    gc = new DGC(1, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, varSoma, gid+1, gid+2)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -138,6 +139,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     forest_path = $s1
     results_path = $s2
     gid = $3
+    varSoma = $4
     
     print "single_ap_test: gid = ", gid
 
@@ -156,7 +158,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, 0, 0, 0)
+    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, varSoma, gid+1, gid+2)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -312,6 +314,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     forest_path = $s1
     results_path = $s2
     gid = $3
+    varSoma = $4
     
     print "ap_rate_test: gid = ", gid
     
@@ -330,7 +333,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
-    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, 0, 0, 0)
+    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn, varSoma, gid+1, gid+2)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
