@@ -10,31 +10,31 @@ UNITS {
 
 NEURON {
 	SUFFIX GSK
-	USEION sk READ esk WRITE isk VALENCE 1
+	USEION k READ ek WRITE ik
 	USEION nca READ ncai VALENCE 2
 	USEION lca READ lcai VALENCE 2
 	USEION tca READ tcai VALENCE 2
-	RANGE gskbar, qinf, qtau, isk
+	RANGE gskbar, qinf, qtau, ik
 }
 
 PARAMETER {
 	celsius (degC)
 	v	(mV)
 	gskbar  (mho/cm2)
-	esk	(mV)
 }
 
 STATE { q }
 
 ASSIGNED {
-	isk (mA/cm2) gsk (mho/cm2) qinf qtau (ms) q10
+	ek	(mV)
+	ik (mA/cm2) gsk (mho/cm2) qinf qtau (ms) q10
 	ncai (mM) lcai (mM) tcai (mM)
     }
     
-BREAKPOINT {          :Computes i=g*q^2*(v-esk)
+BREAKPOINT {          :Computes i=g*q^2*(v-ek)
 	SOLVE state METHOD cnexp
         gsk = gskbar * q * q
-	isk = gsk * (v-esk)
+	ik = gsk * (v-ek)
 }
 
 UNITSOFF

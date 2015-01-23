@@ -2,7 +2,7 @@
 load_file("nrngui.hoc")
 
 // Load the granule cell template
-xopen("DGC_template_from_file_na8st.hoc")
+xopen("DGC_template_from_file_passive_na8st.hoc")
 xopen ("rn.hoc")
 
 vinit = -75.0
@@ -101,7 +101,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     Ilog_ik.record (&gc.soma.ik(0.5))
 
     Ilog_ina = new Vector(vec_sizes)
-    Ilog_ina.record (&gc.soma.inat(0.5))
+    Ilog_ina.record (&gc.soma.ina(0.5))
 
     Ilog_ica = new Vector(vec_sizes)
     Ilog_ica.record (&gc.soma.ica(0.5))
@@ -185,7 +185,7 @@ proc single_ap_test() { local i, j, gid, varSoma, prelength, mainlength, vec_siz
     Ilog_ik.record (&gc.soma.ik(0.5))
 
     Ilog_ina = new Vector(vec_sizes)
-    Ilog_ina.record (&gc.soma.inat(0.5))
+    Ilog_ina.record (&gc.soma.ina(0.5))
 
     Ilog_ica = new Vector(vec_sizes)
     Ilog_ica.record (&gc.soma.ica(0.5))
@@ -354,7 +354,7 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.35
+    stim1.amp = 1.25
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -368,7 +368,7 @@ proc ap_rate_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     Ilog_ik.record (&gc.soma.ik(0.5))
 
     Ilog_ina = new Vector(vec_sizes)
-    Ilog_ina.record (&gc.soma.inat(0.5))
+    Ilog_ina.record (&gc.soma.ina(0.5))
 
     Ilog_ica = new Vector(vec_sizes)
     Ilog_ica.record (&gc.soma.ica(0.5))

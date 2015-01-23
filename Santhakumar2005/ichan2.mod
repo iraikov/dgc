@@ -16,8 +16,7 @@ UNITS {
 NEURON { 
     SUFFIX ichan2 
     USEION nat READ enat WRITE inat VALENCE 1
-    USEION kf READ ekf WRITE ikf  VALENCE 1
-    USEION ks READ eks WRITE iks  VALENCE 1
+    USEION k READ ek WRITE ik
     NONSPECIFIC_CURRENT il 
     RANGE  gnat, gkf, gks
     RANGE gnatbar, gkfbar, gksbar
@@ -43,7 +42,8 @@ STATE {
 }
  
 ASSIGNED {
-         
+    
+    ek ik
         gnat (mho/cm2) 
         gkf (mho/cm2)
         gks (mho/cm2)

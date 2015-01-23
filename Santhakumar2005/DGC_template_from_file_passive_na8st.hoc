@@ -420,6 +420,16 @@ proc biophys() {
         cm = 1
     }
     
+    forsec alldendrites {
+        
+        cm = cm * scale_spines
+        
+        insert pas
+        g_pas = 4e-05
+        e_pas = -75
+
+    }
+    
     forsec allaxons {
         
         insert na8st
@@ -471,125 +481,6 @@ proc biophys() {
         insert pas
         g_pas = 4e-05
         e_pas = -75
-    }
-    
-    
-    forsec GCLs {
-        
-        cm = 1 * scale_spines
-        
-        insert na8st
-        
-        insert ichan2
-	gnatbar_ichan2=0.0  
-	gkfbar_ichan2=0.002
-	gksbar_ichan2=0.002
-	gl_ichan2 = 0.00004 * scale_spines
-        
-	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.003  // check to modify- original 0.004
-        
-	insert CaL
-	glcabar_CaL=0.0075
-        
-	insert CaT
-	gcatbar_CaT=0.000075
-        
-	insert GSK
-	gskbar_GSK=0.0004
-        
-	insert CaBK
-	gkbar_CaBK=0.0006
-    }
-    forsec PDs {
-        
-	cm = 1.6 * scale_spines
-        
-        insert na8st
-        
-        insert ichan2
-	gnatbar_ichan2=0.0
-	gkfbar_ichan2=0.004
-	gksbar_ichan2=0.003
-	gl_ichan2 = 0.000063 * scale_spines
-        
-	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
-        
-	insert CaL
-	glcabar_CaL=0.0075
-        
-	insert CaT
-	gcatbar_CaT=0.00025
-        
-	insert GSK
-	gskbar_GSK=0.0002
-        
-	insert CaBK
-	gkbar_CaBK=0.001
-        
-    }
-    forsec MDs {
-        
-	cm = 1.6 * scale_spines
-        
-        insert na8st
-        
-        insert ichan2
-	gnatbar_ichan2=0.0
-	gkfbar_ichan2=0.002
-	gksbar_ichan2=0.004
-	gl_ichan2 = 0.000063 * scale_spines
-        
-	insert CaN // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
-        
-	insert CaL
-	glcabar_CaL=0.0005
-        
-	insert CaT
-	gcatbar_CaT=0.0005
-        
-	insert GSK
-	gskbar_GSK=0.0
-        
-	insert CaBK
-	gkbar_CaBK=0.0012
-        
-    }
-    forsec DDs {
-        
-	cm = 1.6 * scale_spines
-        
-        insert na8st
-        
-        insert ichan2
-	gnatbar_ichan2=0.0
-	gkfbar_ichan2=0.001
-	gksbar_ichan2=0.004
-	gl_ichan2 = 0.000063 * scale_spines
-        
-	insert CaN  // HAV-N- Ca channel
-	gncabar_CaN=0.001  // check to modify- original 0.004
-        
-	insert CaL
-	glcabar_CaL=0.0
-        
-	insert CaT
-	gcatbar_CaT=0.001
-        
-	insert GSK
-	gskbar_GSK=0.0
-        
-	insert CaBK
-	gkbar_CaBK=0.0024
-    }
-    
-    forsec alldendrites {
-        
-	insert CaConc
-	catau_CaConc = 10
-	caiinf_CaConc = 5.e-6
     }
 
     soma {
@@ -699,60 +590,21 @@ proc biophys() {
         
     }
     
-    forsec alldendrites {
+    forsec allaxons {
         
-	for (x,0) {
-	    rates_seg = new Vector()
-	    dist=distance(x)
-	    for i=0, 17 {
-		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
-	    }
-            
-            if (verbose) {
-                printf ("dendrite distance = %g\n", dist)
-                printf ("dendrite Ra = %g\n", Ra)
-                printf ("dendrites rates_seg = ")
-                rates_seg.printf()
-            }
-            
-            if (ismembrane("na8st")) { 
-                
-	        a1_0_na8st(x)= rates_seg.x[0]
-	        a1_1_na8st(x)= rates_seg.x[1]
-	        
-	        b1_0_na8st(x)= rates_seg.x[2]
-	        b1_1_na8st(x)= rates_seg.x[3]
-                
-	        a2_0_na8st(x)= rates_seg.x[4]
-	        a2_1_na8st(x)= rates_seg.x[5]
-                
-	        b2_0_na8st(x)= rates_seg.x[6]
-	        b2_1_na8st(x)= rates_seg.x[7]
-                
-	        a3_0_na8st(x)= rates_seg.x[8]
-	        a3_1_na8st(x)= rates_seg.x[9]
-                
-	        b3_0_na8st(x)= rates_seg.x[10]
-	        b3_1_na8st(x)= rates_seg.x[11]
-                
-	        bh_0_na8st(x)= rates_seg.x[12]
-	        bh_1_na8st(x)= rates_seg.x[13]
-	        bh_2_na8st(x)= rates_seg.x[14]
-                
-	        ah_0_na8st(x)= rates_seg.x[15]
-	        ah_1_na8st(x)= rates_seg.x[16]
-	        ah_2_na8st(x)= rates_seg.x[17]
-	        
-	        vShift_inact_local_na8st = 0
-                
-	        gnabar_dend = gna_soma - fsigm(dist, gna_soma-gnabar_distal_dend, dend_50, dend_slope)
-	        gbar_na8st(x) = gnabar_dend
-            }
-	}
+        ek  = -90
         
+        if (ismembrane("ichan2")) { 
+            enat = 45 
+	    el_ichan2 = -75
+        }
+        
+        if (ismembrane("Na")) { ena = gENa }
+        if (ismembrane("CaL")) { elca = 130 }
+        if (ismembrane("CaT")) { etca = 130 }
     }
     
-    forsec all {
+    forsec soma {
         
         ek  = -90
         
