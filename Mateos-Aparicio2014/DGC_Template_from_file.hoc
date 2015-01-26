@@ -1,0 +1,83 @@
+
+begintemplate DGC
+
+// GCL - granular layer dendrite
+// PD - proximal dendrite
+// MD - middle dendrite
+// DD - distal dendrite
+
+public soma, axon, GCLD, PD, MD, DD
+public all, allaxons, alldendrites
+public nDends, nGCLD, nPD, nMD, nDD
+public ndendpts
+public verbose
+
+verbose = 0
+
+create soma[1], axon[4], dendrites[1]
+
+objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
+
+objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
+strdef dendrite_dims_fn, dendrite_points_fn
+strdef dendrite_soma_topology_fn, dendrite_topology_fn
+strdef spine_density_fn
+
+xopen("DGC_Parameters.hoc")
+xopen("DGC_Morphology_from_file.hoc")
+xopen("DGC_Biophysics.hoc")
+
+
+proc assert() { local test strdef errmsg
+    
+    test = $1
+    errmsg = $s2
+    
+    if (!test) {
+        execerror ("Assertion failed: ", errmsg)
+    }
+}
+
+
+proc init() {
+    
+    
+    verbose = $1
+    gid = $2
+    dendrite_dims_fn     = $s3
+    dendrite_points_fn   = $s4
+    dendrite_topology_fn = $s5
+    dendrite_soma_topology_fn = $s6
+    spine_density_fn     = $s7
+    
+    if (verbose) {
+        printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
+        printf ("dendrite points filename = %s\n", dendrite_points_fn)
+        printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
+        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_fn)
+        printf ("spine density filename = %s\n", spine_density_fn)
+    }
+    
+    parameters()
+    celldef()
+}
+
+proc celldef() {
+    
+    GCLDidxs = new Vector()
+    PDidxs  = new Vector()
+    MDidxs  = new Vector()
+    DDidxs  = new Vector()
+    
+    
+    topol()
+    subsets()
+    geom()
+    geom_spines()
+    biophys()
+
+}
+
+
+
+endtemplate DGC

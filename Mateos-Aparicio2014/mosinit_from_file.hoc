@@ -1,0 +1,5 @@
+load_file("nrngui.hoc")
+load_file("DGC_Template_from_file.hoc")
+load_file("DGC_Parameters.hoc")
+load_file("DGC_SetUp_from_file.hoc")
+load_file("DGC_Figures_from_file.hoc")
