@@ -97,6 +97,7 @@ proc biophys() {
         gbar_fKDR = 0.001
         insert sKDR
         gbar_sKDR = 0.004
+        g_pas = 5e-05
     }
     
     forsec allaxons {

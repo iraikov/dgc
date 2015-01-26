@@ -6,7 +6,7 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-public soma, axon, GCLD, PD, MD, DD
+public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
 public ndendpts

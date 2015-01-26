@@ -3,7 +3,7 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -62
+    v_init = -75
     
     //Passive properties
     Ra0 = 210         //Ohm.cm
