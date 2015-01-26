@@ -3,6 +3,7 @@
 double xylimits[4]
 
 strdef drug1, drug2
+
 proc figparas() {      //$1 is the figure # (6A or B)
 	Initialize()         //$2 is the treatment:
 	gbarsAHP = 0         //0	control
@@ -50,45 +51,46 @@ proc figparas() {      //$1 is the figure # (6A or B)
 
 n = 1000
 objref tcon, vcon, tdrug1, vdrug1, tdrug2, vdrug2, gfig
-proc plotfig() {
-	figparas($1,0)           //Run the simulations using
-  tcon = new Vector(n)     //parameters in proc figparas.
-  tcon.record(&t)          //Record the voltage and time
-	vcon = new Vector(n)     //in vectors for plotting.
-	vcon.record(&v(0.5))
-	run()
-	tcon.play_remove()
-	vcon.play_remove()
-	figparas($1,1)
-	tdrug1 = new Vector(n)
-  tdrug1.record(&t)
-	vdrug1 = new Vector(n)
-	vdrug1.record(&v(0.5))
-	run()
-	tdrug1.play_remove()
-	vdrug1.play_remove()
-	figparas($1,2)
-	tdrug2 = new Vector(n)
-  tdrug2.record(&t)
-	vdrug2 = new Vector(n)
-	vdrug2.record(&v(0.5))
-	run()
-
-	gfig = new Graph()
-	gfig.label(0.75,.95, "V (mV) vs t (ms)")
-	gfig.color(1)
-	vcon.line(gfig, tcon)
-	gfig.label("Control")
-	gfig.color(9)
-	gfig.label(drug1)
-	vdrug1.line(gfig, tdrug1)
-  gfig.color(5)
-	gfig.label(drug2)
-	vdrug2.line(gfig, tdrug2)
- 	gfig.size(&xylimits)
- 	gfig.size(dur1,xylimits[1],xylimits[2],xylimits[3])
-	gfig.flush()
-	Initialize()
+proc plotfig() { 
+    
+    figparas($1,0)           //Run the simulations using
+    tcon = new Vector(n)     //parameters in proc figparas.
+    tcon.record(&t)          //Record the voltage and time
+    vcon = new Vector(n)     //in vectors for plotting.
+    vcon.record(&gc.soma.v(0.5))
+    run()
+    tcon.play_remove()
+    vcon.play_remove()
+    figparas($1,1)
+    tdrug1 = new Vector(n)
+    tdrug1.record(&t)
+    vdrug1 = new Vector(n)
+    vdrug1.record(&gc.soma.v(0.5))
+    run()
+    tdrug1.play_remove()
+    vdrug1.play_remove()
+    figparas($1,2)
+    tdrug2 = new Vector(n)
+    tdrug2.record(&t)
+    vdrug2 = new Vector(n)
+    vdrug2.record(&gc.soma.v(0.5))
+    run()
+    
+    gfig = new Graph()
+    gfig.label(0.75,.95, "V (mV) vs t (ms)")
+    gfig.color(1)
+    vcon.line(gfig, tcon)
+    gfig.label("Control")
+    gfig.color(9)
+    gfig.label(drug1)
+    vdrug1.line(gfig, tdrug1)
+    gfig.color(5)
+    gfig.label(drug2)
+    vdrug2.line(gfig, tdrug2)
+    gfig.size(&xylimits)
+    gfig.size(dur1,xylimits[1],xylimits[2],xylimits[3])
+    gfig.flush()
+    Initialize()
 }
 
 xpanel("Figures",1)

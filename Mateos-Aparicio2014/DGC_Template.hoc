@@ -1,0 +1,58 @@
+
+begintemplate DGC
+
+// GCL - granular layer dendrite
+// PD - proximal dendrite
+// MD - middle dendrite
+// DD - distal dendrite
+
+public soma, axon, GCLD, PD, MD, DD
+public all, allaxons, alldendrites
+
+create soma[1], axon[4], GCLD[2], PD[2], MD[2], DD[2]
+
+objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
+
+xopen("DGC_Parameters.hoc")
+xopen("DGC_Morphology.hoc")
+xopen("DGC_Biophysics.hoc")
+
+
+proc init() {
+    
+    parameters()
+    celldef()
+}
+
+func lambda_f() { local i, x1, x2, d1, d2, lam
+    if (n3d() < 2) {
+        return 1e5*sqrt(diam/(4*PI*$1*Ra*cm))
+    }
+    x1 = arc3d(0)
+    d1 = diam3d(0)
+    lam = 0
+    for i=1, n3d()-1 {
+        x2 = arc3d(i)
+        d2 = diam3d(i)
+        lam += (x2 - x1)/sqrt(d1 + d2)
+        x1 = x2   d1 = d2
+    }
+    //  length of the section in units of lambda
+    lam *= sqrt(2) * 1e-5*sqrt(4*PI*$1*Ra*cm)
+    
+    return L/lam
+}
+
+proc celldef() {
+    
+    topol()
+    subsets()
+    geom()
+    biophys()
+
+    forall nseg = int((L/(0.1*lambda_f(100))+0.9)/2)*2 + 1
+}
+
+
+
+endtemplate DGC

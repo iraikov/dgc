@@ -1,64 +1,69 @@
 /////////////// Setup, stimulus and run /////////// //
+objref gc, stim, hold, git, gvit
+ihold = 0
+amplitude = 0
+dur1 = 0
+dur2 = 0
+dur3 = 0
 
 proc Initialize() {
-	Parameters()
-  finitialize(v_init)
+    parameters()
+    finitialize(v_init)
+    
+    gc = new DGC()
+    objref stim, hold
+    access gc.soma
+    hold = new holdingi(0.5)
+    hold.ic = 0.001*ihold      			//nA
 }
 
 proc doStop() {
-  stoprun = 1
-	graphList[0].remove_all()
+    stoprun = 1
+    graphList[0].remove_all()
 }
 
-objref stim, hold, git, gvit
+
 proc run() {
-	graphList[0].remove_all()
-  stoprun = 0
-
-  geom()
-	forall {Ra = Ra0  cm = cm0}
-	forall nseg = int((L/(0.1*lambda_f(100))+0.9)/2)*2 + 1
-	InsertChannels()
-
-	objref stim, hold
-	access soma
-	hold = new holdingi(0.5)
-	hold.ic = 0.001*ihold      			//nA
-
-	savedt = dt
-	cvode.active(0)
-	tstop = 1e10
-	dt = 0.1*tstop
-	finitialize(v_init)
-	continuerun(tstop)              //Initial steady state
-  dt = savedt
-
-	stim = new IClamp(0.5)
-	stim.del = dur1
-	stim.dur = dur2
-	stim.amp = 0.001*amplitude      //nA
-	tstop = dur1 + dur2 + dur3
-
-	git = new Graph(0)
-  git.view(0, 0, tstop, 0.002*amplitude, 0, 450, 370, 155)
-	git.label(0.9,0,"t(ms)")
-	git.label(0,0.8, "I(nA)")
-	git.addvar("stim.i")
-	git.family(1)
-	graphList[0].append(git)
-
-	gvit = new Graph(0)
-  gvit.view(0, -80, tstop, 120, 0, 150, 370, 155)
-	gvit.label(0.9,0.04,"t(ms)")
-	gvit.label(0,0.8, "V(mV)")
-	gvit.addvar("v(0.5)")
-	gvit.family(1)
-	graphList[0].append(gvit)
-
-	cvode.active(1)
-	cvode.atol(1e-4)
-  finitialize()
-	continuerun(tstop)
+    
+    graphList[0].remove_all()
+    stoprun = 0
+    
+    access gc.soma
+    
+    savedt = dt
+    cvode.active(0)
+    tstop = 1e10
+    dt = 0.1*tstop
+    finitialize(v_init)
+    continuerun(tstop)              //Initial steady state
+    dt = savedt
+    
+    stim = new IClamp(0.5)
+    stim.del = dur1
+    stim.dur = dur2
+    stim.amp = 0.001*amplitude      //nA
+    tstop = dur1 + dur2 + dur3
+    
+    git = new Graph(0)
+    git.view(0, 0, tstop, 0.002*amplitude, 0, 450, 370, 155)
+    git.label(0.9,0,"t(ms)")
+    git.label(0,0.8, "I(nA)")
+    git.addvar("stim.i")
+    git.family(1)
+    graphList[0].append(git)
+    
+    gvit = new Graph(0)
+    gvit.view(0, -80, tstop, 120, 0, 150, 370, 155)
+    gvit.label(0.9,0.04,"t(ms)")
+    gvit.label(0,0.8, "V(mV)")
+    gvit.addvar("v(0.5)")
+    gvit.family(1)
+    graphList[0].append(gvit)
+    
+    cvode.active(1)
+    cvode.atol(1e-4)
+    finitialize()
+    continuerun(tstop)
 }
 
 xpanel("DGC model parameters")
