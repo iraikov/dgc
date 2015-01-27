@@ -22,7 +22,10 @@ the .mod files and the panel in "SetUp.hoc" for units.
 
 proc biophys() {
     
-    forall {Ra = Ra0  cm = cm0}
+    forall {
+        Ra = Ra0  
+        cm = cm0
+    }
     
     forsec all {
         insert pas
