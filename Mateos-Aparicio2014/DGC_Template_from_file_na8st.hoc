@@ -1,0 +1,106 @@
+
+begintemplate DGC
+
+// GCL - granular layer dendrite
+// PD - proximal dendrite
+// MD - middle dendrite
+// DD - distal dendrite
+
+public soma, axon, dendrites
+public all, allaxons, alldendrites
+public nDends, nGCLD, nPD, nMD, nDD
+public ndendpts
+public verbose
+
+verbose = 0
+
+create soma[1], axon[4], dendrites[1]
+
+objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
+objref rates_soma, rates_axon, rates_seg
+objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
+objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
+
+strdef dendrite_dims_fn, dendrite_points_fn
+strdef dendrite_soma_topology_fn, dendrite_topology_fn
+strdef spine_density_fn
+
+xopen("DGC_Parameters.hoc")
+xopen("DGC_Morphology_from_file_na8st.hoc")
+xopen("DGC_Biophysics_na8st.hoc")
+
+
+proc assert() { local test strdef errmsg
+    
+    test = $1
+    errmsg = $s2
+    
+    if (!test) {
+        execerror ("Assertion failed: ", errmsg)
+    }
+}
+
+proc read_Na_rates() { localobj fileS, fileA
+    
+    rates_soma = new Vector()
+    rates_axon = new Vector()
+    
+    fileS = new File()
+    fileA = new File()
+    
+    fileS.ropen("./dat/soma_st8.dat")
+    fileA.ropen("./dat/axon_st8.dat")
+    
+    while (fileS.eof==0){
+	rates_soma.append( fileS.scanvar() )
+	rates_axon.append( fileA.scanvar() )
+    }
+    
+    fileS.close()
+    fileA.close()
+}
+
+
+proc init() {
+    
+    
+    verbose = $1
+    gid = $2
+    dendrite_dims_fn     = $s3
+    dendrite_points_fn   = $s4
+    dendrite_topology_fn = $s5
+    dendrite_soma_topology_fn = $s6
+    spine_density_fn     = $s7
+    
+    if (verbose) {
+        printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
+        printf ("dendrite points filename = %s\n", dendrite_points_fn)
+        printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
+        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_fn)
+        printf ("spine density filename = %s\n", spine_density_fn)
+    }
+    
+    parameters()
+    read_Na_rates()
+    celldef()
+}
+
+proc celldef() {
+    
+    GCLDidxs = new Vector()
+    PDidxs  = new Vector()
+    MDidxs  = new Vector()
+    DDidxs  = new Vector()
+    
+    
+    topol()
+    subsets()
+    geom()
+    geom_spines()
+    biophys()
+
+}
+
+
+
+endtemplate DGC

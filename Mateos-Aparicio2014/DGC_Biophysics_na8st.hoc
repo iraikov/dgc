@@ -1,0 +1,411 @@
+/*//////////////////// Biophysics ////////////////////
+
+Channel mechanisms:
+
+  pas = passive leak conductance
+   KM = M conductance                  (DGC_M.mod)
+   KA = A-type conductance             (Aradi_KA.mod)
+ fKDR = fast delayed rectifier         (Aradi_KDRf.mod)
+ sKDR = fast delayed rectifier         (Aradi_KDRs.mod)
+CaDep = SK and BK channels             (Aradi_CadepK.mod)
+ sAHP = slow AHP conductance           (DGC_sAHP.mod)
+   Na = transient Na conductance       (Aradi_Na.mod)
+   Ca = T, N and L -type Ca channels   (Aradi_Ca.mod)
+   UK = ad-hoc unknown conductance     (DGC_UK.mod)
+   
+   na8st = 8-state sodium              (SH_na8st.mod)
+   KIn   = Kv1.4 potassium             (SH_KIn.mod)
+   
+   
+"g...bar" indicates a specific conductance while
+"mult" and "div" indicate multipliers and divisors. See
+the .mod files and the panel in "SetUp.hoc" for units.
+
+/*////////////////////////////////////////////////////
+
+
+func fsigm() {
+    // $1: x
+    // $2: amplitude
+    // $3: center
+    // $4: slope
+    return $2-$2/(1.0+exp(($1-$3)/$4))
+}
+
+
+func dens_func() {//(x, gNas, gNaa, a0, lambda2)
+    /*
+    Returns Nav conductance density (gNa) along the axon.
+
+    Arguments:
+    x       -- Axonal distance from soma
+    gNas    -- Somatic gNa
+    gNaa    -- Axonal density  forsec "dend" {for i=0, n3d()-1 {pt3dchange(i, diam3d(i)*$1)}  
+nseg*=3 nseg/=3}
+  printf ("Dendritic 3d diameter changed to %g percent.\n", $1*100)
+    a0      -- Scaling factor
+    lambda2 -- Axonal decay length constant
+
+    Returns:
+    Axonal gNa
+    */
+    lambda1 = 5.0
+    return $2 + ($3-$2) * (1.0-exp(-$1/lambda1)) * (1.0 + $4*exp(-$1/$5))
+}
+
+
+func tempScale() { local scale
+	// $1: Q10
+	return $1^((celsius-24)/10)
+}
+
+
+proc biophys() {
+    
+    forall {
+        Ra = Ra0  
+        cm = cm0
+    }
+    
+    forsec all {
+        insert pas
+        g_pas = gpas
+        e_pas = Epas
+    }
+    
+    forsec alldendrites {
+        cm = 1.6*cm0*scale_spines
+        insert pas
+        g_pas = 4e-05*scale_spines
+        e_pas = Epas
+    }
+    
+    forsec GCLDs {
+        insert na8st
+        insert Ca
+        gtcabar_Ca = CaTmult*0.0003
+        gncabar_Ca = CaNmult*0.003
+        glcabar_Ca = CaLmult*0.015
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.0003
+        gskbar_CadepK = gskGCLs
+        insert fKDR
+        gbar_fKDR = 0.004
+        insert sKDR
+        gbar_sKDR = 0.003
+    }
+    
+    forsec PDs {
+        insert na8st
+        insert Ca
+        gtcabar_Ca = CaTmult*0.001
+        gncabar_Ca = CaNmult*0.001
+        glcabar_Ca = CaLmult*0.015
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.0005
+        gskbar_CadepK = gskprox
+        insert fKDR
+        gbar_fKDR = 0.004
+        insert sKDR
+        gbar_sKDR = 0.003
+    }
+    
+    forsec MDs {
+        insert na8st
+        insert Ca
+        gtcabar_Ca = CaTmult*0.002
+        gncabar_Ca = CaNmult*0.001
+        glcabar_Ca = CaLmult*0.001
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.0012
+        gskbar_CadepK = 0.0
+        insert fKDR
+        gbar_fKDR = 0.001
+        insert sKDR
+        gbar_sKDR = 0.003
+    }
+    
+    forsec DDs {
+        insert Ca
+        gtcabar_Ca = CaTmult*0.002
+        gncabar_Ca = CaNmult*0.001
+        glcabar_Ca = 0.0
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.0012
+        gskbar_CadepK = 0.0
+        insert fKDR
+        gbar_fKDR = 0.001
+        insert sKDR
+        gbar_sKDR = 0.004
+        g_pas = 5e-05
+    }
+    
+    forsec allaxons {
+        insert na8st
+        insert KIn
+        insert fKDR
+        gbar_fKDR = 0.008
+        insert KA
+	gbar_KA = gKAa	//0.004
+        insert KM
+    	k_KM = kKM
+    	v0erev_KM = v0erevKM
+    	kV_KM = kVM
+    	gamma_KM = gammaKM
+    	taudiv_KM = taudivKM
+    	Dtaumult1_KM = Dtaumult1
+    	Dtaumult2_KM = Dtaumult2
+    	Vshift_KM = VshiftKM
+	tau0mult_KM = tau0mult
+	gbar_KM = gMaxon
+    }
+    
+    soma {
+        insert na8st
+        insert KIn
+        gkbar_KIn = gk_soma
+        insert Ca
+        gtcabar_Ca = CaTmult*0.00015
+        gncabar_Ca = CaNmult*0.002
+        glcabar_Ca = CaLmult*0.01
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.0003
+        gskbar_CadepK = gsksoma
+        insert fKDR
+        gbar_fKDR = 0.028
+        insert sKDR
+        gbar_sKDR = 0.008
+        insert KA
+    	gbar_KA = gKAs 
+        insert UK
+    	gbar_UK = gbarUK
+        insert sAHP
+    	gbar_sAHP = gbarsAHP
+    }
+    
+    forsec all {
+	if (ismembrane("na8st")) {
+	    ena = gENa
+	}
+	if (ismembrane("Na")) {
+	    ena = ENa
+	    taumult_Na = taumultNa
+	}
+	if (ismembrane("UK")) {
+	    erev_UK = erevUK
+	    p_UK = pUK
+	    tau_UK = tauUK
+	    Vhalf_UK = VhalfUK
+	    k_UK = kUK
+	    taucadiv_UK = taucadiv
+	    kca_UK = kcaUK
+	    ca0_UK = ca0
+	}
+	if (ismembrane("Ca")) {
+	    taucadiv_Ca = taucadiv
+	    tauctdiv_Ca = tauctdiv
+	    Vshift_Ca = Vshift
+	    ca0_Ca = ca0
+	}
+	if (ismembrane("CadepK")) { ek = EK
+	    erevSK_CadepK = erevSK
+	    tauskdiv_CadepK = tauskdiv
+	    taucadiv_CadepK = taucadiv
+	    erevBK_CadepK = erevBK
+	    ca0_CadepK = ca0
+	}
+	if (ismembrane("KM")) {erev_KM = EK}
+	if (ismembrane("KA")) {erev_KA = EK}
+	if (ismembrane("fKDR")) {
+	    erev_fKDR = EK
+	    gbar_fKDR = KDRmult*gbar_fKDR
+	    v0_fKDR = V0KDR
+	    taumult_fKDR = taumultKDR
+	}
+	if (ismembrane("sKDR")) {
+	    erev_sKDR = EK
+	    gbar_sKDR = KDRmult*gbar_sKDR
+	}
+	if (ismembrane("sAHP")) {
+	    ek = EK
+	    tau1Ref_sAHP = tau1RefsAHP
+	    tau2_sAHP = tau2sAHP
+	    c1inf_sAHP = c1infsAHP
+	    oinf_sAHP = oinfsAHP
+	    CaRef_sAHP = CaRefsAHP
+	    kca_sAHP = kcasAHP
+	    cah_sAHP = cahsAHP
+	    n_sAHP = nsAHP
+	}
+    }
+    
+    // na8st and KIn conductances from Schmidt-Hieber 2010
+    soma {
+        distance()
+        
+	for (x,0) {
+            
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                if (verbose) {
+                    printf ("soma distance = %g\n", dist)
+                    printf ("soma rates_seg = ")
+                    rates_seg.printf()
+                }
+            }
+            
+	    a1_0_na8st(x)= rates_seg.x[0]
+	    a1_1_na8st(x)= rates_seg.x[1]
+	    
+	    b1_0_na8st(x)= rates_seg.x[2]
+	    b1_1_na8st(x)= rates_seg.x[3]
+            
+	    a2_0_na8st(x)= rates_seg.x[4]
+	    a2_1_na8st(x)= rates_seg.x[5]
+            
+	    b2_0_na8st(x)= rates_seg.x[6]
+	    b2_1_na8st(x)= rates_seg.x[7]
+            
+	    a3_0_na8st(x)= rates_seg.x[8]
+	    a3_1_na8st(x)= rates_seg.x[9]
+            
+	    b3_0_na8st(x)= rates_seg.x[10]
+	    b3_1_na8st(x)= rates_seg.x[11]
+            
+	    bh_0_na8st(x)= rates_seg.x[12]
+	    bh_1_na8st(x)= rates_seg.x[13]
+	    bh_2_na8st(x)= rates_seg.x[14]
+            
+	    ah_0_na8st(x)= rates_seg.x[15]
+	    ah_1_na8st(x)= rates_seg.x[16]
+	    ah_2_na8st(x)= rates_seg.x[17]
+	    
+	    vShift_inact_local_na8st = 0
+            
+            
+        }
+        
+    }
+    
+    forsec allaxons {
+        
+	dist = distance(0.5)
+        q10_Ra = 0.8
+	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50)) * tempScale(q10_Ra) 
+        
+        if (verbose) {
+            printf ("axon Ra = %g\n", Ra)
+        }
+        
+	for (x,0) {
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                printf ("axon distance = %g\n", dist)
+                printf ("soma rates_seg = ")
+                rates_seg.printf()
+            }
+
+	    a1_0_na8st(x)= rates_seg.x[0]
+	    a1_1_na8st(x)= rates_seg.x[1]
+	    
+	    b1_0_na8st(x)= rates_seg.x[2]
+	    b1_1_na8st(x)= rates_seg.x[3]
+            
+	    a2_0_na8st(x)= rates_seg.x[4]
+	    a2_1_na8st(x)= rates_seg.x[5]
+            
+	    b2_0_na8st(x)= rates_seg.x[6]
+	    b2_1_na8st(x)= rates_seg.x[7]
+            
+	    a3_0_na8st(x)= rates_seg.x[8]
+	    a3_1_na8st(x)= rates_seg.x[9]
+            
+	    b3_0_na8st(x)= rates_seg.x[10]
+	    b3_1_na8st(x)= rates_seg.x[11]
+            
+	    bh_0_na8st(x)= rates_seg.x[12]
+	    bh_1_na8st(x)= rates_seg.x[13]
+	    bh_2_na8st(x)= rates_seg.x[14]
+            
+	    ah_0_na8st(x)= rates_seg.x[15]
+	    ah_1_na8st(x)= rates_seg.x[16]
+	    ah_2_na8st(x)= rates_seg.x[17]
+	    
+	    vShift_inact_local_na8st = 0
+            
+	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
+	    gbar_na8st(x) = gnabar_gauss
+            
+            gkbar_ax = gk_axon + fsigm(dist, (gk_distal_axon - gk_axon), 200.0, 100.0)
+            gkbar_KIn(x)  = gkbar_ax
+	}
+        
+    }
+    
+    forsec alldendrites {
+        
+        if (verbose) {
+            printf ("dendrite Ra = %g\n", Ra)
+        }
+        
+	for (x,0) {
+	    rates_seg = new Vector()
+	    dist=distance(x)
+	    for i=0, 17 {
+		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
+	    }
+            
+            if (verbose) {
+                printf ("dendrite distance = %g\n", dist)
+                printf ("dendrites rates_seg = ")
+                rates_seg.printf()
+            }
+            
+            if (ismembrane("na8st")) { 
+                
+	        a1_0_na8st(x)= rates_seg.x[0]
+	        a1_1_na8st(x)= rates_seg.x[1]
+	        
+	        b1_0_na8st(x)= rates_seg.x[2]
+	        b1_1_na8st(x)= rates_seg.x[3]
+                
+	        a2_0_na8st(x)= rates_seg.x[4]
+	        a2_1_na8st(x)= rates_seg.x[5]
+                
+	        b2_0_na8st(x)= rates_seg.x[6]
+	        b2_1_na8st(x)= rates_seg.x[7]
+                
+	        a3_0_na8st(x)= rates_seg.x[8]
+	        a3_1_na8st(x)= rates_seg.x[9]
+                
+	        b3_0_na8st(x)= rates_seg.x[10]
+	        b3_1_na8st(x)= rates_seg.x[11]
+                
+	        bh_0_na8st(x)= rates_seg.x[12]
+	        bh_1_na8st(x)= rates_seg.x[13]
+	        bh_2_na8st(x)= rates_seg.x[14]
+                
+	        ah_0_na8st(x)= rates_seg.x[15]
+	        ah_1_na8st(x)= rates_seg.x[16]
+	        ah_2_na8st(x)= rates_seg.x[17]
+	        
+	        vShift_inact_local_na8st = 0
+                
+	        gnabar_dend = gna_soma - fsigm(dist, gna_soma-gnabar_distal_dend, dend_50, dend_slope)
+	        gbar_na8st(x) = gnabar_dend
+            }
+	}
+    }
+
+}
+
