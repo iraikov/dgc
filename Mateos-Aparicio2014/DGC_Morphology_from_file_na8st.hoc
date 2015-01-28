@@ -194,13 +194,17 @@ proc subsets() { local i
 
 proc geom() {
     
-    forsec allaxons {  L = 50  }
+    forsec allaxons {  L = 10  }
     
-    axon.diam = 0.9
-    axon[1].diam = 0.7
-    axon[2].diam = 0.5
-    axon[3].diam = 0.4
-    axon[3] {  L = 1200  }
+    axon[0].diam = 2.3
+    axon[1].diam = 1.2
+    axon[2].diam = 0.8
+    axon[3].diam = 0.3
+    axon[3] {  L = 1000  }
+    
+    for (i = 0; i < 4; i = i+1) {
+        axon[i] { printf ("axon area[%d] = %g\n", i, area(0.5)) }
+    }
     
     soma {  L = 16.8  diam = 16.8 }
     

@@ -25,7 +25,7 @@ strdef dendrite_dims_fn, dendrite_points_fn
 strdef dendrite_soma_topology_fn, dendrite_topology_fn
 strdef spine_density_fn
 
-xopen("DGC_Parameters.hoc")
+xopen("DGC_Parameters_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
 xopen("DGC_Biophysics_na8st.hoc")
 

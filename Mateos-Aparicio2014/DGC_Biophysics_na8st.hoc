@@ -76,7 +76,7 @@ proc biophys() {
     forsec alldendrites {
         cm = 1.6*cm0*scale_spines
         insert pas
-        g_pas = 4e-05*scale_spines
+        g_pas = g_pas*scale_spines
         e_pas = Epas
     }
     
@@ -105,7 +105,7 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.0005
         gskbar_CadepK = gskprox
         insert fKDR
-        gbar_fKDR = 0.004
+        gbar_fKDR = 0.002
         insert sKDR
         gbar_sKDR = 0.003
     }
@@ -120,9 +120,10 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.0012
         gskbar_CadepK = 0.0
         insert fKDR
-        gbar_fKDR = 0.001
+        gbar_fKDR = 0.002
         insert sKDR
-        gbar_sKDR = 0.003
+        gbar_sKDR = 0.004
+        g_pas = 7e-05
     }
     
     forsec DDs {
@@ -136,17 +137,17 @@ proc biophys() {
         insert fKDR
         gbar_fKDR = 0.001
         insert sKDR
-        gbar_sKDR = 0.004
-        g_pas = 5e-05
+        gbar_sKDR = 0.005
+        g_pas = 8e-05
     }
     
     forsec allaxons {
         insert na8st
         insert KIn
         insert fKDR
-        gbar_fKDR = 0.008
+        gbar_fKDR = 0.012
         insert KA
-	gbar_KA = gKAa	//0.004
+	gbar_KA = 3.0 * gKAa	//0.004
         insert KM
     	k_KM = kKM
     	v0erev_KM = v0erevKM
@@ -162,6 +163,7 @@ proc biophys() {
     
     soma {
         insert na8st
+        gbar_na8st = gna_soma
         insert KIn
         gkbar_KIn = gk_soma
         insert Ca
@@ -172,20 +174,23 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.0003
         gskbar_CadepK = gsksoma
         insert fKDR
-        gbar_fKDR = 0.028
+        gbar_fKDR = 0.016
         insert sKDR
         gbar_sKDR = 0.008
         insert KA
-    	gbar_KA = gKAs 
+    	gbar_KA = 3.0 * gKAs
         insert UK
-    	gbar_UK = gbarUK
+    	gbar_UK = 2.0 * gbarUK
         insert sAHP
-    	gbar_sAHP = gbarsAHP
+    	gbar_sAHP = 2.0 * gbarsAHP
     }
     
     forsec all {
 	if (ismembrane("na8st")) {
 	    ena = gENa
+	}
+	if (ismembrane("KIn")) {
+	    ek = EK
 	}
 	if (ismembrane("Na")) {
 	    ena = ENa
@@ -259,35 +264,37 @@ proc biophys() {
                 }
             }
             
-	    a1_0_na8st(x)= rates_seg.x[0]
-	    a1_1_na8st(x)= rates_seg.x[1]
-	    
-	    b1_0_na8st(x)= rates_seg.x[2]
-	    b1_1_na8st(x)= rates_seg.x[3]
-            
-	    a2_0_na8st(x)= rates_seg.x[4]
-	    a2_1_na8st(x)= rates_seg.x[5]
-            
-	    b2_0_na8st(x)= rates_seg.x[6]
-	    b2_1_na8st(x)= rates_seg.x[7]
-            
-	    a3_0_na8st(x)= rates_seg.x[8]
-	    a3_1_na8st(x)= rates_seg.x[9]
-            
-	    b3_0_na8st(x)= rates_seg.x[10]
-	    b3_1_na8st(x)= rates_seg.x[11]
-            
-	    bh_0_na8st(x)= rates_seg.x[12]
-	    bh_1_na8st(x)= rates_seg.x[13]
-	    bh_2_na8st(x)= rates_seg.x[14]
-            
-	    ah_0_na8st(x)= rates_seg.x[15]
-	    ah_1_na8st(x)= rates_seg.x[16]
-	    ah_2_na8st(x)= rates_seg.x[17]
-	    
-	    vShift_inact_local_na8st = 0
-            
-            
+	    if (ismembrane("na8st")) {
+                
+	        a1_0_na8st(x)= rates_seg.x[0]
+	        a1_1_na8st(x)= rates_seg.x[1]
+	        
+	        b1_0_na8st(x)= rates_seg.x[2]
+	        b1_1_na8st(x)= rates_seg.x[3]
+                
+	        a2_0_na8st(x)= rates_seg.x[4]
+	        a2_1_na8st(x)= rates_seg.x[5]
+                
+	        b2_0_na8st(x)= rates_seg.x[6]
+	        b2_1_na8st(x)= rates_seg.x[7]
+                
+	        a3_0_na8st(x)= rates_seg.x[8]
+	        a3_1_na8st(x)= rates_seg.x[9]
+                
+	        b3_0_na8st(x)= rates_seg.x[10]
+	        b3_1_na8st(x)= rates_seg.x[11]
+                
+	        bh_0_na8st(x)= rates_seg.x[12]
+	        bh_1_na8st(x)= rates_seg.x[13]
+	        bh_2_na8st(x)= rates_seg.x[14]
+                
+	        ah_0_na8st(x)= rates_seg.x[15]
+	        ah_1_na8st(x)= rates_seg.x[16]
+	        ah_2_na8st(x)= rates_seg.x[17]
+	        
+	        vShift_inact_local_na8st = 20
+                
+            }
         }
         
     }
@@ -341,7 +348,7 @@ proc biophys() {
 	    ah_1_na8st(x)= rates_seg.x[16]
 	    ah_2_na8st(x)= rates_seg.x[17]
 	    
-	    vShift_inact_local_na8st = 0
+	    vShift_inact_local_na8st = 20
             
 	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	    gbar_na8st(x) = gnabar_gauss
@@ -399,7 +406,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 0
+	        vShift_inact_local_na8st = 20
                 
 	        gnabar_dend = gna_soma - fsigm(dist, gna_soma-gnabar_distal_dend, dend_50, dend_slope)
 	        gbar_na8st(x) = gnabar_dend

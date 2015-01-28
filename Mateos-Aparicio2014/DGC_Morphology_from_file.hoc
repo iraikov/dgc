@@ -202,6 +202,10 @@ proc geom() {
     axon[3].diam = 0.4
     axon[3] {  L = 1200  }
     
+    for (i = 0; i < 4; i = i+1) {
+        axon[i] { printf ("axon area[%d] = %g\n", i, area(0.5)) }
+    }
+    
     soma {  L = 16.8  diam = 16.8 }
     
     geom_nseg()
