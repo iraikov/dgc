@@ -57,7 +57,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 0.8
+    BKmult = 1.0
     
     //The sAHP conductance
     gbarsAHP = 10
