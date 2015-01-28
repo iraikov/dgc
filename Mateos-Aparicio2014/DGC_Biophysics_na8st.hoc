@@ -145,9 +145,9 @@ proc biophys() {
         insert na8st
         insert KIn
         insert fKDR
-        gbar_fKDR = 0.012
+        gbar_fKDR = 0.014
         insert KA
-	gbar_KA = 3.0 * gKAa	//0.004
+	gbar_KA = 2.0 * gKAa	//0.004
         insert KM
     	k_KM = kKM
     	v0erev_KM = v0erevKM
@@ -174,15 +174,15 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.0003
         gskbar_CadepK = gsksoma
         insert fKDR
-        gbar_fKDR = 0.016
+        gbar_fKDR = 0.006
         insert sKDR
-        gbar_sKDR = 0.008
+        gbar_sKDR = 0.002
         insert KA
-    	gbar_KA = 3.0 * gKAs
-        insert UK
-    	gbar_UK = 2.0 * gbarUK
+    	gbar_KA = 2.0 * gKAs
         insert sAHP
-    	gbar_sAHP = 2.0 * gbarsAHP
+    	gbar_sAHP = gbarsAHP
+        insert UK
+    	gbar_UK = 4.0 * gbarUK
     }
     
     forsec all {
