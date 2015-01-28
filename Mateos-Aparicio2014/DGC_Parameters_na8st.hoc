@@ -11,7 +11,7 @@ proc parameters() {
     gpas = 4e-05      //S/cm2
     Rm0 = 1e-3/gpas   //kOhm.cm2
     Epas = -75        //mV
-    EK = -100         //mV
+    EK = -100       //mV
     
     // Parameters from Schmidt-Hieber 2010
     Ra_soma = Ra0
@@ -57,7 +57,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 0.4
+    BKmult = 0.8
     
     //The sAHP conductance
     gbarsAHP = 10
@@ -84,8 +84,8 @@ proc parameters() {
     KDRmult = 1.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.012
-    gKAa = 0.004
+    gKAs = 0.005 // 0.012
+    gKAa = 0.003 // 0.004
     
     //Calcium channels
     CaTmult = 1.75
@@ -94,7 +94,7 @@ proc parameters() {
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1
-    Vshift = 0
+    Vshift = 10
     
     //The transient Na conductance
     gNaT_mult = 1.5

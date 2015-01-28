@@ -54,10 +54,6 @@ nseg*=3 nseg/=3}
 }
 
 
-func tempScale() { local scale
-	// $1: Q10
-	return $1^((celsius-24)/10)
-}
 
 
 proc biophys() {
@@ -75,9 +71,52 @@ proc biophys() {
     
     forsec alldendrites {
         cm = 1.6*cm0*scale_spines
-        insert pas
         g_pas = g_pas*scale_spines
         e_pas = Epas
+    }
+    
+    forsec allaxons {
+        insert na8st
+        insert KIn
+        insert fKDR
+        gbar_fKDR = 0.006
+        insert KA
+	gbar_KA = gKAa
+        insert KM
+    	k_KM = kKM
+    	v0erev_KM = v0erevKM
+    	kV_KM = kVM
+    	gamma_KM = gammaKM
+    	taudiv_KM = taudivKM
+    	Dtaumult1_KM = Dtaumult1
+    	Dtaumult2_KM = Dtaumult2
+    	Vshift_KM = VshiftKM
+	tau0mult_KM = tau0mult
+	gbar_KM = gMaxon
+    }
+    
+    soma {
+        insert na8st
+        gbar_na8st = gna_soma
+        insert KIn
+        gkbar_KIn = gk_soma
+        insert Ca
+        gtcabar_Ca = CaTmult*0.0015
+        gncabar_Ca = CaNmult*0.002
+        glcabar_Ca = CaLmult*0.01
+        insert CadepK
+        gbkbar_CadepK = BKmult*0.003
+        gskbar_CadepK = gsksoma
+        insert fKDR
+        gbar_fKDR = 0.003
+        insert sKDR
+        gbar_sKDR = 0.002
+        insert KA
+    	gbar_KA = gKAs
+        insert sAHP
+    	gbar_sAHP = gbarsAHP
+        insert UK
+    	gbar_UK = gbarUK
     }
     
     forsec GCLDs {
@@ -139,50 +178,7 @@ proc biophys() {
         insert sKDR
         gbar_sKDR = 0.005
         g_pas = 8e-05
-    }
-    
-    forsec allaxons {
-        insert na8st
-        insert KIn
-        insert fKDR
-        gbar_fKDR = 0.014
-        insert KA
-	gbar_KA = 2.0 * gKAa	//0.004
-        insert KM
-    	k_KM = kKM
-    	v0erev_KM = v0erevKM
-    	kV_KM = kVM
-    	gamma_KM = gammaKM
-    	taudiv_KM = taudivKM
-    	Dtaumult1_KM = Dtaumult1
-    	Dtaumult2_KM = Dtaumult2
-    	Vshift_KM = VshiftKM
-	tau0mult_KM = tau0mult
-	gbar_KM = gMaxon
-    }
-    
-    soma {
-        insert na8st
-        gbar_na8st = gna_soma
-        insert KIn
-        gkbar_KIn = gk_soma
-        insert Ca
-        gtcabar_Ca = CaTmult*0.00015
-        gncabar_Ca = CaNmult*0.002
-        glcabar_Ca = CaLmult*0.01
-        insert CadepK
-        gbkbar_CadepK = BKmult*0.0003
-        gskbar_CadepK = gsksoma
-        insert fKDR
-        gbar_fKDR = 0.006
-        insert sKDR
-        gbar_sKDR = 0.002
-        insert KA
-    	gbar_KA = 2.0 * gKAs
-        insert sAHP
-    	gbar_sAHP = gbarsAHP
-        insert UK
-    	gbar_UK = 4.0 * gbarUK
+
     }
     
     forsec all {
@@ -292,7 +288,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 20
+	        vShift_inact_local_na8st = 10
                 
             }
         }
@@ -302,8 +298,7 @@ proc biophys() {
     forsec allaxons {
         
 	dist = distance(0.5)
-        q10_Ra = 0.8
-	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50)) * tempScale(q10_Ra) 
+	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50))
         
         if (verbose) {
             printf ("axon Ra = %g\n", Ra)
@@ -348,7 +343,7 @@ proc biophys() {
 	    ah_1_na8st(x)= rates_seg.x[16]
 	    ah_2_na8st(x)= rates_seg.x[17]
 	    
-	    vShift_inact_local_na8st = 20
+	    vShift_inact_local_na8st = 10
             
 	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	    gbar_na8st(x) = gnabar_gauss
@@ -406,7 +401,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 20
+	        vShift_inact_local_na8st = 10
                 
 	        gnabar_dend = gna_soma - fsigm(dist, gna_soma-gnabar_distal_dend, dend_50, dend_slope)
 	        gbar_na8st(x) = gnabar_dend

@@ -1,74 +1,68 @@
-: A conductance
+: KA channel
 
 NEURON {
 	SUFFIX KA
-	USEION k WRITE ik
-	RANGE gbar, minf, mtau, hinf, htau, i, g, m, h
-	GLOBAL erev
+	USEION k READ ek WRITE ik
+	RANGE gmax
 }
 
 UNITS {
-	(mA) = (milliamp)
+	(molar) = (1/liter)
+	(mM) = (millimolar)
 	(mV) = (millivolt)
-} 
+	(mA) = (milliamp)
+	(S) = (siemens)
+	F = (faraday) (coulomb)
+	R = (k-mole) (joule/degC)
+}
 
 PARAMETER {
-	erev = -85		(mV)		: effective Ek
-	gbar = 0   		(S/cm2)
- 	vmin = -100		(mV)		: for look-up table
-	vmax = 100		(mV)
-} 
-
+	gmax = .001	(S/cm2)
+}
 
 ASSIGNED {
-	v 		(mV)
-	i 		(mA/cm2)
-	ik 		(mA/cm2)
-	g			(S/cm2)
-
-	malpha	(/ms)		
-	mbeta		(/ms)	
-	minf
-	mtau 		(ms)
-
-	halpha	(/ms)		
-	hbeta		(/ms)
-	hinf
-	htau 		(ms)
+    v	(mV)
+    ek (mV)
+    ik	(mA/cm2)
+    gk (S/cm2) ak (/ms) bk (/ms) al (/ms) bl (/ms)
 }
 
-STATE { m h }
+STATE { k l }
 
-INITIAL { 
-	rates(v)
-	m = minf
-	h = hinf
-}
 
 BREAKPOINT {
-  SOLVE states METHOD cnexp
-	g = gbar*m*h
-	ik = g*(v - erev)
-	i = ik
-} 
+    SOLVE states METHOD cnexp
+    gk = gmax * k * l
+    ik = gk * (v - ek)
+}
+
 
 DERIVATIVE states {
-	rates(v)
-	m' = (minf - m)/mtau
-	h' = (hinf - h)/htau
+    rates(v)
+    
+    k' = ak*(1 - k) - bk*k
+    l' = al*(1 - l) - bl*l
 }
 
-PROCEDURE rates(v (mV)) {
-TABLE minf, mtau, hinf, htau
-FROM vmin TO vmax WITH 199
-  malpha = -0.05*(v+25)/(exp(-(v+25)/15)-1)
-  mbeta = 0.1*(v+15)/(exp((v+15)/8)-1)
-  mtau = 1/(malpha + mbeta)
-  minf = malpha/(malpha + mbeta)
 
-  halpha = (1.5e-4)/exp((v+13)/15)
-  hbeta = 0.06/(exp(-(v+68)/12)+1)
-	htau = 1/(halpha + hbeta)
-	hinf = halpha/(halpha + hbeta)
+INITIAL {
+    rates(v)
+    k = ak/(ak+bk)
+    k = al/(al+bl)
 }
 
+
+PROCEDURE rates (v) {
+    
+    LOCAL akx, bkx
+    
+    akx = 0.06667*(v + 25) 
+    ak = 0.75*akx/(1 - exp(-akx)) 
+    
+    bkx = -0.125*(v + 15) 
+    bk = 0.8*bkx/(1 - exp(-bkx))
+    
+    al = 0.00015*exp(-0.06667*(v + 13))            
+    bl = 0.06/(1 + exp(0.08333*(-68 - v)))
+
+}
