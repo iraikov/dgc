@@ -3,7 +3,7 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -75
+    v_init = -77
     
     //Passive properties
     Ra0 = 200         //Ohm.cm
@@ -60,7 +60,7 @@ proc parameters() {
     BKmult = 1.0
     
     //The sAHP conductance
-    gbarsAHP = 10
+    gbarsAHP = 30
     tau1RefsAHP = 400
     tau2sAHP = 200
     c1infsAHP = 0.25
@@ -72,7 +72,7 @@ proc parameters() {
     msAHP = 1
     
     //The ad-hoc unknown conductance
-    gbarUK = 200
+    gbarUK = 10
     erevUK = -55
     pUK = 4
     tauUK = 10
@@ -84,8 +84,8 @@ proc parameters() {
     KDRmult = 1.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.005 // 0.012
-    gKAa = 0.003 // 0.004
+    gKAs = 0.012 // 0.012
+    gKAa = 0.004 // 0.004
     
     //Calcium channels
     CaTmult = 1.75
