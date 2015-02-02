@@ -21,7 +21,7 @@ proc parameters() {
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
-    gnabar_distal_dend = gna_soma * 0.1
+    gnabar_distal_dend = gna_soma * 0.37
     gENa = 75.0
     
     // KIn conductance
@@ -72,7 +72,7 @@ proc parameters() {
     msAHP = 1
     
     //The ad-hoc unknown conductance
-    gbarUK = 10
+    gbarUK = 0
     erevUK = -55
     pUK = 4
     tauUK = 10
@@ -84,8 +84,8 @@ proc parameters() {
     KDRmult = 1.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.012 // 0.012
-    gKAa = 0.004 // 0.004
+    gKAs = 0.012 
+    gKAa = 0.004 
     
     //Calcium channels
     CaTmult = 1.75
