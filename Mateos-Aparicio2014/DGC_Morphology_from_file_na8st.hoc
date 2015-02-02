@@ -26,9 +26,11 @@ func vector_slice() { local p, n localobj src, dest
     dest = $o1
     
     n = src.x[p]
-    
-    dest.copy (src, p+1, p+n)
-    
+
+    if (n > 0) {    
+      dest.copy (src, p+1, p+n)
+    }
+  
     return p+n+1
 }
 
