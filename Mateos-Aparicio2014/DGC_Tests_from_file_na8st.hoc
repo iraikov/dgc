@@ -403,7 +403,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
 }
 
-
+/*
 strdef local_forest_path, local_results_path
 
 gid = 001
@@ -418,3 +418,4 @@ passive_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
 
+*/
