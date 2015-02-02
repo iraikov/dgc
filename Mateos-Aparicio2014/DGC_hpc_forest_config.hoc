@@ -1,0 +1,5 @@
+strdef forest_path, results_path
+
+ncells = 1000
+forest_path = "/data/users/iraikov/model/DGC_forest/dat"
+results_path = "/pub/iraikov/DGC_forest_test_results"
