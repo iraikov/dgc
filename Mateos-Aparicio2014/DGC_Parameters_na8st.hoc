@@ -3,7 +3,7 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -77
+    v_init = -75
     
     //Passive properties
     Ra0 = 200         //Ohm.cm
@@ -21,7 +21,7 @@ proc parameters() {
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
-    gnabar_distal_dend = gna_soma * 0.37
+    gnabar_distal_dend = gna_soma * 0.05
     gENa = 75.0
     
     // KIn conductance
@@ -84,7 +84,7 @@ proc parameters() {
     KDRmult = 1.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.012 
+    gKAs = 0.012
     gKAa = 0.004 
     
     //Calcium channels

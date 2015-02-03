@@ -3,7 +3,6 @@ load_file("nrngui.hoc")
 
 // Load the granule cell template
 xopen("DGC_Template_from_file_na8st.hoc")
-load_file("DGC_protocol.ses")
 
 xopen ("rn.hoc")
 
@@ -403,19 +402,29 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
 }
 
-/*
+
+load_file("DGC_protocol.ses")
+
 strdef local_forest_path, local_results_path
 
-gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
+gid = 307
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
 gid = 827
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
+gid = 005
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
+local_results_path = "results"
+
+gid = 001
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
+local_results_path = "results"
+
 passive_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
 
-*/
+
