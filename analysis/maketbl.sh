@@ -11,7 +11,7 @@ tblpath=$1
 nworkers=20
 ncells=1000
 
-path_prefix="/home/igr/src/model/DGC_forest/results/110/20150109"
+path_prefix="$2"
 
 echo "## gid,DC_input_resistance,vmin,vtau0,tau0,maximum_Vsoma,minimum_Vsoma,threshold,AP_amplitude_rel_threshold,AHP,Rel_AP_amplitude_dendrite_0,Rel_AP_amplitude_dendrite_1,Rel_AP_amplitude_dendrite_2,number_of_spikes,mean_FR,mean_ISI,stdev_ISI,adaptation_ISI1,adaptation_ISI2,adaptation_ISI3" > $tblpath
 
@@ -27,11 +27,11 @@ for (( i = 0; i < ncells; i++ )) do
     DC_input_resistance=`grep "DC input resistance" $passive_results_path | cut -f4 -d' '`
     vmin=`grep "vmin" $passive_results_path | cut -f2 -d' '`
     vtau0=`grep "vtau0" $passive_results_path | cut -f2 -d' '`
-    tau0=`grep "tau0" $passive_results_path | cut -f2 -d' '`
+    tau0=`grep "^tau0" $passive_results_path | cut -f2 -d' '`
 
     maximum_Vsoma=`grep "maximum Vsoma" $single_ap_results_path | cut -f3 -d' '`
-    minimum_Vsoma=`grep "minumum Vsoma" $single_ap_results_path | cut -f3 -d' '`
-    threshold=`grep "maximum of vderiv2" $single_ap_results_path | cut -f12 -d' '`
+    minimum_Vsoma=`grep "minimum Vsoma" $single_ap_results_path | cut -f3 -d' '`
+    threshold=`grep "^maximum of vderiv2" $single_ap_results_path | cut -f10 -d' '`
     AP_amplitude_rel_threshold=`grep "AP amplitude relative" $single_ap_results_path | cut -f6 -d' '`
     AHP=`grep "AHP relative" $single_ap_results_path | cut -f5 -d' '`
     Rel_AP_amplitude_dendrite_0=`grep "Relative amplitude of AP in dendrite 0" $single_ap_results_path | cut -f8 -d' '`
