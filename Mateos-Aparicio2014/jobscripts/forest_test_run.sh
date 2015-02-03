@@ -10,6 +10,7 @@
 
 
 module load neuron/7.3
+mkdir -p ./results
 nrniv -nobanner -nogui -c "batch_size=20" -c "task_id=$SGE_TASK_ID - 1" \
 -c "strdef forest_config" -c 'forest_config="DGC_hpc_forest_config.hoc"' \
 ./DGC_serial_test_from_forest_na8st.hoc
