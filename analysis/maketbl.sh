@@ -28,7 +28,7 @@ for (( i = 0; i < ncells; i++ )) do
     vmin=`grep "vmin" $passive_results_path | cut -f2 -d' '`
     vtau0=`grep "vtau0" $passive_results_path | cut -f2 -d' '`
     tau0=`grep "^tau0" $passive_results_path | cut -f2 -d' '`
-    tau0=`grep "dendritic surface area" $passive_results_path | cut -f5 -d' '`
+    dendarea=`grep "dendritic surface area" $passive_results_path | cut -f5 -d' '`
 
     maximum_Vsoma=`grep "maximum Vsoma" $single_ap_results_path | cut -f3 -d' '`
     minimum_Vsoma=`grep "minimum Vsoma" $single_ap_results_path | cut -f3 -d' '`
@@ -48,7 +48,7 @@ for (( i = 0; i < ncells; i++ )) do
     adaptation_ISI3=`grep "ISI adaptation 3" $spikes_path | cut -f5 -d' '`
     
 
-    echo $i,$DC_input_resistance,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI1,$adaptation_ISI2,$adaptation_ISI3 >> $tblpath
+    echo $i,$DC_input_resistance,$dendarea,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI1,$adaptation_ISI2,$adaptation_ISI3 >> $tblpath
     
 done
 
