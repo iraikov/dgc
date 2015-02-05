@@ -110,6 +110,12 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
+    // compute total surface area of dendritic compartments
+    dendritearea = 0
+    forsec gc.alldendrites {
+        dendritearea = dendritearea + area(0.5)
+    }
+    
     // attempt to compute membrane time constant
     vrest  = -75.0
     vmin   = Vlog_soma.min()
@@ -126,7 +132,8 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.printf ("vmin: %g mV\n", vmin)
     logfile.printf ("vtau0: %g mV\n", vtau0)
     logfile.printf ("tau0: %g ms\n", tau0)
-    
+    logfile.printf ("total dendritic surface area: %g\n", dendritearea)
+
     logfile.close()
 }
 
@@ -401,8 +408,8 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.close()
     
 }
-/*
 
+/*
 load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
@@ -426,6 +433,5 @@ local_results_path = "results"
 passive_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
-
 
 */

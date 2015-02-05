@@ -118,6 +118,12 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     vtau0  = vrest - amp23
     tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
     
+    // compute total surface area of dendritic compartments
+    dendritearea = 0
+    forsec gc.alldendrites {
+        dendritearea = dendritearea + area(0.5)
+    }
+    
     logfile = new File()
     sprint (log_fn, "%s/DGC_passive_results_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
@@ -126,6 +132,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.printf ("vmin: %g mV\n", vmin)
     logfile.printf ("vtau0: %g mV\n", vtau0)
     logfile.printf ("tau0: %g ms\n", tau0)
+    logfile.printf ("total dendritic surface area: %g\n", dendritearea)
     
     logfile.close()
 }
@@ -249,8 +256,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     vd2max = vderiv2.max()
     vd2spike = 0.05 * vd2max
     vd2max_index = vderiv2.indwhere (">=", vd2max)
-    
-    
     
     // Attempt to locate the index where vderiv2[x] ~= vd2spike 
     // (i.e. 5% of the maximum d^2 V / d^2 t)

@@ -21,7 +21,7 @@ proc parameters() {
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
-    gnabar_distal_dend = gna_soma * 0.05
+    gnabar_distal_dend = gna_soma * 0.075
     gENa = 75.0
     
     // KIn conductance
