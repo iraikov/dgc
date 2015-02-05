@@ -2,7 +2,7 @@
 load_file("nrngui.hoc")
 
 // Load the granule cell template
-xopen("DGC_Template_from_file_na8st.hoc")
+xopen("DGC_Template_from_file_passive_na8st.hoc")
 
 xopen ("rn.hoc")
 
