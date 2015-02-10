@@ -59,19 +59,18 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
     
 }
 
-proc write_vderiv() { local logsize  localobj logfile, tlog, vderiv, vderiv2, vderiv3
+proc write_vderiv() { local logsize  localobj logfile, tlog, vderiv, vderiv2
     
     logfile=$o1
     tlog=$o2
     vderiv=$o3
     vderiv2=$o4
-    vderiv3=$o5
 
     
     logsize = tlog.size()
     
     for i=0,tlog.size()-1 {
-	logfile.printf("%g %g %g %g\n", tlog.x[i], vderiv.x[i], vderiv2.x[i], vderiv3.x[i])
+	logfile.printf("%g %g %g\n", tlog.x[i], vderiv.x[i], vderiv2.x[i])
     }
     
 }
@@ -157,7 +156,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
 
 
 
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vderiv3, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -185,7 +184,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.5
+    stim1.amp = 0.3
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -267,30 +266,24 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     vderiv = new Vector()
     vderiv2 = new Vector()
-    vderiv3 = new Vector()
     
-    vderiv.deriv (Vlog_soma, dt, 2)
-    vderiv2.deriv (vderiv, dt, 2)
-    vderiv3.deriv (vderiv2, dt, 2)
+    vderiv.deriv (Vlog_soma, 0.01, 2)
+    vderiv2.deriv (vderiv, 0.01, 2)
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_vderiv_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    write_vderiv(logfile, tlog, vderiv, vderiv2, vderiv3)
+    write_vderiv(logfile, tlog, vderiv, vderiv2)
     logfile.close()
     
     vd2max = vderiv2.max()
     vd2spike = 0.05 * vd2max
     vd2max_index = vderiv2.indwhere (">=", vd2max)
     
-    // Finds the first peak amplitude of the second derivative
-    vd3max = vderiv3.max()
-    vd3max_index = vderiv3.indwhere (">=", vd3max)
-    
     // Attempt to locate the index where vderiv2[x] ~= vd2spike 
     // (i.e. 5% of the maximum d^2 V / d^2 t)
     
-    i = vd3max_index
+    i = vd2max_index
     vd2spike_index = -1
     while (i > 0) {
         if (vderiv2.x[i] > vd2spike) {
@@ -440,23 +433,23 @@ load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
 
-gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
-local_results_path = "results"
-
-gid = 827
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
+gid = 005
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
 local_results_path = "results"
 
 gid = 307
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
-gid = 005
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
+gid = 827
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
+local_results_path = "results"
+
+gid = 001
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
 local_results_path = "results"
 
 passive_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
-//ap_rate_test(local_forest_path, local_results_path, gid)
+ap_rate_test(local_forest_path, local_results_path, gid)
 

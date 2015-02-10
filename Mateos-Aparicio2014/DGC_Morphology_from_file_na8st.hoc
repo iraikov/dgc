@@ -231,7 +231,7 @@ proc geom_spines() { localobj spine_density, f
 
 proc geom_nseg() { local freq, d_lambda
     
-    freq = 100 // Hz, frequency at which AC length constant will be computed
+    freq = 50 // Hz, frequency at which AC length constant will be computed
     d_lambda = 0.1
     
     soma area(0.5)
