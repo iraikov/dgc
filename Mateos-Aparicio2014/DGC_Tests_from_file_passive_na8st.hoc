@@ -138,9 +138,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
 }
 
 
-
-
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -168,7 +166,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.5
+    stim1.amp = 0.3
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -240,44 +238,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     vmax = Vlog_soma.max()
     vmin = Vlog_soma.min()
     
-    //
-    // AP threshold estimation based on Kress et al. J Neurophysiol 2008
-    //
-    // AP threshold is the somatic membrane potential corresponding to 5%
-    // of the first peak amplitude in the second derivative of V w.r.t to time
-    // (i.e. d^2 V/d^2 t)
-    //
-    
-    vderiv = new Vector()
-    vderiv2 = new Vector()
-    
-    vderiv.deriv (Vlog_soma, 0.1, 2)
-    vderiv2.deriv (vderiv, 0.1, 2)
-    vd2max = vderiv2.max()
-    vd2spike = 0.05 * vd2max
-    vd2max_index = vderiv2.indwhere (">=", vd2max)
-    
-    // Attempt to locate the index where vderiv2[x] ~= vd2spike 
-    // (i.e. 5% of the maximum d^2 V / d^2 t)
-    
-    i = vd2max_index
-    vd2spike_index = -1
-    while (i > 0) {
-        
-        if (vderiv2.x[i] > vd2spike) {
-            i = i-1
-        } else {
-            vd2spike_index = i
-            break
-        }
-    }
-    
-    if (!(vd2spike_index > 0)) {
-        execerror ("Unable to find vd2spike value")
-    }
-    
-    vthresh = Vlog_soma.x[vd2spike_index]
-    
     vdend_max = new Vector(Vlog_dends.count())
     vdend_min = new Vector(Vlog_dends.count())
     
@@ -294,9 +254,146 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
+    logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
     
-    logfile.printf ("maximum of vderiv2: %g, 5%% of maximum of vderiv2: %g\n", vd2max, vd2spike)
-    logfile.printf ("5%% of maximum of vderiv2: t = %g ms, Vsoma = %g mV\n", (tlog.x[vd2spike_index]), (Vlog_soma.x[vd2spike_index]))
+    vsoma_amp = vmax-vmin
+    for i=0,vdend_max.size()-1 { 
+        vdend_amp = vdend_max.x[i]-vdend_min.x[i]
+        logfile.printf ("Relative amplitude of AP in dendrite %d: %g\n", i, vdend_amp/vsoma_amp)
+    }
+    
+    logfile.close()
+    
+}
+
+proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
+    
+    forest_path = $s1
+    results_path = $s2
+    gid = $3
+    
+    print "threshold_test: gid = ", gid
+
+    strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
+    
+    prelength = 1000
+    mainlength = 2000
+    
+    vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
+    
+    stimdur = 150.0
+    
+    sprint(dims_fn, "%s/DGC_dims_%06d.dat", forest_path, gid)
+    sprint(points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
+    sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)
+    sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
+    sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
+    
+    gc = new DGC(0, gid, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn)
+    
+    gc.soma stim1 = new IClamp(0.5)
+    stim1.del = prelength
+    stim1.dur = stimdur
+    stim1.amp = 0.05
+    
+    spikelog = new Vector()
+    gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
+    nc.threshold = 0.0
+    nc.record(spikelog)
+    
+    Vlog_soma = new Vector(vec_sizes)
+    Vlog_soma.record (&gc.soma.v(0.5))
+    
+    Vlog_axon = new Vector(vec_sizes)
+    Vlog_axon.record (&gc.axon[2].v(0.8))
+    
+    // Record from several dendritic locations, 
+    // approximately dendlog_interval apart
+    Vlog_dends = new List()
+    dendlog_interval = 80 //um
+    dendlog_distance = dendlog_interval //um
+    dendlog_found = 0
+    for i=0,2 {
+        
+        Vlog_dend = new Vector(vec_sizes)
+        Vlog_dends.append(Vlog_dend)
+        
+        gc.soma { distance() }
+        
+        for j=0, gc.nDends-1 gc.dendrites[j] { 
+	    for (x,0) {
+                dist = distance(x)
+                if (dist >= dendlog_distance) {
+                    printf ("Vlog_dend: dist = %g\n", dist)
+                    Vlog_dend.record (&gc.dendrites[j].v(0.5))
+                    dendlog_found = 1
+                    pop_section()
+                    break
+                }
+            }
+            if (dendlog_found) {
+                dendlog_found = 0
+                break
+            }
+        }
+        dendlog_distance = dendlog_distance + dendlog_interval
+    }
+    
+    tlog = new Vector(vec_sizes,0)
+    tlog.record (&t)
+    
+    simulate(prelength,mainlength)
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    logfile.close()
+    
+    vmax = Vlog_soma.max()
+    vmin = Vlog_soma.min()
+    
+    //
+    // AP threshold estimation based on Kress et al. J Neurophysiol 2008
+    //
+    // AP threshold is the point on the phase plot of dV/dt vs. v that
+    // corresponds to dV/dt = 10.
+    //
+    
+    vderiv = new Vector()
+    vderiv2 = new Vector()
+    
+    vderiv.deriv (Vlog_soma, 0.1, 2)
+    vderiv2.deriv (vderiv, 0.1, 2)
+    
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_vderiv_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    write_vderiv(logfile, tlog, vderiv, vderiv2)
+    logfile.close()
+    
+    vderiv10_index = vderiv.indwhere (">=", 10.0)
+    
+    // Set the spike threshold to the index where vderiv[x] ~= 10.0 
+    vthresh = Vlog_soma.x[vderiv10_index+1]
+    
+    vdend_max = new Vector(Vlog_dends.count())
+    vdend_min = new Vector(Vlog_dends.count())
+    
+    for i=0,Vlog_dends.count()-1 {
+        
+        Vlog_dend = Vlog_dends.object(i)
+        vdend_max.x[i] = Vlog_dend.max()
+        vdend_min.x[i] = Vlog_dend.min()
+    }
+    
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_threshold_results_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    
+    logfile.printf ("maximum Vsoma: %g mV\n", vmax)
+    logfile.printf ("minimum Vsoma: %g mV\n", vmin)
+    
+    logfile.printf ("threshold: %g mV\n", vthresh)
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
     logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
@@ -312,7 +409,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
 }
 
 
-proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+ ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
