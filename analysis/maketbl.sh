@@ -22,6 +22,7 @@ for (( i = 0; i < ncells; i++ )) do
     path="$path_prefix/$dir"
     passive_results_path="$path/DGC_passive_results_$id.dat"
     single_ap_results_path="$path/DGC_single_ap_results_$id.dat"
+    threshold_results_path="$path/DGC_threshold_results_$id.dat"
     spikes_path="$path/DGC_spikes_$id.dat"
 
     DC_input_resistance=`grep "DC input resistance" $passive_results_path | cut -f4 -d' '`
@@ -32,8 +33,8 @@ for (( i = 0; i < ncells; i++ )) do
 
     maximum_Vsoma=`grep "maximum Vsoma" $single_ap_results_path | cut -f3 -d' '`
     minimum_Vsoma=`grep "minimum Vsoma" $single_ap_results_path | cut -f3 -d' '`
-    threshold=`grep "^5% of maximum of vderiv2" $single_ap_results_path | cut -f12 -d' '`
-    AP_amplitude_rel_threshold=`grep "AP amplitude relative" $single_ap_results_path | cut -f6 -d' '`
+    threshold=`grep "threshold:" $single_ap_results_path | cut -f12 -d' '`
+    AP_amplitude_rel_threshold=`grep "AP amplitude relative" $threshold_results_path | cut -f6 -d' '`
     AHP=`grep "AHP relative" $single_ap_results_path | cut -f5 -d' '`
     Rel_AP_amplitude_dendrite_0=`grep "Relative amplitude of AP in dendrite 0" $single_ap_results_path | cut -f8 -d' '`
     Rel_AP_amplitude_dendrite_1=`grep "Relative amplitude of AP in dendrite 1" $single_ap_results_path | cut -f8 -d' '`
