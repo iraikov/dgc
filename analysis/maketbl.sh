@@ -33,7 +33,7 @@ for (( i = 0; i < ncells; i++ )) do
 
     maximum_Vsoma=`grep "maximum Vsoma" $single_ap_results_path | cut -f3 -d' '`
     minimum_Vsoma=`grep "minimum Vsoma" $single_ap_results_path | cut -f3 -d' '`
-    threshold=`grep "threshold:" $single_ap_results_path | cut -f12 -d' '`
+    threshold=`grep "^threshold:" $threshold_results_path | cut -f2 -d' '`
     AP_amplitude_rel_threshold=`grep "AP amplitude relative" $threshold_results_path | cut -f6 -d' '`
     AHP=`grep "AHP relative" $single_ap_results_path | cut -f5 -d' '`
     Rel_AP_amplitude_dendrite_0=`grep "Relative amplitude of AP in dendrite 0" $single_ap_results_path | cut -f8 -d' '`
