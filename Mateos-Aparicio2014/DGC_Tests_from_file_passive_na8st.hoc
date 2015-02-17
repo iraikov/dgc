@@ -60,6 +60,23 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
 }
 
 
+proc write_vderiv() { local logsize  localobj logfile, tlog, vderiv, vderiv2
+    
+    logfile=$o1
+    tlog=$o2
+    vderiv=$o3
+    vderiv2=$o4
+
+    
+    logsize = tlog.size()
+    
+    for i=0,tlog.size()-1 {
+	logfile.printf("%g %g %g\n", tlog.x[i], vderiv.x[i], vderiv2.x[i])
+    }
+    
+}
+
+
 proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile strdef forest_path, results_path
     
     
@@ -409,7 +426,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
 }
 
 
- ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
