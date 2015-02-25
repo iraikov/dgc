@@ -8,9 +8,11 @@ membrane_tau=DGC_results(:,6);
 spike_threshold=DGC_results(:,9);
 spike_amplitude=DGC_results(:,10);
 spike_ahp=DGC_results(:,11);
-spike_amplitude_dend1=DGC_results(:,12);
-spike_amplitude_dend2=DGC_results(:,13);
-spike_amplitude_dend3=DGC_results(:,14);
+rel_amplitude_dend1=DGC_results(:,12);
+rel_amplitude_dend2=DGC_results(:,13);
+rel_amplitude_dend3=DGC_results(:,14);
+rel_amplitude_dend4=DGC_results(:,13);
+rel_amplitude_dend5=DGC_results(:,14);
 number_of_spikes=DGC_results(:,15);
 mean_firing_rate=DGC_results(:,16);
 mean_isi=DGC_results(:,17);
@@ -47,22 +49,31 @@ print (h, "DGC_results1.pdf", "-dpdf")
 h = figure(2);
 
 s = subplot(2, 2, 1)
-spike_amplitude_dend1_mean = mean(spike_amplitude_dend1);
-spike_amplitude_dend1_stdev = std(spike_amplitude_dend1);
-spike_amplitude_dend2_mean = mean(spike_amplitude_dend2);
-spike_amplitude_dend2_stdev = std(spike_amplitude_dend2);
-spike_amplitude_dend3_mean = mean(spike_amplitude_dend3);
-spike_amplitude_dend3_stdev = std(spike_amplitude_dend3);
-spike_amplitude_dend_means = [spike_amplitude_dend1_mean,
-                              spike_amplitude_dend2_mean,
-                              spike_amplitude_dend3_mean];
-spike_amplitude_dend_stds = [spike_amplitude_dend1_stdev,
-                             spike_amplitude_dend2_stdev,
-                             spike_amplitude_dend3_stdev];
-errorbar([80,160,240],spike_amplitude_dend_means, ...
-         spike_amplitude_dend_stds);
+rel_amplitude_dend1_mean = mean(rel_amplitude_dend1);
+rel_amplitude_dend1_stdev = std(rel_amplitude_dend1);
+rel_amplitude_dend2_mean = mean(rel_amplitude_dend2);
+rel_amplitude_dend2_stdev = std(rel_amplitude_dend2);
+rel_amplitude_dend3_mean = mean(rel_amplitude_dend3);
+rel_amplitude_dend3_stdev = std(rel_amplitude_dend3);
+rel_amplitude_dend4_mean = mean(rel_amplitude_dend4);
+rel_amplitude_dend4_stdev = std(rel_amplitude_dend4);
+rel_amplitude_dend5_mean = mean(rel_amplitude_dend5);
+rel_amplitude_dend5_stdev = std(rel_amplitude_dend5);
+
+rel_amplitude_dend_means = [rel_amplitude_dend1_mean,
+                            rel_amplitude_dend2_mean,
+                            rel_amplitude_dend3_mean,
+                            rel_amplitude_dend4_mean,
+                            rel_amplitude_dend5_mean,];
+rel_amplitude_dend_stds = [rel_amplitude_dend1_stdev,
+                           rel_amplitude_dend2_stdev,
+                           rel_amplitude_dend3_stdev,
+                           rel_amplitude_dend4_stdev,
+                           rel_amplitude_dend5_stdev];
+errorbar([50,100,150,200,250],rel_amplitude_dend_means, ...
+         rel_amplitude_dend_stds);
 axis([0 300 -0.25 1.25]);
-set(s,'XTick',0:80:240);
+set(s,'XTick',0:50:250);
 set(s,'YTick',0:0.2:1);
 title("Amplitude of dendritic AP rel. to soma [mV]");
 
