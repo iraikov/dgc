@@ -1,16 +1,25 @@
 
 xopen("DGC_Tests_from_file_na8st.hoc")
 
-proc main() { local i, ij, gid strdef cmd, local_forest_path, local_results_path
-    
+proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_results_path
+    strdef results_path, forest_path
+
     // forest_config and task_id and batch_size are variables that
     // should be set on the command line, e.g. nrniv -c "task_id=1" 
-    // -c "batch_size=20" -c "strdef forest_config" -c "forest_config=\"config.hoc\""
+    // -c "batch_size=20" -c "strdef forest_config" -c "forest_config=\"forest.config\""
     
-    load_file (forest_config)
+    f = new File() 
+    f.ropen(forest_config)
+    ncells = f.scanvar()
+    f.scanstr(forest_path)
+    f.scanstr(results_path)
+    f.close()
     
     sprint (local_forest_path, "%s/%03d", forest_path, task_id)
     sprint (local_results_path, "%s/%03d", results_path, task_id)
+
+    printf("DGC_serial_test_from_forest_na8st: results_path = %s\n", results_path)
+    printf("DGC_serial_test_from_forest_na8st: local_results_path = %s\n", local_results_path)
     
     sprint(cmd, "mkdir -p %s", local_results_path)
     printf("DGC_serial_test_from_forest_na8st: %s\n", cmd)
