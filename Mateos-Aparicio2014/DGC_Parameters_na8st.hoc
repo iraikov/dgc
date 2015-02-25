@@ -8,10 +8,10 @@ proc parameters() {
     //Passive properties
     Ra0 = 200         //Ohm.cm
     cm0 = 1           //uF/cm2
-    gpas = 2.5e-05      //S/cm2
+    gpas = 4e-05    //S/cm2
     Rm0 = 1e-3/gpas   //kOhm.cm2
     Epas = -75        //mV
-    EK = -100       //mV
+    EK = -100         //mV
     
     // Parameters from Schmidt-Hieber 2010
     Ra_soma = Ra0
