@@ -200,10 +200,10 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     // Record from several dendritic locations, 
     // approximately dendlog_interval apart
     Vlog_dends = new List()
-    dendlog_interval = 80 //um
+    dendlog_interval = 50 //um
     dendlog_distance = dendlog_interval //um
     dendlog_found = 0
-    for i=0,2 {
+    for i=0,4 {
         
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
@@ -328,10 +328,10 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     // Record from several dendritic locations, 
     // approximately dendlog_interval apart
     Vlog_dends = new List()
-    dendlog_interval = 80 //um
+    dendlog_interval = 50 //um
     dendlog_distance = dendlog_interval //um
     dendlog_found = 0
-    for i=0,2 {
+    for i=0,4 {
         
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
