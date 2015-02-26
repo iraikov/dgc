@@ -6,9 +6,23 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
+//
+// Synaptic connections are organized by type of pre-synaptic cell:
+//
+// syns_GC - connections from other granule cells
+// syns_MC - connections from mossy cells
+// syns_HC - connections from HIPP cells
+// syns_BC - connections from PV+ basket cells
+// syns_AA - connections from axo-axonic cells
+// syns_HCC - connections from HICAP cells
+// syns_NGFC - connections from neurogliaform cells
+//
+
 public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
+public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
+
 public ndendpts
 public verbose
 
@@ -20,6 +34,7 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
+objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
 
 strdef dendrite_dims_fn, dendrite_points_fn
 strdef dendrite_soma_topology_fn, dendrite_topology_fn
@@ -28,6 +43,7 @@ strdef spine_density_fn
 xopen("DGC_Parameters_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
 xopen("DGC_Biophysics_passive_na8st.hoc")
+xopen("DGC_Synapses.hoc")
 
 
 proc assert() { local test strdef errmsg
@@ -92,13 +108,20 @@ proc celldef() {
     MDidxs  = new Vector()
     DDidxs  = new Vector()
     
+    syns_GC   = new List()
+    syns_MC   = new List()
+    syns_HC   = new List()
+    syns_BC   = new List()
+    syns_AA   = new List()
+    syns_HCC  = new List()
+    syns_NGFC = new List()
     
     topol()
     subsets()
     geom()
     geom_spines()
     biophys()
-
+    synapses()
 }
 
 
