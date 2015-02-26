@@ -1,0 +1,85 @@
+
+
+nsyns_GC_GCL  = 1
+nsyns_GC_IML  = 1
+nsyns_MC      = 1
+nsyns_HC      = 5
+nsyns_BC      = 20
+nsyns_AA      = 4
+nsyns_HCC     = 1
+nsyns_NGFC    = 10
+
+func choose_index() { local x localobj vect, r
+    vect = $o1
+    r = $o2
+    x = r.repick()
+    pos = int(x % vect.size())
+    return vect.x[pos]
+}
+
+proc synapses() { local i, j localobj syn, rs
+    
+    // Generate a new random stream, setting
+    //	aside 'random_stream_offset' random numbers
+    //	for this cell based on its gid
+    rs = new Random()
+    rs.Random123(random_stream_offset,gid)
+    rs.discunif(0,100)
+    
+    // GC-GC synapses; location is GCL/IML
+    for i=0, nsyns_GC_GCL {
+        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_GC.append(syn)
+    }
+    for i=0, nsyns_GC_IML {
+        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_GC.append(syn)
+    }
+    
+    // MC-GC synapses; location is IML
+    for i=0, nsyns_MC-1 {
+        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_MC.append(syn)
+    }
+    
+    // HC-GC synapses; location is MOML
+    for i=0, nsyns_HC-1 {
+        j = choose_index(MDidxs,rs) // randomly select middle dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_HC.append(syn)
+    }
+    
+    // BC-GC synapses; location is GCL
+    for i=0, nsyns_BC-1 {
+        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_BC.append(syn)
+    }
+    
+    // AA-GC synapses; location is GCL
+    for i=0, nsyns_AA-1 {
+        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_AA.append(syn)
+    }
+    
+    // HCC-GC synapses; location is IML
+    for i=0, nsyns_HCC-1 {
+        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_HCC.append(syn)
+    }
+    
+    // NGFC-GC synapses; location is MOML
+    for i=0, nsyns_NGFC-1 {
+        j = choose_index(MDidxs,rs) // randomly select middle dendrite
+        dendrites[j] { syn = new Exp2Syn(0.8) }
+        syns_NGFC.append(syn)
+    }
+    
+}
+
+
