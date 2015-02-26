@@ -208,7 +208,11 @@ proc geom() {
         axon[i] { printf ("axon area[%d] = %g\n", i, area(0.5)) }
     }
     
-    soma {  L = 16.8  diam = 16.8 }
+    // Soma size from Claiborne et al., 1990 (N = 48)
+    // Soma width (um): 10.3  +/- 0.3 SEM (6 - 15 um range)
+    // Soma length (um): 18.6  +/- 0.5 SEM (15 - 30 um range)
+
+    soma {  L = 18.6  diam = 10.3 }
     
     geom_nseg()
 }
