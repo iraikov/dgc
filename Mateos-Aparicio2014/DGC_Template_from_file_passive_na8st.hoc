@@ -27,6 +27,8 @@ public ndendpts
 public verbose
 
 verbose = 0
+gid = -1
+random_stream_offset = 0
 
 create soma[1], axon[4], dendrites[1]
 
@@ -87,6 +89,10 @@ proc init() {
     dendrite_topology_fn = $s5
     dendrite_soma_topology_fn = $s6
     spine_density_fn     = $s7
+    
+    if (numarg() > 7) {
+        random_stream_offset = $8
+    }
     
     if (verbose) {
         printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)

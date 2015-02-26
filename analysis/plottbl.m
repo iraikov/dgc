@@ -11,12 +11,12 @@ spike_ahp=DGC_results(:,11);
 rel_amplitude_dend1=DGC_results(:,12);
 rel_amplitude_dend2=DGC_results(:,13);
 rel_amplitude_dend3=DGC_results(:,14);
-rel_amplitude_dend4=DGC_results(:,13);
-rel_amplitude_dend5=DGC_results(:,14);
-number_of_spikes=DGC_results(:,15);
-mean_firing_rate=DGC_results(:,16);
-mean_isi=DGC_results(:,17);
-isi_adaptation2=DGC_results(:,20);
+rel_amplitude_dend4=DGC_results(:,15);
+rel_amplitude_dend5=DGC_results(:,16);
+number_of_spikes=DGC_results(:,17);
+mean_firing_rate=DGC_results(:,18);
+mean_isi=DGC_results(:,19);
+isi_adaptation2=DGC_results(:,22);
 
 h = figure(1);
 

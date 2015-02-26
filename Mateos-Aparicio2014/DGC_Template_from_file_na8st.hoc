@@ -27,6 +27,8 @@ public ndendpts
 public verbose
 
 verbose = 0
+gid = -1
+random_stream_offset = 0
 
 create soma[1], axon[4], dendrites[1]
 
@@ -78,14 +80,18 @@ proc read_Na_rates() { localobj fileS, fileA
 
 proc init() {
     
-    
     verbose = $1
     gid = $2
+
     dendrite_dims_fn     = $s3
     dendrite_points_fn   = $s4
     dendrite_topology_fn = $s5
     dendrite_soma_topology_fn = $s6
     spine_density_fn     = $s7
+    
+    if (numarg() > 7) {
+        random_stream_offset = $8
+    }
     
     if (verbose) {
         printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
@@ -103,9 +109,9 @@ proc init() {
 proc celldef() {
     
     GCLDidxs = new Vector()
-    PDidxs  = new Vector()
-    MDidxs  = new Vector()
-    DDidxs  = new Vector()
+    PDidxs   = new Vector()
+    MDidxs   = new Vector()
+    DDidxs   = new Vector()
     
     syns_GC   = new List()
     syns_MC   = new List()

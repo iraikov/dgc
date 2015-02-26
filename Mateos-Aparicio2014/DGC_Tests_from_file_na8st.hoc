@@ -290,8 +290,6 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     results_path = $s2
     gid = $3
     
-    print "threshold_test: gid = ", gid
-
     strdef log_fn, dims_fn, points_fn, dendrite_topology_fn, dendrite_soma_topology_fn, spine_density_fn
     
     prelength = 1000
@@ -360,7 +358,21 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
-    simulate(prelength,mainlength)
+    // Increase the injected current until a spike occurs
+    while (spikelog.size() == 0) {
+        simulate(prelength,mainlength)
+        if (spikelog.size() == 0) {
+            stim1.amp = stim1.amp + 0.01
+            tlog.clear()
+            Vlog_soma.clear()
+            Vlog_axon.clear()
+            for i=0,Vlog_dends.count()-1 {
+                Vlog_dend = Vlog_dends.object(i)
+                Vlog_dend.clear()
+            }
+        }
+    }
+    
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
@@ -521,6 +533,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.close()
     
 }
+
 /*
 load_file("DGC_protocol.ses")
 
@@ -534,16 +547,16 @@ gid = 307
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
-gid = 827
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
-local_results_path = "results"
-
 gid = 001
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
 local_results_path = "results"
 
 gid = 016
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/016"
+local_results_path = "results"
+
+gid = 827
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
 passive_test(local_forest_path, local_results_path, gid)
