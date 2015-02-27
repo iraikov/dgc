@@ -52,8 +52,8 @@ proc parameters() {
     
     //The SK and BK conductances
     gsksoma = 0.0001
-    gskprox = 0.00001
-    gskGCLs = 0.00002
+    gskprox = 0.00004 // increase by a factor of 4 to achieve
+    gskGCLs = 0.00008 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK

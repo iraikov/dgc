@@ -559,12 +559,12 @@ gid = 827
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/007"
 local_results_path = "results"
 
-gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
-local_results_path = "results"
-
 gid = 016
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/016"
+local_results_path = "results"
+
+gid = 001
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
 local_results_path = "results"
 
 gid = 005
