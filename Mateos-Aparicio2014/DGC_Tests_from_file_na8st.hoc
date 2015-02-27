@@ -520,7 +520,19 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     } else {
         isi10th = isilast
     }
-
+    
+    // Compute the last spike that is largest than the first one.
+    // This is necessary because some variants of the model generate spike doublets,
+    // (i.e. spike with very short distance between them, which confuse the ISI statistics.
+    isilastgt = isivect.size()-1
+    while (isivect.x[isilastgt] < isivect.x[0]) {
+        isilastgt = isilastgt-1
+    }
+    
+    if (!(isilastgt > 0)) {
+        execerror("Unable to find ISI greater than first ISI")
+    }
+    
     spikefile.printf ("## number of spikes: %g\n", spikelog.size())
     spikefile.printf ("## FR mean: %g\n", 1/isimean)
     spikefile.printf ("## ISI mean: %g\n", isimean) 
@@ -529,11 +541,12 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.printf ("## ISI adaptation 1: %g\n", (isivect.x[0]/isimean))
     spikefile.printf ("## ISI adaptation 2: %g\n", (isivect.x[0]/isivect.x[isilast]))
     spikefile.printf ("## ISI adaptation 3: %g\n", (isivect.x[0]/isivect.x[isi10th]))
+    spikefile.printf ("## ISI adaptation 4: %g\n", (isivect.x[0]/isivect.x[isilastgt]))
     
     spikefile.close()
     
 }
-/*
+
 load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
@@ -558,8 +571,11 @@ gid = 005
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
 local_results_path = "results"
 
+gid = 134
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/014"
+local_results_path = "results"
+
 passive_test(local_forest_path, local_results_path, gid)
 threshold_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
-*/

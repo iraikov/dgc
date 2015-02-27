@@ -17,6 +17,7 @@ number_of_spikes=DGC_results(:,17);
 mean_firing_rate=DGC_results(:,18);
 mean_isi=DGC_results(:,19);
 isi_adaptation2=DGC_results(:,22);
+isi_adaptation2=isi_adaptation2(find(isi_adaptation2 <= 1));
 
 h = figure(1);
 
