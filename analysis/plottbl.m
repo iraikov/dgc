@@ -16,8 +16,7 @@ rel_amplitude_dend5=DGC_results(:,16);
 number_of_spikes=DGC_results(:,17);
 mean_firing_rate=DGC_results(:,18);
 mean_isi=DGC_results(:,19);
-isi_adaptation2=DGC_results(:,22);
-isi_adaptation2=isi_adaptation2(find(isi_adaptation2 <= 1));
+isi_adaptation4=DGC_results(:,24);
 
 h = figure(1);
 
@@ -42,8 +41,8 @@ hist(spike_ahp,50);
 title(sprintf("Fast AHP [mV]; mean = %g",mean(spike_ahp)));
 
 subplot(3, 2, 6)
-hist(isi_adaptation2,50);
-title(sprintf("ISI adaptation 2; mean = %g",mean(isi_adaptation2)));
+hist(isi_adaptation4,50);
+title(sprintf("ISI adaptation 4; mean = %g",mean(isi_adaptation4)));
 
 print (h, "DGC_results1.pdf", "-dpdf")
 
