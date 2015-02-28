@@ -13,8 +13,13 @@ func choose_index() { local x localobj vect, r
     vect = $o1
     r = $o2
     x = r.repick()
-    pos = int(x % vect.size())
-    return vect.x[pos]
+    if (vect.size() > 0) {
+       pos = int(x % vect.size())
+       return vect.x[pos]
+    } else {
+       return 0
+    }
+
 }
 
 proc synapses() { local i, j localobj syn, rs
