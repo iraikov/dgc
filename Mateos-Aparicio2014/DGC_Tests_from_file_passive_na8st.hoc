@@ -402,7 +402,11 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     write_vderiv(logfile, tlog, vderiv, vderiv2)
     logfile.close()
     
-    vderiv10_index = vderiv.indwhere (">=", 10.0)
+    vderiv20_index = vderiv.indwhere (">=", 20.0)
+    vderiv10_index = vderiv20_index
+    while (vderiv.x[vderiv10_index] > 10) {
+        vderiv10_index = vderiv10_index-1
+    }
     
     // Set the spike threshold to the index where vderiv[x] ~= 10.0 
     vthresh = Vlog_soma.x[vderiv10_index+1]

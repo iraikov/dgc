@@ -72,10 +72,10 @@ rel_amplitude_dend_stds = [rel_amplitude_dend1_stdev,
                            rel_amplitude_dend5_stdev];
 errorbar([50,100,150,200,250],rel_amplitude_dend_means, ...
          rel_amplitude_dend_stds);
-axis([0 300 -0.25 1.25]);
+axis([0 300 0 1]);
 set(s,'XTick',0:50:250);
 set(s,'YTick',0:0.2:1);
-title("Amplitude of dendritic AP rel. to soma [mV]");
+title("Amplitude of dendritic AP rel. to soma");
 
 subplot(2, 2, 2)
 hist(number_of_spikes,20);
