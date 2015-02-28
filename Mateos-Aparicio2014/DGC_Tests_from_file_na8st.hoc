@@ -401,7 +401,11 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     write_vderiv(logfile, tlog, vderiv, vderiv2)
     logfile.close()
     
-    vderiv10_index = vderiv.indwhere (">=", 10.0)
+    vderiv20_index = vderiv.indwhere (">=", 20.0)
+    vderiv10_index = vderiv20_index
+    while (vderiv.x[vderiv10_index] > 10) {
+        vderiv10_index = vderiv10_index-1
+    }
     
     // Set the spike threshold to the index where vderiv[x] ~= 10.0 
     vthresh = Vlog_soma.x[vderiv10_index+1]
@@ -546,7 +550,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.close()
     
 }
-
+/*
 load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
@@ -567,15 +571,20 @@ gid = 001
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
 local_results_path = "results"
 
+gid = 134
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/014"
+local_results_path = "results"
+
 gid = 005
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
 local_results_path = "results"
 
-gid = 134
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/014"
+gid = 003
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/003"
 local_results_path = "results"
 
 passive_test(local_forest_path, local_results_path, gid)
 threshold_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
+*/
