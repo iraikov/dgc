@@ -525,7 +525,19 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     } else {
         isi10th = isilast
     }
-
+    
+    // Compute the last spike that is largest than the first one.
+    // This is necessary because some variants of the model generate spike doublets,
+    // (i.e. spike with very short distance between them, which confuse the ISI statistics.
+    isilastgt = isivect.size()-1
+    while (isivect.x[isilastgt] < isivect.x[0]) {
+        isilastgt = isilastgt-1
+    }
+    
+    if (!(isilastgt > 0)) {
+        execerror("Unable to find ISI greater than first ISI")
+    }
+    
     spikefile.printf ("## number of spikes: %g\n", spikelog.size())
     spikefile.printf ("## FR mean: %g\n", 1/isimean)
     spikefile.printf ("## ISI mean: %g\n", isimean) 
@@ -534,6 +546,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     spikefile.printf ("## ISI adaptation 1: %g\n", (isivect.x[0]/isimean))
     spikefile.printf ("## ISI adaptation 2: %g\n", (isivect.x[0]/isivect.x[isilast]))
     spikefile.printf ("## ISI adaptation 3: %g\n", (isivect.x[0]/isivect.x[isi10th]))
+    spikefile.printf ("## ISI adaptation 4: %g\n", (isivect.x[0]/isivect.x[isilastgt]))
     
     spikefile.close()
     
