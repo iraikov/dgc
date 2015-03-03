@@ -130,7 +130,9 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     vrest  = -75.0
     vmin   = Vlog_soma.min()
     vmax   = vrest
-    amp23  = 0.67 * abs (vmax - vmin)
+    // the time it takes the system's step response to reach 1-1/e (or
+    // 63.2%) of the peak value (Wikipedia)
+    amp23  = 0.632 * abs (vmax - vmin)
     vtau0  = vrest - amp23
     tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
     
