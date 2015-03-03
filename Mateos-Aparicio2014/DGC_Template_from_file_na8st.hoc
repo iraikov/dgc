@@ -38,6 +38,7 @@ objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
 
+strdef forest_path
 strdef dendrite_dims_fn, dendrite_points_fn
 strdef dendrite_soma_topology_fn, dendrite_topology_fn
 strdef spine_density_fn
@@ -80,18 +81,19 @@ proc read_Na_rates() { localobj fileS, fileA
 
 proc init() {
     
-    verbose = $1
-    gid = $2
-
-    dendrite_dims_fn     = $s3
-    dendrite_points_fn   = $s4
-    dendrite_topology_fn = $s5
-    dendrite_soma_topology_fn = $s6
-    spine_density_fn     = $s7
+    gid = $1
+    random_stream_offset = $2
+    forest_path = $s3
     
-    if (numarg() > 7) {
-        random_stream_offset = $8
+    if (numarg() > 3) {
+        verbose = $4
     }
+    
+    sprint(dendrite_dims_fn, "%s/DGC_dims_%06d.dat", forest_path, gid)
+    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
+    sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)
+    sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
+    sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
     if (verbose) {
         printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)

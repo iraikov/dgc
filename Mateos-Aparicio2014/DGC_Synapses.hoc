@@ -34,7 +34,7 @@ proc synapses() { local i, j localobj syn, rs
     // GC-GC synapses; location is GCL/IML
     for i=0, nsyns_GC_GCL {
         j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
+        dendrites[j] { syn = new Exp2Syn(0.8) } // make location random
         syns_GC.append(syn)
     }
     for i=0, nsyns_GC_IML {
