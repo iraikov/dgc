@@ -162,7 +162,6 @@ proc biophys() {
         gbar_fKDR = 0.002
         insert sKDR
         gbar_sKDR = 0.004
-        g_pas = 7e-05
     }
     
     forsec DDs {
@@ -177,8 +176,6 @@ proc biophys() {
         gbar_fKDR = 0.001
         insert sKDR
         gbar_sKDR = 0.005
-        g_pas = 8e-05
-
     }
     
     forsec all {
