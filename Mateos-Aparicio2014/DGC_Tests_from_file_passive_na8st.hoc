@@ -60,18 +60,16 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
 }
 
 
-proc write_vderiv() { local logsize  localobj logfile, tlog, vderiv, vderiv2
+proc write_dvdt() { local logsize  localobj logfile, tlog, dvdt
     
     logfile=$o1
     tlog=$o2
-    vderiv=$o3
-    vderiv2=$o4
-
+    dvdt=$o3
     
     logsize = tlog.size()
     
     for i=0,tlog.size()-1 {
-	logfile.printf("%g %g %g\n", tlog.x[i], vderiv.x[i], vderiv2.x[i])
+	logfile.printf("%g %g\n", tlog.x[i], dvdt.x[i])
     }
     
 }
@@ -273,14 +271,13 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
 }
 
-proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vderiv, vderiv2, vdend_max, vdend_min strdef forest_path, results_path
+
+proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_axon, tlog, icaplog, logfile, dvdt strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
     gid = $3
     
-    print "threshold_test: gid = ", gid
-
     strdef log_fn
     
     prelength = 1000
@@ -291,7 +288,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     stimdur = 150.0
     
     gc = new DGC(gid, 1, forest_path, 0)
-
+    
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
@@ -308,37 +305,8 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     Vlog_axon = new Vector(vec_sizes)
     Vlog_axon.record (&gc.axon[2].v(0.8))
     
-    // Record from several dendritic locations, 
-    // approximately dendlog_interval apart
-    Vlog_dends = new List()
-    dendlog_interval = 50 //um
-    dendlog_distance = dendlog_interval //um
-    dendlog_found = 0
-    for i=0,4 {
-        
-        Vlog_dend = new Vector(vec_sizes)
-        Vlog_dends.append(Vlog_dend)
-        
-        gc.soma { distance() }
-        
-        for j=0, gc.nDends-1 gc.dendrites[j] { 
-	    for (x,0) {
-                dist = distance(x)
-                if (dist >= dendlog_distance) {
-                    printf ("Vlog_dend: dist = %g\n", dist)
-                    Vlog_dend.record (&gc.dendrites[j].v(0.5))
-                    dendlog_found = 1
-                    pop_section()
-                    break
-                }
-            }
-            if (dendlog_found) {
-                dendlog_found = 0
-                break
-            }
-        }
-        dendlog_distance = dendlog_distance + dendlog_interval
-    }
+    icaplog = new Vector(vec_sizes)
+    icaplog.record (&gc.soma.i_cap(0.5))
     
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
@@ -351,21 +319,18 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
             tlog.clear()
             Vlog_soma.clear()
             Vlog_axon.clear()
-            for i=0,Vlog_dends.count()-1 {
-                Vlog_dend = Vlog_dends.object(i)
-                Vlog_dend.clear()
-            }
+            icaplog.clear()
         }
     }
-
-    logfile = new File()
-    sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
-    logfile.wopen ( log_fn )
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
-    logfile.close()
     
     vmax = Vlog_soma.max()
     vmin = Vlog_soma.min()
+    
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,new List())
+    logfile.close()
     
     //
     // AP threshold estimation based on Kress et al. J Neurophysiol 2008
@@ -374,36 +339,22 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     // corresponds to dV/dt = 10.
     //
     
-    vderiv = new Vector()
-    vderiv2 = new Vector()
-    
-    vderiv.deriv (Vlog_soma, 0.1, 2)
-    vderiv2.deriv (vderiv, 0.1, 2)
+    dvdt = new Vector()
+    // dV/dt in mV/ms = i_cap/cm/1000 
+    dvdt.copy(icaplog)
+    dvdt.div(gc.soma.cm/1000)
     
     logfile = new File()
-    sprint (log_fn, "%s/DGC_vderiv_%06d.dat", results_path, gid )
+    sprint (log_fn, "%s/DGC_dvdt_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    write_vderiv(logfile, tlog, vderiv, vderiv2)
+    write_dvdt(logfile, tlog, dvdt)
     logfile.close()
     
-    vderiv20_index = vderiv.indwhere (">=", 20.0)
-    vderiv10_index = vderiv20_index
-    while (vderiv.x[vderiv10_index] > 10) {
-        vderiv10_index = vderiv10_index-1
-    }
+    dvdtmax = dvdt.max()
+    dvdt10_index = dvdt.indwhere (">", 100.0)
     
-    // Set the spike threshold to the index where vderiv[x] ~= 10.0 
-    vthresh = Vlog_soma.x[vderiv10_index+1]
-    
-    vdend_max = new Vector(Vlog_dends.count())
-    vdend_min = new Vector(Vlog_dends.count())
-    
-    for i=0,Vlog_dends.count()-1 {
-        
-        Vlog_dend = Vlog_dends.object(i)
-        vdend_max.x[i] = Vlog_dend.max()
-        vdend_min.x[i] = Vlog_dend.min()
-    }
+    // Set the spike threshold to the index where dvdt[x] ~= 100.0 
+    vthresh = Vlog_soma.x[dvdt10_index]
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_results_%06d.dat", results_path, gid )
@@ -412,20 +363,15 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
     
-    logfile.printf ("threshold: %g mV\n", vthresh)
+    logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlog.x[dvdt10_index])
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
     logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
     
-    vsoma_amp = vmax-vmin
-    for i=0,vdend_max.size()-1 { 
-        vdend_amp = vdend_max.x[i]-vdend_min.x[i]
-        logfile.printf ("Relative amplitude of AP in dendrite %d: %g\n", i, vdend_amp/vsoma_amp)
-    }
-    
     logfile.close()
     
 }
+
 
 
 proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
