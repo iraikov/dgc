@@ -238,6 +238,14 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
             }
         }
     }
+
+    printf("gid = %d Vlog_soma.size = %d Vlog_axon.size = %d\n", gid, Vlog_soma.size(), Vlog_axon.size())
+    for i=0,Vlog_dends.count()-1 {
+        Vlog_dend = Vlog_dends.object(i)
+        printf("Vlog_dend[%d].size = %d\n", i, Vlog_dend.size())
+    }
+
+
     write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
