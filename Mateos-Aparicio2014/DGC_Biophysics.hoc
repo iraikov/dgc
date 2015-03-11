@@ -25,6 +25,7 @@ proc biophys() {
     forall {
         Ra = Ra0  
         cm = cm0
+        insert spines
     }
     
     forsec all {

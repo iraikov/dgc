@@ -60,6 +60,7 @@ rel_amplitude_dend4_stdev = std(rel_amplitude_dend4);
 rel_amplitude_dend5_mean = mean(rel_amplitude_dend5);
 rel_amplitude_dend5_stdev = std(rel_amplitude_dend5);
 
+
 rel_amplitude_dend_means = [rel_amplitude_dend1_mean,
                             rel_amplitude_dend2_mean,
                             rel_amplitude_dend3_mean,
