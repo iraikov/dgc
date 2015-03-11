@@ -2,7 +2,7 @@
 xopen("DGC_Tests_from_file_na8st.hoc")
 
 proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_results_path
-    strdef results_path, forest_path
+    strdef results_path, forest_path_prefix
 
     // forest_config and task_id and batch_size are variables that
     // should be set on the command line, e.g. nrniv -c "task_id=1" 
@@ -11,7 +11,7 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
     f = new File() 
     f.ropen(forest_config)
     ncells = f.scanvar()
-    f.scanstr(forest_path)
+    f.scanstr(forest_path_prefix)
     f.scanstr(results_path)
     f.close()
     
@@ -27,12 +27,14 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
     nodeSize = 5000 
     nodeNumber = int(ncells / nodeSize)
     treeHeight = int((log10(nodeNumber+1) / log10(2))+1)
+
+    printf("DGC_serial_test_from_forest_na8st: nodeNumber = %d treeHeight = %d\n", nodeNumber, treeHeight)
     
     for (gid=task_id; gid < ncells; gid += batch_size)  {
 
         printf("DGC_serial_test_from_forest_na8st: gid = %d\n", gid)
 
-        local_forest_path=forest_path
+        sprint(local_forest_path,"%s",forest_path_prefix)
         node=int(gid/nodeSize)
         for (j=treeHeight-1; j >= 0; j = j-1) {
             p = 2^j
@@ -43,7 +45,7 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
               sprint(local_forest_path, "%s/0", local_forest_path)
            }
         }
-        
+
         passive_test (local_forest_path, local_results_path, gid)
         threshold_test (local_forest_path, local_results_path, gid)
         single_ap_test (local_forest_path, local_results_path, gid)
