@@ -1,5 +1,0 @@
-strdef forest_path
-
-ncells = 300
-forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-

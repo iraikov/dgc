@@ -2,8 +2,8 @@
 
 config_path=./config/DGC_forest_hpc.config
 
-ncells=1000
-data_path=/data/users/iraikov/model/DGC_forest/dat
+ncells=22321
+data_path=/pub/iraikov/dentate/slice0000/GC
 results_path="/pub/iraikov/DGC_forest_test_results/`date +'%Y%m%d%H%M'`"
 
 echo "$ncells" > $config_path

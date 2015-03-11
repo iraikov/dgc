@@ -1,5 +1,0 @@
-strdef forest_path
-
-ncells = 1000
-forest_path = "/data/users/iraikov/model/DGC_forest/dat"
-
