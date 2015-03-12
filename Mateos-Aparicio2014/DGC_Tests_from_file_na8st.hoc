@@ -483,8 +483,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
 }
 
-    
-/*
+/*    
 load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
@@ -517,9 +516,12 @@ gid = 001
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
 local_results_path = "results"
 
+gid = 9016
+local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
+local_results_path = "results"
+
 passive_test(local_forest_path, local_results_path, gid)
 threshold_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
-
 */
