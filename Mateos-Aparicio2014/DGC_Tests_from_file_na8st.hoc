@@ -23,6 +23,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     finitialize(v_init)
     
     cvode_active (1)
+    cvode.cache_efficient(1)
     
     dt = preDT
     tstop = prelength

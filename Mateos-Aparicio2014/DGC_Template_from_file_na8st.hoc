@@ -126,6 +126,7 @@ proc celldef() {
     topol()
     subsets()
     geom()
+    geom_nseg()
     geom_spines()
     biophys()
     synapses()
