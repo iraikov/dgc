@@ -22,9 +22,9 @@ public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
 public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
-
 public ndendpts
 public verbose
+public syntest
 
 verbose = 0
 gid = -1

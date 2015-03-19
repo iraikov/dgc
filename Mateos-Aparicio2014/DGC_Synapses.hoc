@@ -1,90 +1,244 @@
 
 
-nsyns_GC_GCL  = 1
-nsyns_GC_IML  = 1
-nsyns_MC      = 1
-nsyns_HC      = 5
-nsyns_BC      = 20
-nsyns_AA      = 4
-nsyns_HCC     = 1
-nsyns_NGFC    = 10
 
-func choose_index() { local x localobj vect, r
+
+func choose_index() { local i, x, Lsum localobj vect, weights, r
+    
     vect = $o1
-    r = $o2
-    x = r.repick()
+    weights = $o2
+    r = $o3
+    
     if (vect.size() > 0) {
-       pos = int(x % vect.size())
-       return vect.x[pos]
+        x = r.repick()
+        for i=0, weights.size()-1 {
+            if (x < weights.x[i]) {
+                break
+            } else {
+                x = x-weights.x[i]
+            }
+        }
+        return vect.x[i]
     } else {
-       return 0
-    }
-
+       return -1
+   }
+   
 }
 
-proc synapses() { local i, j localobj syn, rs
+obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
+    
+    sects = $o1
+    
+    Lsum = 0
+    lengths = new Vector()
+    weights = new Vector()
+    forsec sects {
+        lengths.append(L)
+        Lsum = Lsum + L
+    }
+    for i = 0, lengths.size()-1 {
+        weights.append(lengths.x[i]/Lsum)
+    }
+    
+    
+    return weights 
+}
+
+proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
+    
+    nsyns_GC   = 2
+    nsyns_MC   = 1
+    nsyns_HC   = 5
+    nsyns_BC   = 20
+    nsyns_AA   = 4
+    nsyns_HCC  = 1
+    nsyns_NGFC = 10
     
     // Generate a new random stream, setting
     //	aside 'random_stream_offset' random numbers
     //	for this cell based on its gid
     rs = new Random()
     rs.Random123(random_stream_offset,gid)
-    rs.discunif(0,100)
+    rs.uniform(0,1)
     
+    // Calculate the length-dependent weights for each group of dendritic compartments
+    GCLDweights = Lweights(GCLDs)
+    PDweights   = Lweights(PDs)
+    MDweights   = Lweights(MDs)
+    DDweights   = Lweights(DDs)
+    
+    // Create combined indices and weights for the GCL+IML and MML+OML cases
+    GCLPDweights = new Vector()
+    GCLPDweights.append(GCLDweights)
+    GCLPDweights.append(PDweights)
+    
+    GCLPDidxs = new Vector()
+    GCLPDidxs.append(GCLDidxs)
+    GCLPDidxs.append(PDidxs)
+    
+    MDDweights = new Vector()
+    MDDweights.append(DDweights)
+    MDDweights.append(MDweights)
+    
+    MDDidxs = new Vector()
+    MDDidxs.append(DDidxs)
+    MDDidxs.append(MDidxs)
+
     // GC-GC synapses; location is GCL/IML
-    for i=0, nsyns_GC_GCL {
-        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) } // make location random
-        syns_GC.append(syn)
-    }
-    for i=0, nsyns_GC_IML {
-        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_GC.append(syn)
+    for i=0, nsyns_GC {
+        j = choose_index(GCLPDidxs,GCLPDweights,rs) // randomly select GCL dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5)
+                syn.e = -30
+            } // make location random
+            syns_GC.append(syn)
+        }
     }
     
     // MC-GC synapses; location is IML
     for i=0, nsyns_MC-1 {
-        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_MC.append(syn)
+        j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.e = -30
+            }
+            syns_MC.append(syn)
+        }
     }
     
-    // HC-GC synapses; location is MOML
+    // HC-GC synapses; location is MMML/MOML
     for i=0, nsyns_HC-1 {
-        j = choose_index(MDidxs,rs) // randomly select middle dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_HC.append(syn)
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.e = -30
+            }
+            syns_HC.append(syn)
+        }
     }
     
     // BC-GC synapses; location is GCL
     for i=0, nsyns_BC-1 {
-        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_BC.append(syn)
+        j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5)
+                syn.e = -30
+            }
+            syns_BC.append(syn)
+        }
     }
     
     // AA-GC synapses; location is GCL
     for i=0, nsyns_AA-1 {
-        j = choose_index(GCLDidxs,rs) // randomly select GCL dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_AA.append(syn)
+        j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.e = -30
+            }
+            syns_AA.append(syn)
+        }
     }
     
     // HCC-GC synapses; location is IML
     for i=0, nsyns_HCC-1 {
-        j = choose_index(PDidxs,rs) // randomly select proximal dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_HCC.append(syn)
+        j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.e = -30
+            }
+            syns_HCC.append(syn)
+        }
     }
     
-    // NGFC-GC synapses; location is MOML
+    // NGFC-GC synapses; location is MMML/MOML
     for i=0, nsyns_NGFC-1 {
-        j = choose_index(MDidxs,rs) // randomly select middle dendrite
-        dendrites[j] { syn = new Exp2Syn(0.8) }
-        syns_NGFC.append(syn)
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.e = -30
+            }
+            syns_NGFC.append(syn)
+        }
     }
     
 }
 
+external continuerun, cvode_active
+proc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, tlog
+    
+    syn = $o1
+    v_init = -65.0
+    print "v_init = ", v_init
+    soma {
+        se = new SEClamp(0.5) 
+        se.rs = 1
+        se.dur1 = 100
+        se.amp1 = -70
+    }
+    
+    mainDT = 0.025
+    dt = mainDT
+    tstop = 5000
+    
+    vec_size = tstop/mainDT + 1
+    
+    vec = new Vector(vec_size)
+    vec.record(&se.i)
+    
+    tlog = new Vector(vec_size)
+    tlog.record(&t)
+    
+    ns = new NetStim()
+    ns.interval = 1000
+    ns.number = 1
+    ns.start = 25
+    ns.noise = 0
+    
+    nc = new NetCon(ns,syn)
+    nc.weight = 0.005
+    nc.delay = 0
+    
+    finitialize(v_init)
+    cvode_active(1)
+    fadvance()
+    continuerun(tstop)
+    
+    i_holding = vec.x[tlog.indwhere(">",ns.start)]
+    vec.remove(0,tlog.indwhere(">",ns.start) - 1)
+    
+    i_peak = vec.max()
+    t_peak = tlog.x[vec.indwhere(">=",i_peak)]
+    
+    amp = abs(i_peak - i_holding) * 1000
+    
+    i_0001 = i_holding + (i_peak - i_holding) * 1/10000
+    i_10 = i_holding + (i_peak - i_holding) * 1/10
+    i_20 = i_holding + (i_peak - i_holding) * 2/10
+    i_50 = i_holding + (i_peak - i_holding) * 5/10
+    i_80 = i_holding + (i_peak - i_holding) * 8/10
+    i_90 = i_holding + (i_peak - i_holding) * 9/10
+    
+    t_10_90 = tlog.x[vec.indwhere(">",i_90)] - tlog.x[vec.indwhere(">",i_10)]
+    t_20_80 = tlog.x[vec.indwhere(">",i_80)] - tlog.x[vec.indwhere(">",i_20)]
+    
+    t_all   = t_peak - tlog.x[(vec.indwhere(">",i_0001))]
+    t_50    = t_peak - tlog.x[(vec.indwhere(">",i_50))]
+    
+    vec.remove(0,vec.indwhere("==",i_peak) - 1)
+    i_t	= i_holding + ((1/exp(1)) * abs(i_peak - i_holding))
+    t_decay = tlog.x[vec.indwhere("<",i_t)]
+    
+    printf("Amplitude\t\t %f\n",amp)
+    printf("10-90 Rise Time\t\t %f\n",t_10_90)
+    printf("20-80 Rise Time\t\t %f\n",t_20_80)	
+    printf("Time to Peak\t\t %f\n",t_all)	
+    printf("Time to 50\t\t %f\n",t_50)
+    printf("Decay Time Constant\t %f\n",t_decay)	
+}
 

@@ -22,7 +22,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     
     finitialize(v_init)
     
-    cvode_active (1)
+    cvode_active (0)
     cvode.cache_efficient(1)
     
     dt = preDT
@@ -484,7 +484,20 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
 }
 
-/*    
+
+proc synapse_test() { local gid localobj gc strdef forest_path, results_path
+    
+    forest_path = $s1
+    results_path = $s2
+    gid = $3
+    
+    print "synapse test: gid = ", gid
+    
+    gc = new DGC(gid, 1, forest_path, 0)
+    
+    gc.syntest(gc.syns_GC.o(0))
+}
+
 
 load_file("DGC_protocol.ses")
 
@@ -514,18 +527,18 @@ gid = 003
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/003"
 local_results_path = "results"
 
-gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
-local_results_path = "results"
-
 gid = 9016
 local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
 local_results_path = "results"
 
-passive_test(local_forest_path, local_results_path, gid)
-threshold_test(local_forest_path, local_results_path, gid)
-single_ap_test(local_forest_path, local_results_path, gid)
-ap_rate_test(local_forest_path, local_results_path, gid)
+gid = 001
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/001"
+local_results_path = "results"
 
-*/
-
+//passive_test(local_forest_path, local_results_path, gid)
+//threshold_test(local_forest_path, local_results_path, gid)
+//single_ap_test(local_forest_path, local_results_path, gid)
+//ap_rate_test(local_forest_path, local_results_path, gid)
+synapse_test(local_forest_path, local_results_path, gid)
+objref gc
+gc = new DGC(gid, 1, local_forest_path, 0)
