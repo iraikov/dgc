@@ -6,14 +6,15 @@ xopen("DGC_Template_from_file_na8st.hoc")
 
 xopen ("rn.hoc")
 
-proc synapse_group_test () { localobj gc, synlist, v, vv, logfile
+proc synapse_group_test () { local gid localobj gc, synlist, v, vv, logfile
     
-    strdef label, msg, results_path
+    strdef label, msg, results_path, log_fn
     
-    gc = $o1
-    synlist = $o2
-    label = $s3
-    results_path = $s4
+    gid = $1
+    gc = $o2
+    synlist = $o3
+    label = $s4
+    results_path = $s5
     
     vv = new Vector()
     vv.append(0,0,0,0,0,0)
@@ -33,7 +34,7 @@ proc synapse_group_test () { localobj gc, synlist, v, vv, logfile
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
-    logfile.wopen ( log_fn )
+    logfile.aopen ( log_fn )
 
     sprint(msg, "%s synapses:\n", label)
     logfile.printf(msg)
@@ -59,14 +60,14 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     
     gc = new DGC(gid, 1, forest_path, 0)
     
-    synapse_group_test(gc, gc.syns_GC, "GC-GC", results_path)
-    synapse_group_test(gc, gc.syns_MC, "MC-GC", results_path)
-    synapse_group_test(gc, gc.syns_HC, "HC-GC", results_path)
-    synapse_group_test(gc, gc.syns_BC, "BC-GC", results_path)
-    synapse_group_test(gc, gc.syns_AA, "AA-GC", results_path)
-    synapse_group_test(gc, gc.syns_HCC, "HCC-GC", results_path)
-    synapse_group_test(gc, gc.syns_NGFC_GABAA, "NGFC-GC GABAA", results_path)
-    synapse_group_test(gc, gc.syns_NGFC_GABAB, "NGFC-GC GABAB", results_path)
+    synapse_group_test(gid, gc, gc.syns_GC, "GC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_MC, "MC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_HC, "HC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_BC, "BC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_AA, "AA-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_HCC, "HCC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, "NGFC-GC GABAA", results_path)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAB, "NGFC-GC GABAB", results_path)
 }
 
 
