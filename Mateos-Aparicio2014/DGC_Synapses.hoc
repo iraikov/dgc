@@ -43,16 +43,15 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
     return weights 
 }
 
-proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
+proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
     
-    nsyns_GC   = 2
+    nsyns_GC   = 1
     nsyns_MC   = 1
-    nsyns_HC   = 5
-    nsyns_BC   = 20
+    nsyns_HC   = 3
+    nsyns_BC   = 10
     nsyns_AA   = 4
     nsyns_HCC  = 1
-    nsyns_NGFC_GABAA = 5
-    nsyns_NGFC_GABAB = 5
+    nsyns_NGFC = 10
     
     // Generate a new random stream, setting
     //	aside 'random_stream_offset' random numbers
@@ -60,6 +59,11 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
     rs = new Random()
     rs.Random123(random_stream_offset,gid)
     rs.uniform(0,1)
+    
+    // random stream to generate synapse location within its compartment
+    rx = new Random()
+    rx.Random123(random_stream_offset+1,gid)
+    rx.uniform(0,1)
     
     // Calculate the length-dependent weights for each group of dendritic compartments
     GCLDweights = Lweights(GCLDs)
@@ -87,110 +91,101 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
     // GC-GC synapses; location is GCL/IML
     for i=0, nsyns_GC {
         j = choose_index(GCLPDidxs,GCLPDweights,rs) // randomly select GCL dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5)
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
-            } 
-            syns_GC.append(syn)
-        }
+        dendrites[j] { 
+            syn = new Exp2Syn(0.5)
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+        } 
+        syns_GC.append(syn)
     }
     
     // MC-GC synapses; location is IML
     for i=0, nsyns_MC-1 {
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
-            }
-            syns_MC.append(syn)
+        dendrites[j] { 
+            syn = new Exp2Syn(rx.repick()) 
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
         }
+        syns_MC.append(syn)
     }
     
     // HC-GC synapses; location is MMML/MOML
     for i=0, nsyns_HC-1 {
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
-            }
-            syns_HC.append(syn)
+        dendrites[j] { 
+            syn = new Exp2Syn(rx.repick()) 
+            syn.tau1 = 1.5	syn.tau2 = 8	syn.e = -85.704
         }
+        syns_HC.append(syn)
     }
     
+    // TODO: include soma as a possible location for BC synapse
     // BC-GC synapses; location is GCL
     for i=0, nsyns_BC-1 {
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5)
-                syn.tau1 = 0.26 syn.tau2 = 5.5 syn.e = -70   
-            }
-            syns_BC.append(syn)
+        dendrites[j] { 
+            syn = new Exp2Syn(rx.repick())
+            syn.tau1 = 0.1 syn.tau2 = 1.5 syn.e = -28.99
         }
+        syns_BC.append(syn)
     }
     
-    // AA-GC synapses; location is GCL
+    naxons_AA = 3
+    // AA-GC synapses; location is GC axon
     for i=0, nsyns_AA-1 {
-        j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0                
+        x = rs.repick() // randomly select axon
+        for j = 0, 2 {
+            if (x < 1/naxons_AA) {
+                axon[j] { 
+                    syn = new Exp2Syn(rx.repick()) 
+                    syn.tau1 = 0.25	syn.tau2 = 3	syn.e = -28.99
+                }
+                syns_AA.append(syn)
+                break
+            } else {
+                x = x - 1/naxons_AA
             }
-            syns_AA.append(syn)
         }
     }
     
     // HCC-GC synapses; location is IML
     for i=0, nsyns_HCC-1 {
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
-            }
-            syns_HCC.append(syn)
+        dendrites[j] { 
+            syn = new Exp2Syn(rx.repick()) 
+            syn.tau1 = 0.7	syn.tau2 = 1	syn.e = -28.99
         }
+        syns_HCC.append(syn)
     }
     
     // NGFC-GC synapses; location is MMML/MOML
-    for i=0, nsyns_NGFC_GABAA-1 {
+    for i=0, nsyns_NGFC-1 {
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/proximal dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 0.5	syn.tau2 = 5	syn.e = -38
-            }
+        x = rx.repick()
+        dendrites[j] { 
+            syn = new Exp2Syn(x) 
+            syn.tau1 = 4	syn.tau2 = 14	syn.e = -38.148
             syns_NGFC_GABAA.append(syn)
-        }
-    }
-    
-    for i=0, nsyns_NGFC_GABAB-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/proximal dendrite
-        if (j >= 0) {
-            dendrites[j] { 
-                syn = new Exp2Syn(0.5) 
-                syn.tau1 = 0.5	syn.tau2 = 5	syn.e = 0
-            }
+            syn = new Exp2Syn(x) 
+            syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
             syns_NGFC_GABAB.append(syn)
         }
     }
+
 }
 
 external continuerun, cvode_active
-obfunc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, results, tlog
+obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
-    syn = $o1
-    v_init = -70
+    synlist = $o1
+    se = $o2
+    w = $3
+    v_holding = $4
+    v_init = v_holding
     
-    soma {
-        se = new SEClamp(0.5) 
+    soma { 
         se.rs = 1
-        se.dur1 = 1000
-        se.amp1 = -70
+        se.dur1 = 1010
+        se.amp1 = v_holding 
     }
     
     load_file("DGC_syn.ses")
@@ -210,23 +205,34 @@ obfunc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, resu
     ns = new NetStim()
     ns.interval = 1000
     ns.number = 1
-    ns.start  = 25
+    ns.start  = 200
     ns.noise  = 0
     
-    nc = new NetCon(ns,syn)
-    nc.weight = 0.005
-    nc.delay = 0
+    nclist = new List()
+    for idx=0, synlist.count()-1 {
+        nc = new NetCon(ns,synlist.o(idx))
+        nc.weight = w
+        nc.delay = 0
+        nclist.append(nc)
+    }
     
     finitialize(v_init)
     cvode_active(1)
     fadvance()
     continuerun(tstop)
     
-    i_holding = vec.x[tlog.indwhere(">",ns.start)]
-    vec.remove(0,tlog.indwhere(">",ns.start) - 1)
+    i_holding = vec.x[tlog.indwhere(">=",ns.start)]
+    idx = tlog.indwhere(">=",ns.start) - 1
+    vec.remove(0,idx)
+    tlog.remove(0,idx)
     
-    i_peak = vec.max()
-    t_peak = tlog.x[vec.indwhere(">=",i_peak)]
+    vec.printf()
+    tlog.printf()
+    
+    i_peak = vec.min()
+    t_peak = tlog.x[vec.indwhere("==",i_peak)]
+    
+    print i_peak, t_peak
     
     amp = abs(i_peak - i_holding) * 1000
     
@@ -237,18 +243,24 @@ obfunc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, resu
     i_80 = i_holding + (i_peak - i_holding) * 8/10
     i_90 = i_holding + (i_peak - i_holding) * 9/10
     
-    t_10_90 = tlog.x[vec.indwhere(">",i_90)] - tlog.x[vec.indwhere(">",i_10)]
-    t_20_80 = tlog.x[vec.indwhere(">",i_80)] - tlog.x[vec.indwhere(">",i_20)]
+    t_10_90 = tlog.x[vec.indwhere("<",i_90)] - tlog.x[vec.indwhere("<",i_10)]
+    t_20_80 = tlog.x[vec.indwhere("<",i_80)] - tlog.x[vec.indwhere("<",i_20)]
     
-    t_all = t_peak - tlog.x[(vec.indwhere(">",i_0001))]
+    t_all = t_peak - tlog.x[(vec.indwhere("<",i_0001))]
     t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
+
+    idx = vec.indwhere("==",i_peak) - 1
+    vec.remove(0,idx)
+    tlog.remove(0,idx)
     
-    vec.remove(0,vec.indwhere("==",i_peak) - 1)
-    i_t	= i_holding + ((1/exp(1)) * abs(i_peak - i_holding))
-    t_decay = tlog.x[vec.indwhere("<",i_t)]
+    i_t	= i_holding - ((1/exp(1)) * abs(i_peak - i_holding))
+    t_decay = tlog.x[vec.indwhere(">",i_t)] - tlog.x[0]
     
     results = new Vector()
     results.append(amp,t_10_90,t_20_80,t_all,t_50,t_decay)
+    
+    ns = nil
+    nc = nil
     
     return results
 }

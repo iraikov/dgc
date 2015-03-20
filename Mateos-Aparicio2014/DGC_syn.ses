@@ -6,12 +6,21 @@ objectvar ocbox_, ocbox_list_, scene_, scene_list_
 {pwman_place(0,0,0)}
 {
 save_window_ = new Graph(0)
-save_window_.size(0,5,-1,1)
+save_window_.size(0,2100,-80,50)
+scene_vector_[2] = save_window_
+{save_window_.view(0, -80, 2100, 130, 477, 25, 774.72, 232)}
+graphList[0].append(save_window_)
+save_window_.save_name("graphList[0].")
+save_window_.addexpr("v(.5)", 1, 1, 0.8, 0.9, 2)
+}
+{
+save_window_ = new Graph(0)
+save_window_.size(95.1683,123.852,-0.117617,0.0382167)
 scene_vector_[3] = save_window_
-{save_window_.view(0, -1, 5, 2, 656, 207, 300.48, 200.32)}
+{save_window_.view(95.1683, -0.117617, 28.6833, 0.155833, 656, 207, 300.48, 200.32)}
 graphList[1].append(save_window_)
 save_window_.save_name("graphList[1].")
-save_window_.addvar("SEClamp[0].i", 1, 1, 0.8, 0.9, 2)
+save_window_.addexpr("se.i", 1, 1, 0.8, 0.9, 2)
 }
 objectvar scene_vector_[1]
 {doNotify()}
