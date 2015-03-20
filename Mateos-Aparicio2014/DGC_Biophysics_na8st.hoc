@@ -56,8 +56,8 @@ nseg*=3 nseg/=3}
 
 
 
-proc biophys() {
-    
+proc biophys() { local verbose
+
     forall {
         Ra = Ra0  
         cm = cm0
@@ -249,12 +249,10 @@ proc biophys() {
 		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
 	    }
             
-            if (verbose) {
-                if (verbose) {
+            if (verbose > 0) {
                     printf ("soma distance = %g\n", dist)
                     printf ("soma rates_seg = ")
                     rates_seg.printf()
-                }
             }
             
 	    if (ismembrane("na8st")) {
@@ -262,7 +260,7 @@ proc biophys() {
 	        a1_0_na8st(x)= rates_seg.x[0]
 	        a1_1_na8st(x)= rates_seg.x[1]
 	        
-	        b1_0_na8st(x)= rates_seg.x[2]
+  	        b1_0_na8st(x)= rates_seg.x[2]
 	        b1_1_na8st(x)= rates_seg.x[3]
                 
 	        a2_0_na8st(x)= rates_seg.x[4]
@@ -297,8 +295,8 @@ proc biophys() {
 	dist = distance(0.5)
 	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50))
         
-        if (verbose) {
-            printf ("axon Ra = %g\n", Ra)
+        if (verbose > 0) {
+            printf ("gid %d: axon Ra = %g\n", gid, Ra)
         }
         
 	for (x,0) {
@@ -308,9 +306,9 @@ proc biophys() {
 		rates_seg.append( fsigm(dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
 	    }
             
-            if (verbose) {
-                printf ("axon distance = %g\n", dist)
-                printf ("soma rates_seg = ")
+            if (verbose > 0) {
+                printf ("gid %d: axon distance = %g\n", gid, dist)
+                printf ("gid %d: soma rates_seg = ", gid)
                 rates_seg.printf()
             }
 
@@ -350,11 +348,14 @@ proc biophys() {
 	}
         
     }
-    
+
+    soma { distance() }
+
     forsec alldendrites {
         
-        if (verbose) {
-            printf ("dendrite Ra = %g\n", Ra)
+        if (verbose > 0) {
+            printf ("gid %d: section = %s dendrite Ra = %g\n", gid, secname(), Ra)
+            printf ("gid %d: p = %g %g %g\n", gid, x3d(0), y3d(0), z3d(0))
         }
         
 	for (x,0) {
@@ -364,9 +365,9 @@ proc biophys() {
 		rates_seg.append( fsigm(-dist, (rates_axon.x[i] - rates_soma.x[i]), center, slope) + rates_soma.x[i] )
 	    }
             
-            if (verbose) {
-                printf ("dendrite distance = %g\n", dist)
-                printf ("dendrites rates_seg = ")
+            if (verbose > 0) {
+                printf ("gid %d: dendrite distance(%g) = %g\n", gid, x, dist)
+                printf ("gid %d: dendrites rates_seg = ", gid)
                 rates_seg.printf()
             }
             

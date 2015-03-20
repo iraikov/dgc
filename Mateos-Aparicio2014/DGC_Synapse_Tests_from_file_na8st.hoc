@@ -6,7 +6,7 @@ xopen("DGC_Template_from_file_na8st.hoc")
 
 xopen ("rn.hoc")
 
-proc synapse_group_test () { localobj gc, synlist, v, vv 
+proc synapse_group_test () { localobj gc, synlist, v, vv, logfile
     
     strdef label, msg, results_path
     
