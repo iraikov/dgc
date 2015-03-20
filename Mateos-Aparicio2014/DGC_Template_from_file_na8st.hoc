@@ -15,13 +15,13 @@ begintemplate DGC
 // syns_BC - connections from PV+ basket cells
 // syns_AA - connections from axo-axonic cells
 // syns_HCC - connections from HICAP cells
-// syns_NGFC - connections from neurogliaform cells
+// syns_NGFC_GABAA, syns_NGFC_GABAB - connections from neurogliaform cells
 //
 
 public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
-public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
+public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 public ndendpts
 public verbose
 public syntest
@@ -36,7 +36,7 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
-objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC
+objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 
 strdef forest_path
 strdef dendrite_dims_fn, dendrite_points_fn
@@ -121,7 +121,8 @@ proc celldef() {
     syns_BC   = new List()
     syns_AA   = new List()
     syns_HCC  = new List()
-    syns_NGFC = new List()
+    syns_NGFC_GABAA = new List()
+    syns_NGFC_GABAB = new List()
     
     topol()
     subsets()

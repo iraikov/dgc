@@ -51,7 +51,8 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
     nsyns_BC   = 20
     nsyns_AA   = 4
     nsyns_HCC  = 1
-    nsyns_NGFC = 10
+    nsyns_NGFC_GABAA = 5
+    nsyns_NGFC_GABAB = 5
     
     // Generate a new random stream, setting
     //	aside 'random_stream_offset' random numbers
@@ -89,8 +90,8 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5)
-                syn.e = -30
-            } // make location random
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+            } 
             syns_GC.append(syn)
         }
     }
@@ -101,7 +102,7 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5) 
-                syn.e = -30
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
             }
             syns_MC.append(syn)
         }
@@ -113,7 +114,7 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5) 
-                syn.e = -30
+                syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
             }
             syns_HC.append(syn)
         }
@@ -125,7 +126,7 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5)
-                syn.e = -30
+                syn.tau1 = 0.26 syn.tau2 = 5.5 syn.e = -70   
             }
             syns_BC.append(syn)
         }
@@ -137,7 +138,7 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5) 
-                syn.e = -30
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0                
             }
             syns_AA.append(syn)
         }
@@ -149,42 +150,54 @@ proc synapses() { local i, j, Lsum localobj syn, rs, lengths, GCLDweights, PDwei
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5) 
-                syn.e = -30
+                syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -70
             }
             syns_HCC.append(syn)
         }
     }
     
     // NGFC-GC synapses; location is MMML/MOML
-    for i=0, nsyns_NGFC-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+    for i=0, nsyns_NGFC_GABAA-1 {
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/proximal dendrite
         if (j >= 0) {
             dendrites[j] { 
                 syn = new Exp2Syn(0.5) 
-                syn.e = -30
+                syn.tau1 = 0.5	syn.tau2 = 5	syn.e = -38
             }
-            syns_NGFC.append(syn)
+            syns_NGFC_GABAA.append(syn)
         }
     }
     
+    for i=0, nsyns_NGFC_GABAB-1 {
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/proximal dendrite
+        if (j >= 0) {
+            dendrites[j] { 
+                syn = new Exp2Syn(0.5) 
+                syn.tau1 = 0.5	syn.tau2 = 5	syn.e = 0
+            }
+            syns_NGFC_GABAB.append(syn)
+        }
+    }
 }
 
 external continuerun, cvode_active
-proc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, tlog
+obfunc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, results, tlog
     
     syn = $o1
-    v_init = -65.0
-    print "v_init = ", v_init
+    v_init = -70
+    
     soma {
         se = new SEClamp(0.5) 
         se.rs = 1
-        se.dur1 = 100
+        se.dur1 = 1000
         se.amp1 = -70
     }
     
+    load_file("DGC_syn.ses")
+    
     mainDT = 0.025
     dt = mainDT
-    tstop = 5000
+    tstop = 1000
     
     vec_size = tstop/mainDT + 1
     
@@ -197,8 +210,8 @@ proc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, tlog
     ns = new NetStim()
     ns.interval = 1000
     ns.number = 1
-    ns.start = 25
-    ns.noise = 0
+    ns.start  = 25
+    ns.noise  = 0
     
     nc = new NetCon(ns,syn)
     nc.weight = 0.005
@@ -227,18 +240,16 @@ proc syntest() { local vec_size, i_holding localobj se, ns, nc, vec, syn, tlog
     t_10_90 = tlog.x[vec.indwhere(">",i_90)] - tlog.x[vec.indwhere(">",i_10)]
     t_20_80 = tlog.x[vec.indwhere(">",i_80)] - tlog.x[vec.indwhere(">",i_20)]
     
-    t_all   = t_peak - tlog.x[(vec.indwhere(">",i_0001))]
-    t_50    = t_peak - tlog.x[(vec.indwhere(">",i_50))]
+    t_all = t_peak - tlog.x[(vec.indwhere(">",i_0001))]
+    t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
     
     vec.remove(0,vec.indwhere("==",i_peak) - 1)
     i_t	= i_holding + ((1/exp(1)) * abs(i_peak - i_holding))
     t_decay = tlog.x[vec.indwhere("<",i_t)]
     
-    printf("Amplitude\t\t %f\n",amp)
-    printf("10-90 Rise Time\t\t %f\n",t_10_90)
-    printf("20-80 Rise Time\t\t %f\n",t_20_80)	
-    printf("Time to Peak\t\t %f\n",t_all)	
-    printf("Time to 50\t\t %f\n",t_50)
-    printf("Decay Time Constant\t %f\n",t_decay)	
+    results = new Vector()
+    results.append(amp,t_10_90,t_20_80,t_all,t_50,t_decay)
+    
+    return results
 }
 
