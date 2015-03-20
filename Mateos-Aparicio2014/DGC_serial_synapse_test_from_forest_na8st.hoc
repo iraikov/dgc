@@ -1,0 +1,54 @@
+
+xopen("DGC_Synapse_Tests_from_file_na8st.hoc")
+
+proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_results_path
+    strdef results_path, forest_path_prefix
+
+    // forest_config and task_id and batch_size are variables that
+    // should be set on the command line, e.g. nrniv -c "task_id=1" 
+    // -c "batch_size=20" -c "strdef forest_config" -c "forest_config=\"forest.config\""
+    
+    f = new File() 
+    f.ropen(forest_config)
+    ncells = f.scanvar()
+    f.scanstr(forest_path_prefix)
+    f.scanstr(results_path)
+    f.close()
+    
+    sprint (local_results_path, "%s", results_path)
+
+    printf("DGC_serial_synapse_test_from_forest_na8st: results_path = %s\n", results_path)
+    printf("DGC_serial_synapse_test_from_forest_na8st: local_results_path = %s\n", local_results_path)
+
+    sprint(cmd, "mkdir -p %s", local_results_path)
+    printf("DGC_serial_synapse_test_from_forest_na8st: %s\n", cmd)
+    system(cmd)
+
+    nodeSize = 5000 
+    nodeNumber = int(ncells / nodeSize)
+    treeHeight = int((log10(nodeNumber+1) / log10(2))+1)
+
+    printf("DGC_serial_synapse_test_from_forest_na8st: nodeNumber = %d treeHeight = %d\n", nodeNumber, treeHeight)
+    
+    for (gid=task_id; gid < ncells; gid += batch_size)  {
+
+        printf("DGC_serial_synapse_test_from_forest_na8st: gid = %d\n", gid)
+
+        sprint(local_forest_path,"%s",forest_path_prefix)
+        node=int(gid/nodeSize)
+        for (j=treeHeight-1; j >= 0; j = j-1) {
+            p = 2^j
+           if (node >= p) {
+              node = node-p
+              sprint(local_forest_path, "%s/1", local_forest_path)
+           } else {
+              sprint(local_forest_path, "%s/0", local_forest_path)
+           }
+        }
+
+        synapse_test (local_forest_path, local_results_path, gid)
+    }
+}
+
+main()
+
