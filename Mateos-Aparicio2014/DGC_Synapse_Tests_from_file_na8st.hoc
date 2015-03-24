@@ -78,7 +78,7 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_HCC, 0.003, -70, "HCC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_HCC, 0.001, -70, "HCC-GC", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
     synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0001, -90, "NGFC-GC GABAA", results_path)
