@@ -248,10 +248,12 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     
     t_all = t_peak - tlog.x[(vec.indwhere("<",i_0001))]
     t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
-
+    
     idx = vec.indwhere("==",i_peak) - 1
-    vec.remove(0,idx)
-    tlog.remove(0,idx)
+    if (idx >= 0) {
+        vec.remove(0,idx)
+        tlog.remove(0,idx)
+    }
     
     i_t	= i_holding - ((1/exp(1)) * abs(i_peak - i_holding))
     t_decay = tlog.x[vec.indwhere(">",i_t)] - tlog.x[0]
