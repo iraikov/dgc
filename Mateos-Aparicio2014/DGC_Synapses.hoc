@@ -152,7 +152,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.01	syn.tau2 = 0.1	syn.e = -28.99
+            syn.tau1 = 0.05	syn.tau2 = 0.15	syn.e = -28.99
         }
         syns_HCC.append(syn)
     }
