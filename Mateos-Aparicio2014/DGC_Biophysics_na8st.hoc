@@ -70,7 +70,7 @@ proc biophys() { local verbose
     }
     
     forsec alldendrites {
-        cm = 1.6*cm0*scale_spines
+        cm = cm0*scale_spines
         g_pas = g_pas*scale_spines
         e_pas = Epas
     }
@@ -352,6 +352,8 @@ proc biophys() { local verbose
     soma { distance() }
 
     forsec alldendrites {
+        
+        Ra = Ra_dend
         
         if (verbose > 0) {
             printf ("gid %d: section = %s dendrite Ra = %g\n", gid, secname(), Ra)

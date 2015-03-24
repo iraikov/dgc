@@ -50,8 +50,9 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     nsyns_HC   = 3
     nsyns_BC   = 10
     nsyns_AA   = 4
-    nsyns_HCC  = 1
+    nsyns_HCC  = 10
     nsyns_NGFC = 10
+    naxons_AA = 3
     
     // Generate a new random stream, setting
     //	aside 'random_stream_offset' random numbers
@@ -87,7 +88,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     MDDidxs = new Vector()
     MDDidxs.append(DDidxs)
     MDDidxs.append(MDidxs)
-
+    
     // GC-GC synapses; location is GCL/IML
     for i=0, nsyns_GC {
         j = choose_index(GCLPDidxs,GCLPDweights,rs) // randomly select GCL dendrite
@@ -129,7 +130,6 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         syns_BC.append(syn)
     }
     
-    naxons_AA = 3
     // AA-GC synapses; location is GC axon
     for i=0, nsyns_AA-1 {
         x = rs.repick() // randomly select axon
@@ -152,7 +152,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.7	syn.tau2 = 1	syn.e = -28.99
+            syn.tau1 = 0.01	syn.tau2 = 0.1	syn.e = -28.99
         }
         syns_HCC.append(syn)
     }

@@ -17,6 +17,8 @@ proc parameters() {
     Ra_soma = Ra0
     Ra_axon = 120
     
+    Ra_dend = Ra0
+    
     // na8st conductance
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152

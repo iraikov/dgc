@@ -68,22 +68,23 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     
     print "DGC synapse test: gid = ", gid
     
-    //gc = new DGC(gid, 1, forest_path, 0)
-    //synapse_group_test(gid, gc, gc.syns_HC,  0.0003, 0, "HC-GC", results_path)
-
-    //gc = new DGC(gid, 1, forest_path, 0)
-    //synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, "BC-GC", results_path)
-    
-    //gc = new DGC(gid, 1, forest_path, 0)
-    //synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_HC,  0.0003, 0, "HC-GC", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_HCC, 0.0001, -70, "HCC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, "BC-GC", results_path)
     
-    //gc = new DGC(gid, 1, forest_path, 0)
-    //synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0001, -90, "NGFC-GC GABAA", results_path)
-    //gc = new DGC(gid, 1, forest_path, 0)
-    //synapse_group_test(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -50, "NGFC-GC GABAB", results_path)
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
+    
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_HCC, 0.003, -70, "HCC-GC", results_path)
+    
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0001, -90, "NGFC-GC GABAA", results_path)
+    
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -50, "NGFC-GC GABAB", results_path)
 }
 
 load_file("DGC_protocol.ses")
@@ -119,7 +120,7 @@ gid = 9016
 local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
 local_results_path = "results"
 
-gid = 001
+gid = 134
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
 local_results_path = "results"
 

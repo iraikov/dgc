@@ -35,7 +35,7 @@ proc biophys() {
     }
     
     forsec alldendrites {
-        cm = 1.6*cm0*scale_spines
+        cm = cm0*scale_spines
         insert pas
         g_pas = 4e-05*scale_spines
         e_pas = Epas
