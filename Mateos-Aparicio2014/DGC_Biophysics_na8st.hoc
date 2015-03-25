@@ -407,6 +407,7 @@ proc biophys() { local verbose
 	        gbar_na8st(x) = gnabar_dend
             }
 	}
+        
     }
 
 }
