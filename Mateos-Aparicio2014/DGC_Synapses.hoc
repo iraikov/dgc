@@ -111,7 +111,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     
     // HC-GC synapses; location is MMML/MOML
     for i=0, nsyns_HC-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             syn.tau1 = 1.5	syn.tau2 = 8	syn.e = -85.704
@@ -137,7 +137,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.25	syn.tau2 = 3	syn.e = -28.99
+                    syn.tau1 = 0.3	syn.tau2 = 2.5 syn.e = -28.99
                 }
                 syns_AA.append(syn)
                 break
@@ -163,7 +163,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 4	syn.tau2 = 14	syn.e = -38.148
+            syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -38.148
             syns_NGFC_GABAA.append(syn)
             syn = new Exp2Syn(x) 
             syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
