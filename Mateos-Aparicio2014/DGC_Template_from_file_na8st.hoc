@@ -24,7 +24,7 @@ public nDends, nGCLD, nPD, nMD, nDD
 public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 public ndendpts
 public verbose
-public syntest
+public syntest, syntest_up
 
 verbose = 0
 gid = -1
@@ -131,6 +131,7 @@ proc celldef() {
     geom_spines()
     biophys()
     synapses()
+    
 }
 
 endtemplate DGC

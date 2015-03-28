@@ -108,13 +108,13 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         }
         syns_MC.append(syn)
     }
-    
+
     // HC-GC synapses; location is MMML/MOML
     for i=0, nsyns_HC-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 1.5	syn.tau2 = 8	syn.e = -85.704
+            syn.tau1 = 0.01	syn.tau2 = 0.5	syn.e = -28.99
         }
         syns_HC.append(syn)
     }
@@ -137,7 +137,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.25	syn.tau2 = 3	syn.e = -28.99
+                    syn.tau1 = 0.3	syn.tau2 = 2.5 syn.e = -28.99
                 }
                 syns_AA.append(syn)
                 break
@@ -163,7 +163,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 4	syn.tau2 = 14	syn.e = -38.148
+            syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -38.148
             syns_NGFC_GABAA.append(syn)
             syn = new Exp2Syn(x) 
             syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
@@ -174,13 +174,107 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
 }
 
 external continuerun, cvode_active
+obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
+    
+    synlist = $o1
+    se = $o2
+    w = $3
+    v_holding = $4
+    v_init = -75
+    
+    soma { 
+        se.rs = 1
+        se.dur1 = 2000
+        se.amp1 = v_holding 
+    }
+    
+    load_file("DGC_syn.ses")
+    
+    mainDT = 0.025
+    dt = mainDT
+    tstop = 2000
+    
+    vec_size = tstop/mainDT + 1
+    
+    vec = new Vector(vec_size)
+    vec.record(&se.i)
+    
+    tlog = new Vector(vec_size)
+    tlog.record(&t)
+    
+    ns = new NetStim()
+    ns.interval = 1000
+    ns.number = 1
+    ns.start  = 200
+    ns.noise  = 0
+    
+    nclist = new List()
+    for idx=0, synlist.count()-1 {
+        nc = new NetCon(ns,synlist.o(idx))
+        nc.weight = w
+        nc.delay = 0
+        nclist.append(nc)
+    }
+    
+    finitialize(v_init)
+    cvode_active(1)
+    fadvance()
+    continuerun(tstop)
+    
+    i_holding = vec.x[tlog.indwhere(">=",ns.start)]
+    idx = tlog.indwhere(">=",ns.start) - 1
+    vec.remove(0,idx)
+    tlog.remove(0,idx)
+    
+    vec.printf()
+    tlog.printf()
+    
+    i_peak = vec.max()
+    t_peak = tlog.x[vec.indwhere("==",i_peak)]
+    
+    print i_peak, t_peak
+    
+    amp = abs(i_peak - i_holding) * 1000
+    
+    i_0001 = i_holding + (i_peak - i_holding) * 1/10000
+    i_10 = i_holding + (i_peak - i_holding) * 1/10
+    i_20 = i_holding + (i_peak - i_holding) * 2/10
+    i_50 = i_holding + (i_peak - i_holding) * 5/10
+    i_80 = i_holding + (i_peak - i_holding) * 8/10
+    i_90 = i_holding + (i_peak - i_holding) * 9/10
+    
+    t_10_90 = tlog.x[vec.indwhere(">",i_90)] - tlog.x[vec.indwhere(">",i_10)]
+    t_20_80 = tlog.x[vec.indwhere(">",i_80)] - tlog.x[vec.indwhere(">",i_20)]
+    
+    t_all = t_peak - tlog.x[(vec.indwhere(">",i_0001))]
+    t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
+    
+    idx = vec.indwhere("==",i_peak) - 1
+    if (idx >= 0) {
+        vec.remove(0,idx)
+        tlog.remove(0,idx)
+    }
+    
+    i_t	= i_holding + ((1/exp(1)) * abs(i_peak - i_holding))
+    t_decay = tlog.x[vec.indwhere("<",i_t)] - tlog.x[0]
+    
+    results = new Vector()
+    results.append(amp,t_10_90,t_20_80,t_all,t_50,t_decay)
+    
+    ns = nil
+    nc = nil
+    
+    return results
+}
+
+
 obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
     synlist = $o1
     se = $o2
     w = $3
     v_holding = $4
-    v_init = v_holding
+    v_init = -75
     
     soma { 
         se.rs = 1

@@ -60,6 +60,58 @@ proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
 }
 
 
+proc synapse_group_test_up () { local gid, w localobj gc, synlist, v, vv, logfile
+    
+    strdef label, msg, results_path, log_fn
+    
+    gid = $1
+    gc = $o2
+    synlist = $o3
+    w = $4
+    v_holding = $5
+    label = $s6
+    results_path = $s7
+    
+    vv = new Vector()
+    vv.append(0,0,0,0,0,0)
+    
+    gc.soma { se = new SEClamp(0.5) }
+    v = gc.syntest_up(synlist,se,w,v_holding)
+    vv = vv.add(v)
+    
+    amp = vv.x(0)
+    t_10_90 = vv.x(1)
+    t_20_80 = vv.x(2)
+    t_all = vv.x(3)
+    t_50 = vv.x(4)
+    t_decay = vv.x(5)
+    
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
+    logfile.aopen ( log_fn )
+
+    sprint(msg, "%s synapses:\n", label)
+    logfile.printf(msg)
+    logfile.printf("  Amplitude\t\t %f\n",amp)
+    logfile.printf("  10-90 Rise Time\t\t %f\n",t_10_90)
+    logfile.printf("  20-80 Rise Time\t\t %f\n",t_20_80)	
+    logfile.printf("  Time to Peak\t\t %f\n",t_all)	
+    logfile.printf("  Time to 50\t\t %f\n",t_50)
+    logfile.printf("  Decay Time Constant\t %f\n",t_decay)	
+    
+    logfile.close()
+    
+    printf("%s synapses:\n", label)
+    printf("  Amplitude\t\t %f\n",amp)
+    printf("  10-90 Rise Time\t\t %f\n",t_10_90)
+    printf("  20-80 Rise Time\t\t %f\n",t_20_80)	
+    printf("  Time to Peak\t\t %f\n",t_all)	
+    printf("  Time to 50\t\t %f\n",t_50)
+    printf("  Decay Time Constant\t %f\n",t_decay)	
+
+}
+
+
 proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     
     forest_path = $s1
@@ -67,44 +119,45 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     gid = $3
     
     print "DGC synapse test: gid = ", gid
-  
-/*  
+    
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_HC,  0.0003, 0, "HC-GC", results_path)
-  
+    synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, "NGFC-GC GABAB", results_path)
+    
+    /*
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_HC,  0.005, -70, "HC-GC", results_path)
+    
     gc = new DGC(gid, 1, forest_path, 0)
     synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, "BC-GC", results_path)
     
-    gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
-*/  
     
     gc = new DGC(gid, 1, forest_path, 0)
     synapse_group_test(gid, gc, gc.syns_HCC, 0.0002, -70, "HCC-GC", results_path)
     
-/*
-    gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0001, -90, "NGFC-GC GABAA", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -50, "NGFC-GC GABAB", results_path)
-*/
+    synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
+    
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0002, -90, "NGFC-GC GABAA", results_path)
+    */
 }
-/*
+
+
 load_file("DGC_protocol.ses")
 
 
 strdef local_forest_path, local_results_path
 
-gid = 307
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 827
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
 gid = 016
+local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
+local_results_path = "results"
+
+gid = 9016
+local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
+local_results_path = "results"
+
+gid = 003
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
 local_results_path = "results"
 
@@ -116,20 +169,12 @@ gid = 005
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
 local_results_path = "results"
 
-gid = 003
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 9016
-local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
-local_results_path = "results"
-
-gid = 134
+gid = 307
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
 local_results_path = "results"
 
 synapse_test(local_forest_path, local_results_path, gid)
-objref gc
 
+objref gc
 gc = new DGC(gid, 1, local_forest_path, 0)
-*/
+
