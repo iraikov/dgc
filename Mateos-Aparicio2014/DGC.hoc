@@ -22,7 +22,7 @@ public connect2target, is_art, is_connected
 public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
-public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
+public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 
 public ndendpts
 public verbose
@@ -37,7 +37,7 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
-objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB
+objref syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB
 
 strdef forest_path
 strdef dendrite_dims_fn, dendrite_points_fn
@@ -120,6 +120,7 @@ proc celldef() {
     MDidxs   = new Vector()
     DDidxs   = new Vector()
     
+    syns = new List()
     syns_GC   = new List()
     syns_MC   = new List()
     syns_HC   = new List()
@@ -128,7 +129,16 @@ proc celldef() {
     syns_HCC  = new List()
     syns_NGFC_GABAA = new List()
     syns_NGFC_GABAB = new List()
-    
+
+    syns.append(syns_GC)    
+    syns.append(syns_MC)    
+    syns.append(syns_HC)    
+    syns.append(syns_BC)    
+    syns.append(syns_AA)    
+    syns.append(syns_HCC)    
+    syns.append(syns_NGFC_GABAA)
+    syns.append(syns_NGFC_GABAB)
+
     topol()
     subsets()
     geom()
