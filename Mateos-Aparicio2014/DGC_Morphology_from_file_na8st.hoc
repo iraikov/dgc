@@ -38,10 +38,9 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     f = new File ()
     
-    f.ropen (dendrite_dims_fn)
+    f.ropen (dendrite_topology_fn)
     dims = new Vector()
     dims.scanf (f)
-    f.close()
 
     p = 0
     p = vector_slice (GCLDidxs, dims, p)
@@ -81,10 +80,8 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     
     create dendrites[nDends]
     
-    f.ropen (dendrite_topology_fn)
     m = new Matrix()
     m.scanf (f)
-    f.close()
     
     if (verbose) {
         printf ("dendrite topology matrix = ")
@@ -102,10 +99,8 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         connect dendrites[j](0),dendrites[i](1)
     }
     
-    f.ropen (dendrite_soma_topology_fn)
     m = new Matrix()
     m.scanf (f)
-    f.close()
     
     if (verbose) {
         printf ("dendrite/soma topology matrix = ")
@@ -121,7 +116,8 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
         connect dendrites[j](0),soma(0)
     }
-
+    
+    f.close()
 }
 
 proc topol() { local i

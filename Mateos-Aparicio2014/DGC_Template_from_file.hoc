@@ -19,9 +19,7 @@ create soma[1], axon[4], dendrites[1]
 objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
-strdef dendrite_dims_fn, dendrite_points_fn
-strdef dendrite_soma_topology_fn, dendrite_topology_fn
-strdef spine_density_fn
+strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
 
 xopen("DGC_Parameters.hoc")
 xopen("DGC_Morphology_from_file.hoc")
@@ -43,21 +41,17 @@ proc init() {
     
     
     gid = $1
-    dendrite_dims_fn     = $s2
+    dendrite_topology_fn     = $s2
     dendrite_points_fn   = $s3
-    dendrite_topology_fn = $s4
-    dendrite_soma_topology_fn = $s5
-    spine_density_fn     = $s6
+    spine_density_fn     = $s4
     
-    if (numarg() > 6) {
-        verbose = $7
+    if (numarg() > 4) {
+        verbose = $5
     }
     
     if (verbose) {
-        printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
-        printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
-        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_fn)
+        printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("spine density filename = %s\n", spine_density_fn)
     }
     

@@ -42,9 +42,7 @@ objref syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GA
 objref syn_stim
 
 strdef forest_path
-strdef dendrite_dims_fn, dendrite_points_fn
-strdef dendrite_soma_topology_fn, dendrite_topology_fn
-strdef spine_density_fn
+strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
 
 xopen("DGC_Parameters_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
@@ -96,17 +94,13 @@ proc init() {
         verbose = $4
     }
     
-    sprint(dendrite_dims_fn, "%s/DGC_dims_%06d.dat", forest_path, gid)
-    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
     sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)
-    sprint(dendrite_soma_topology_fn, "%s/DGC_dendrite_soma_topology_%06d.dat", forest_path, gid)
+    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
     sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
     
     if (verbose) {
-        printf ("dendrite dimensions filename = %s\n", dendrite_dims_fn)
-        printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
-        printf ("dendrite/soma topology filename = %s\n", dendrite_soma_topology_fn)
+        printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("spine density filename = %s\n", spine_density_fn)
     }
     
