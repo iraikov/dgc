@@ -529,19 +529,19 @@ gid = 003
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/003"
 local_results_path = "results"
 
-gid = 9016
-local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
-local_results_path = "results"
-
 
 gid = 001
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
 local_results_path = "results"
 
+gid = 15
+local_forest_path = "/pub/iraikov/dentate/Slice_50_300_Control/GC/0/0/0/0/"
+local_results_path = "results"
 
-passive_test(local_forest_path, local_results_path, gid)
-threshold_test(local_forest_path, local_results_path, gid)
-single_ap_test(local_forest_path, local_results_path, gid)
+
+//passive_test(local_forest_path, local_results_path, gid)
+//threshold_test(local_forest_path, local_results_path, gid)
+//single_ap_test(local_forest_path, local_results_path, gid)
 //ap_rate_test(local_forest_path, local_results_path, gid)
 //synapse_test(local_forest_path, local_results_path, gid)
 objref gc
