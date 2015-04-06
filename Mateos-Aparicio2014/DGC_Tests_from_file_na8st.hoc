@@ -535,7 +535,7 @@ local_results_path = "results"
 
 
 gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
+local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
 
