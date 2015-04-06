@@ -91,7 +91,7 @@ proc init() {
     forest_path = $s3
     
     if (numarg() > 3) {
-        verbose = $4
+        verbose = 1
     }
     
     sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)

@@ -1,5 +1,6 @@
 /*////////////// Topology and geometry //////////////// */
 
+
 func lambda_f() { local i, x1, x2, d1, d2, lam
     if (n3d() < 2) {
         return 1e5*sqrt(diam/(4*PI*$1*Ra*cm))
@@ -34,24 +35,27 @@ func vector_slice() { local p, n localobj src, dest
 }
 
 
-proc topol_from_file() { local i,j,p localobj f, dims, m
+proc topol_from_file() { local i,j,p,dimsize localobj f, m
     
     f = new File ()
     
     f.ropen (dendrite_topology_fn)
-    dims = new Vector()
-    dims.scanf (f)
 
-    p = 0
-    p = vector_slice (GCLDidxs, dims, p)
-    p = vector_slice (PDidxs, dims, p)
-    p = vector_slice (MDidxs, dims, p)
-    p = vector_slice (DDidxs, dims, p)
+    dimsize = f.scanvar()
+    GCLDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    PDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    MDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    DDidxs.scanf(f,dimsize)
+
+    dimsize = f.scanvar()
+    ndendpts  = new Vector()
+    ndendpts.scanf(f,dimsize)
 
     if (verbose) {
 
-        printf ("dendrite dimensions = ")
-        dims.printf()
         printf ("GCLD compartment indices = ")
         GCLDidxs.printf()
         printf ("PD compartment indices = ")
@@ -67,9 +71,6 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
     nMD    = MDidxs.size()
     nDD    = DDidxs.size()
     nDends = nGCLD+nPD+nMD+nDD
-    
-    ndendpts  = new Vector()
-    ndendpts.copy (dims, p, -1)
 
     if (verbose) {    
         printf ("Dendritic compartment point counts = ")
