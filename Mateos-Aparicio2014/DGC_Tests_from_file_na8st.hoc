@@ -7,7 +7,7 @@ xopen("DGC_Template_from_file_na8st.hoc")
 
 xopen ("rn.hoc")
 
-
+v_init = -75
 
 //**********************************************************************
 proc simulate() { local prelength, mainlength, preDT, mainDT
@@ -468,6 +468,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     }
     
     if (!(isilastgt > 0)) {
+        print "ap_rate_test: gid = ", gid
+        print "ap_rate_test: isivect.size() = ", isivect.size()
+        
         execerror("Unable to find ISI greater than first ISI")
     }
     
@@ -534,7 +537,7 @@ gid = 15
 local_forest_path = "/pub/iraikov/dentate/Slice_50_300_Control/GC/0/0/0/0/"
 local_results_path = "results"
 
-gid = 001
+gid = 83
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
@@ -543,7 +546,7 @@ passive_test(local_forest_path, local_results_path, gid)
 threshold_test(local_forest_path, local_results_path, gid)
 single_ap_test(local_forest_path, local_results_path, gid)
 ap_rate_test(local_forest_path, local_results_path, gid)
-synapse_test(local_forest_path, local_results_path, gid)
+//synapse_test(local_forest_path, local_results_path, gid)
 objref gc
 gc = new DGC(gid, 1, local_forest_path, 0)
 */
