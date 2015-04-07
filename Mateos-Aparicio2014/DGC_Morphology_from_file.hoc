@@ -33,32 +33,28 @@ func vector_slice() { local p, n localobj src, dest
 }
 
 
-proc topol_from_file() { local i,j,p localobj f, dims, m
+proc topol_from_file() { local i,j,p,dimsize localobj f, m
     
     f = new File ()
     
     f.ropen (dendrite_topology_fn)
-    dims = new Vector()
-    dims.scanf (f)
-    
-    p = 0
-    p = vector_slice (GCLDidxs, dims, p)
-    p = vector_slice (PDidxs, dims, p)
-    p = vector_slice (MDidxs, dims, p)
-    p = vector_slice (DDidxs, dims, p)
-    
-    nGCLD  = GCLDidxs.size()
-    nPD    = PDidxs.size()
-    nMD    = MDidxs.size()
-    nDD    = DDidxs.size()
-    nDends = nGCLD+nPD+nMD+nDD
-    
+
+    dimsize = f.scanvar()
+    GCLDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    PDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    MDidxs.scanf(f,dimsize)
+    dimsize = f.scanvar()
+    DDidxs.scanf(f,dimsize)
+
+    dimsize = f.scanvar()
     ndendpts  = new Vector()
-    ndendpts.copy (dims, p, -1)
+    ndendpts.scanf(f,dimsize)
+
     if (verbose) {
-        printf ("dendrite dimensions = ")
-        dims.printf()
-        printf ("GCL compartment indices = ")
+
+        printf ("GCLD compartment indices = ")
         GCLDidxs.printf()
         printf ("PD compartment indices = ")
         PDidxs.printf()
@@ -66,11 +62,19 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
         MDidxs.printf()
         printf ("DD compartment indices = ")
         DDidxs.printf()
+    }
+    
+    nGCLD  = GCLDidxs.size()
+    nPD    = PDidxs.size()
+    nMD    = MDidxs.size()
+    nDD    = DDidxs.size()
+    nDends = nGCLD+nPD+nMD+nDD
+
+    if (verbose) {    
         printf ("Dendritic compartment point counts = ")
         ndendpts.printf()
         printf ("Total dendritic compartment point count = %d\n", ndendpts.sum ())
     }
-    
     assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the number of dendritic compartments")
     
     create dendrites[nDends]
@@ -116,7 +120,7 @@ proc topol_from_file() { local i,j,p localobj f, dims, m
 }
 
 proc topol() { local i
-    connect axon(0), soma(0)
+    connect axon[0](1), soma(0)
     for i = 1, 3 connect axon[i](0), axon[i-1](1)
     topol_from_file()
     shape()
