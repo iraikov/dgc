@@ -48,6 +48,9 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
     
     logsize = tlog.size()
     
+    print "Vlog_soma.size() = ", Vlog_soma.size() 
+    print "Vlog_axon.size() = ", Vlog_axon.size() 
+    
     for i=0,tlog.size()-1 {
 	logfile.printf("%g %g %g", tlog.x[i], Vlog_soma.x[i], Vlog_axon.x[i])
         if (Vlog_dends.count() > 0) {
@@ -191,9 +194,11 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     // approximately dendlog_interval apart
     Vlog_dends = new List()
     dendlog_interval = 50 //um
-    dendlog_distance = dendlog_interval //um
-    dendlog_found = 0
+    dendlog_distance = 0 //um
+
     for i=0,4 {
+        
+        dendlog_found = 0
         
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
@@ -212,10 +217,13 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
                 }
             }
             if (dendlog_found) {
-                dendlog_found = 0
                 break
             }
         }
+        if (!dendlog_found) {
+            Vlog_dend.record (&gc.dendrites[gc.nDends-1].v(0.5))
+        }
+        
         dendlog_distance = dendlog_distance + dendlog_interval
     }
     
@@ -537,7 +545,7 @@ gid = 15
 local_forest_path = "/pub/iraikov/dentate/Slice_50_300_Control/GC/0/0/0/0/"
 local_results_path = "results"
 
-gid = 83
+gid = 309
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 

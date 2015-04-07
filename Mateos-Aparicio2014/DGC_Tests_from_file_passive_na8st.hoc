@@ -189,10 +189,12 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     // approximately dendlog_interval apart
     Vlog_dends = new List()
     dendlog_interval = 50 //um
-    dendlog_distance = dendlog_interval //um
-    dendlog_found = 0
+    dendlog_distance = 0 //um
+
     for i=0,4 {
         
+        dendlog_found = 0
+
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
         
@@ -210,9 +212,11 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
                 }
             }
             if (dendlog_found) {
-                dendlog_found = 0
                 break
             }
+        }
+        if (!dendlog_found) {
+            Vlog_dend.record (&gc.dendrites[gc.nDends-1].v(0.5))
         }
         dendlog_distance = dendlog_distance + dendlog_interval
     }
