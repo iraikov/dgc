@@ -30,27 +30,44 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
 
     printf("DGC_serial_test_from_forest_na8st: nodeNumber = %d treeHeight = %d\n", nodeNumber, treeHeight)
     
-    for (gid=task_id; gid < ncells; gid += batch_size)  {
-
-        printf("DGC_serial_test_from_forest_na8st: gid = %d\n", gid)
-
-        sprint(local_forest_path,"%s",forest_path_prefix)
-        node=int(gid/nodeSize)
-        for (j=treeHeight-1; j >= 0; j = j-1) {
-            p = 2^j
-           if (node >= p) {
-              node = node-p
-              sprint(local_forest_path, "%s/1", local_forest_path)
-           } else {
-              sprint(local_forest_path, "%s/0", local_forest_path)
-           }
+    
+    if (ncells > nodeSize) {
+        
+        for (gid=task_id; gid < ncells; gid += batch_size)  {
+            
+            printf("DGC_serial_test_from_forest_na8st: gid = %d\n", gid)
+            
+            sprint(local_forest_path,"%s",forest_path_prefix)
+            node=int(gid/nodeSize)
+            for (j=treeHeight-1; j >= 0; j = j-1) {
+                p = 2^j
+                if (node >= p) {
+                    node = node-p
+                    sprint(local_forest_path, "%s/1", local_forest_path)
+                } else {
+                    sprint(local_forest_path, "%s/0", local_forest_path)
+                }
+            }
+            
+            passive_test (local_forest_path, local_results_path, gid)
+            threshold_test (local_forest_path, local_results_path, gid)
+            single_ap_test (local_forest_path, local_results_path, gid)
+            ap_rate_test (local_forest_path, local_results_path, gid)
         }
-
-        passive_test (local_forest_path, local_results_path, gid)
-        threshold_test (local_forest_path, local_results_path, gid)
-        single_ap_test (local_forest_path, local_results_path, gid)
-        ap_rate_test (local_forest_path, local_results_path, gid)
+    } else {
+        for (gid=task_id; gid < ncells; gid += batch_size)  {
+            
+            printf("DGC_serial_test_from_forest_na8st: gid = %d\n", gid)
+            
+            sprint(local_forest_path,"%s",forest_path_prefix)
+            
+            passive_test (local_forest_path, local_results_path, gid)
+            threshold_test (local_forest_path, local_results_path, gid)
+            single_ap_test (local_forest_path, local_results_path, gid)
+            ap_rate_test (local_forest_path, local_results_path, gid)
+        }
     }
+    
 }
 
 main()
