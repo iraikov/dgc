@@ -96,7 +96,7 @@ proc parameters() {
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1
-    Vshift = 10
+    Vshift = 0
     
     //The transient Na conductance
     gNaT_mult = 1.5
