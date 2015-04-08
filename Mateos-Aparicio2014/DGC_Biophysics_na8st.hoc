@@ -105,7 +105,7 @@ proc biophys() { local verbose
         gncabar_Ca = CaNmult*0.002
         glcabar_Ca = CaLmult*0.01
         insert CadepK
-        gbkbar_CadepK = BKmult*0.006
+        gbkbar_CadepK = BKmult*0.004
         gskbar_CadepK = gsksoma
         insert fKDR
         gbar_fKDR = 0.006
