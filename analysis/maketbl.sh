@@ -17,9 +17,8 @@ echo "## gid,DC_input_resistance,dendarea,vmin,vtau0,tau0,maximum_Vsoma,minimum_
 
 for (( i = 0; i < ncells; i++ )) do
 
-    dir=`printf '%03d' $((i % nworkers))`
     id=`printf '%06d' $i`
-    path="$path_prefix/$dir"
+    path="$path_prefix"
     passive_results_path="$path/DGC_passive_results_$id.dat"
     single_ap_results_path="$path/DGC_single_ap_results_$id.dat"
     threshold_results_path="$path/DGC_threshold_results_$id.dat"
