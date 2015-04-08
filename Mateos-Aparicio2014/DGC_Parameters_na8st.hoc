@@ -6,11 +6,11 @@ proc parameters() {
     v_init = -75
     
     //Passive properties
-    Ra0 = 200         //Ohm.cm
-    cm0 = 1           //uF/cm2
-    gpas = 4e-05    //S/cm2
-    Rm0 = 1e-3/gpas   //kOhm.cm2
-    Epas = -75        //mV
+    Ra0 = 200       //Ohm.cm
+    cm0 = 1         //uF/cm2
+    gpas = 5e-05    //S/cm2
+    Rm0 = 1e-3/gpas //kOhm.cm2
+    Epas = -75      //mV
     EK = -90         //mV
 
     // Parameters from Schmidt-Hieber 2010
@@ -23,14 +23,14 @@ proc parameters() {
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
-    gnabar_distal_dend = gna_soma * 0.025
+    gnabar_distal_dend = gna_soma * 0.2
     gENa = 75.0
     
     // KIn conductance
     gk_axon = 0.004
     gk_distal_axon = 0.010
     
-    gk_soma = 0.008 
+    gk_soma = 0.004
     
     lambda2 = 10.0
     dend_50 = 80.0
@@ -54,15 +54,15 @@ proc parameters() {
     
     //The SK and BK conductances
     gsksoma = 0.001 // increased to 0.001 from 0.0002 to reduce excitability
-    gskprox = 0.00004 // increase by a factor of 4 to achieve
-    gskGCLs = 0.00008 // adaptation closer to Santhakumar 2005
+    gskprox = 0.0001 // increase by a factor of 4 to achieve
+    gskGCLs = 0.0001 // adaptation closer to Santhakumar 2005
     erevSK = EK
-    tauskdiv = 2
+    tauskdiv = 8
     erevBK = EK
     BKmult = 1.0
     
     //The sAHP conductance
-    gbarsAHP = 30
+    gbarsAHP = 10
     tau1RefsAHP = 400
     tau2sAHP = 200
     c1infsAHP = 0.25

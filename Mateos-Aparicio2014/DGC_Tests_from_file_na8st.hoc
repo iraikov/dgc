@@ -369,9 +369,9 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.close()
     
     dvdtmax = dvdt.max()
-    dvdt10_index = dvdt.indwhere (">", 100.0)
+    dvdt10_index = dvdt.indwhere (">", 10.0)
     
-    // Set the spike threshold to the index where dvdt[x] ~= 100.0 
+    // Set the spike threshold to the index where dvdt[x] ~= 10.0 
     vthresh = Vlog_soma.x[dvdt10_index]
     
     logfile = new File()
@@ -413,11 +413,11 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.3
+    stim1.amp = 0.2
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
-    nc.threshold = -43.5
+    nc.threshold = -49
     nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
@@ -511,7 +511,7 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     gc.syntest(gc.syns_GC.o(0))
 }
 
-/*
+
 load_file("DGC_protocol.ses")
 
 strdef local_forest_path, local_results_path
@@ -532,20 +532,20 @@ gid = 134
 local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/014"
 local_results_path = "results"
 
-gid = 005
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/005"
-local_results_path = "results"
 
-
-gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/GC"
-local_results_path = "results"
-
-gid = 15
+gid = 015
 local_forest_path = "/pub/iraikov/dentate/Slice_50_300_Control/GC/0/0/0/0/"
 local_results_path = "results"
 
 gid = 309
+local_forest_path = "/home/igr/src/model/DGC_forest/GC"
+local_results_path = "results"
+
+gid = 005
+local_forest_path = "/home/igr/src/model/DGC_forest/GC"
+local_results_path = "results"
+
+gid = 001
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
@@ -557,4 +557,4 @@ ap_rate_test(local_forest_path, local_results_path, gid)
 //synapse_test(local_forest_path, local_results_path, gid)
 objref gc
 gc = new DGC(gid, 1, local_forest_path, 0)
-*/
+
