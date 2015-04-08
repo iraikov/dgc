@@ -43,7 +43,7 @@ objref syn_stim
 strdef forest_path
 strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
 
-xopen("DGC_Parameters_na8st.hoc")
+xopen("DGC_Parameters_passive_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
 xopen("DGC_Biophysics_passive_na8st.hoc")
 xopen("DGC_Synapses.hoc")

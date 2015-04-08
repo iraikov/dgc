@@ -98,8 +98,6 @@ proc biophys() {
     soma {
         insert na8st
         gbar_na8st = gna_soma
-        insert KIn
-        gkbar_KIn = gk_soma
         insert Ca
         gtcabar_Ca = CaTmult*0.0015
         gncabar_Ca = CaNmult*0.002
@@ -108,9 +106,9 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.003
         gskbar_CadepK = gsksoma
         insert fKDR
-        gbar_fKDR = 0.006
+        gbar_fKDR = 0.012
         insert sKDR
-        gbar_sKDR = 0.004
+        gbar_sKDR = 0.008
         insert KA
     	gbar_KA = gKAs
         insert sAHP

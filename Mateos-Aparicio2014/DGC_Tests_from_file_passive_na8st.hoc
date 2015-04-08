@@ -6,7 +6,7 @@ xopen("DGC_Template_from_file_passive_na8st.hoc")
 
 xopen ("rn.hoc")
 
-v_init = -75
+v_init = -68
 
 
 //**********************************************************************
@@ -297,7 +297,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.05
+    stim1.amp = 0.0
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -355,6 +355,10 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     write_dvdt(logfile, tlog, dvdt)
     logfile.close()
     
+    dvdt.remove(0,tlog.indwhere(">",prelength))
+    Vlog_soma.remove(0,tlog.indwhere(">",prelength))
+    tlog.remove(0,tlog.indwhere(">",prelength))
+    
     dvdtmax = dvdt.max()
     dvdt10_index = dvdt.indwhere (">", 10.0)
     
@@ -371,7 +375,11 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlog.x[dvdt10_index])
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
-    logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
+    
+    vmax_index = Vlog_soma.max_ind()
+    t_vmax = tlog.x[vmax_index]
+    vahp = Vlog_soma.min(vmax_index, tlog.indwhere(">", t_vmax+5))
+    logfile.printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
     
     logfile.close()
     
