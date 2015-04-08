@@ -159,9 +159,9 @@ proc biophys() { local verbose
         gbkbar_CadepK = BKmult*0.0012
         gskbar_CadepK = 0.0
         insert fKDR
-        gbar_fKDR = 0.002
+        gbar_fKDR = 0.001
         insert sKDR
-        gbar_sKDR = 0.004
+        gbar_sKDR = 0.003
     }
     
     forsec DDs {

@@ -25,6 +25,7 @@ public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, s
 public ndendpts
 public verbose
 public syntest
+public syn_stim
 
 verbose = 0
 gid = -1
@@ -37,6 +38,7 @@ objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
+objref syn_stim
 
 strdef forest_path
 strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
