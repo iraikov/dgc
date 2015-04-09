@@ -103,7 +103,7 @@ proc biophys() {
         gncabar_Ca = CaNmult*0.002
         glcabar_Ca = CaLmult*0.01
         insert CadepK
-        gbkbar_CadepK = BKmult*0.003
+        gbkbar_CadepK = BKmult*0.002
         gskbar_CadepK = gsksoma
         insert fKDR
         gbar_fKDR = 0.012
