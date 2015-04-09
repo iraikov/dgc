@@ -10,7 +10,7 @@ proc parameters() {
     cm0 = 1         //uF/cm2
     gpas = 6e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
-    Epas = -68      //mV
+    Epas = -70      //mV
     EK = -90         //mV
 
     // Parameters from Schmidt-Hieber 2010
@@ -81,8 +81,8 @@ proc parameters() {
     KDRmult = 1.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.008
-    gKAa = 0.004
+    gKAs = 0.02
+    gKAa = 0.01
     
     //Calcium channels
     CaTmult = 1.75

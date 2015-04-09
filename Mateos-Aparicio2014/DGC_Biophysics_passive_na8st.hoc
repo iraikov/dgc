@@ -79,7 +79,7 @@ proc biophys() {
         insert na8st
         insert KIn
         insert fKDR
-        gbar_fKDR = 0.012
+        gbar_fKDR = 0.028
         insert KA
 	gbar_KA = gKAa
         insert KM
@@ -106,9 +106,9 @@ proc biophys() {
         gbkbar_CadepK = BKmult*0.002
         gskbar_CadepK = gsksoma
         insert fKDR
-        gbar_fKDR = 0.012
+        gbar_fKDR = 0.02
         insert sKDR
-        gbar_sKDR = 0.008
+        gbar_sKDR = 0.016
         insert KA
     	gbar_KA = gKAs
         insert sAHP
