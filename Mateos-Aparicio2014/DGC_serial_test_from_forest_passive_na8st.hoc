@@ -21,7 +21,7 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
     sprint(cmd, "mkdir -p %s", local_results_path)
     system(cmd)
     
-    for (gid=task_id; gid <= ncells; gid += batch_size)  {
+    for (gid=task_id; gid < ncells; gid += batch_size)  {
 
         printf("DGC_serial_test_from_forest_passive_na8st: gid = %d\n", gid)
         
