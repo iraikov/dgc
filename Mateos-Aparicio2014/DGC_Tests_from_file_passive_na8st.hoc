@@ -273,7 +273,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
-    logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
     
     vsoma_amp = vmax-vmin
     for i=0,vdend_max.size()-1 { 
@@ -419,6 +418,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     }
     vahp = Vlog_soma.min(vmax_index, t_ahp_index)
     logfile.printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
+    printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
     
     logfile.close()
     
