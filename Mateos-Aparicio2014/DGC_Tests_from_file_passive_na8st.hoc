@@ -277,7 +277,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
 }
 
 
-proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_axon, tlog, icaplog, logfile, dvdt strdef forest_path, results_path
+proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_axon, tlog, icaplog, logfile, dvdt, dvdtrev, tlogrev, Vlog_soma_rev strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -292,7 +292,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     
     vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
     
-    stimdur = 150.0
+    stimdur = 250.0
     
     gc = new DGC(gid, 1, forest_path, 0)
     
@@ -357,15 +357,34 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     write_dvdt(logfile, tlog, dvdt)
     logfile.close()
     
+    
     dvdt.remove(0,tlog.indwhere(">",prelength))
     Vlog_soma.remove(0,tlog.indwhere(">",prelength))
     tlog.remove(0,tlog.indwhere(">",prelength))
     
     dvdtmax = dvdt.max()
-    dvdt10_index = dvdt.indwhere (">", 10.0)
+    dvdtmax_index = dvdt.max_ind()
+    
+    dvdtrev = new Vector()
+    tlogrev = new Vector()
+    Vlog_soma_rev = new Vector()
+    
+    dvdtrev.copy(dvdt)
+    tlogrev.copy(tlog)
+    Vlog_soma_rev.copy(Vlog_soma)
+    
+    dvdtrev.remove(dvdtmax_index+1,dvdtrev.size()-1)
+    tlogrev.remove(dvdtmax_index+1,tlogrev.size()-1)
+    Vlog_soma_rev.remove(dvdtmax_index+1,Vlog_soma_rev.size()-1)
+    
+    dvdtrev.reverse()
+    Vlog_soma_rev.reverse()
+    tlogrev.reverse()
+    
+    dvdt10_index = dvdtrev.indwhere ("<=", 10.0)
     
     // Set the spike threshold to the index where dvdt[x] ~= 10.0 
-    vthresh = Vlog_soma.x[dvdt10_index]
+    vthresh = Vlog_soma_rev.x[dvdt10_index]
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_results_%06d.dat", results_path, gid )
@@ -374,7 +393,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
     
-    logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlog.x[dvdt10_index])
+    logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlogrev.x[dvdt10_index])
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
     
