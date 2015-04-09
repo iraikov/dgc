@@ -15,8 +15,8 @@ proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_r
     f.scanstr(results_path)
     f.close()
     
-    sprint (local_forest_path, "%s/%03d", forest_path, task_id)
-    sprint (local_results_path, "%s/%03d", results_path, task_id)
+    sprint (local_forest_path, "%s", forest_path)
+    sprint (local_results_path, "%s", results_path)
     
     sprint(cmd, "mkdir -p %s", local_results_path)
     system(cmd)
