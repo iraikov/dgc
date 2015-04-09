@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 210       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 7e-05    //S/cm2
+    gpas = 5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV

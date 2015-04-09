@@ -121,7 +121,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.close()
     
     // attempt to compute membrane time constant
-    vrest  = Vlog_soma.x[tlog.indwhere(">=",prelength)]
+    vrest  = Vlog_soma.x[tlog.indwhere(">=",prelength-1)]
     vmin   = Vlog_soma.min()
     vmax   = vrest
     // the time it takes the system's step response to reach 1-1/e (or
