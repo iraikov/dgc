@@ -22,27 +22,33 @@ h = figure(1);
 
 subplot(3, 2, 1)
 hist(input_resistance,50);
-title(sprintf("Input resistance [MOhm]; mean = %g",mean(input_resistance)));
+title(sprintf("Input resistance [MOhm]; mean = %g std = %g",
+      mean(input_resistance),std(input_resistance)));
 
 subplot(3, 2, 2)
 hist(membrane_tau,50);
-title(sprintf("Membrane time constant [ms]; mean = %g",mean(membrane_tau)));
+title(sprintf("Membrane time constant [ms]; mean = %g std = %g",
+      mean(membrane_tau),std(membrane_tau)));
 
 subplot(3, 2, 3)
 hist(spike_amplitude,50);
-title(sprintf("Rel. AP amplitude [mV]; mean = %g",mean(spike_amplitude)));
+title(sprintf("Rel. AP amplitude [mV]; mean = %g std = %g",
+      mean(spike_amplitude),std(spike_amplitude)));
 
 subplot(3, 2, 4)
 hist(spike_threshold,50);
-title(sprintf("AP threshold [mV]; mean = %g",mean(spike_threshold)));
+title(sprintf("AP threshold [mV]; mean = %g std = %g",
+      mean(spike_threshold),std(spike_threshold)));
 
 subplot(3, 2, 5)
 hist(spike_ahp,50);
-title(sprintf("Fast AHP [mV]; mean = %g",mean(spike_ahp)));
+title(sprintf("Fast AHP [mV]; mean = %g std = %g",
+      mean(spike_ahp),std(spike_ahp)));
 
 subplot(3, 2, 6)
 hist(isi_adaptation4,50);
-title(sprintf("ISI adaptation 4; mean = %g",mean(isi_adaptation4)));
+title(sprintf("ISI adaptation 4; mean = %g std = %g",
+      mean(isi_adaptation4),std(isi_adaptation4)));
 
 print (h, "DGC_results1.pdf", "-dpdf")
 

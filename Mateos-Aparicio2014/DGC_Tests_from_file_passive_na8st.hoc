@@ -121,7 +121,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.close()
     
     // attempt to compute membrane time constant
-    vrest  = -75.0
+    vrest  = Vlog_soma.x[tlog.indwhere(">=",prelength)]
     vmin   = Vlog_soma.min()
     vmax   = vrest
     // the time it takes the system's step response to reach 1-1/e (or
@@ -129,6 +129,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     amp23  = 0.632 * abs (vmax - vmin)
     vtau0  = vrest - amp23
     tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
+    rn2 = abs(vmax - vmin)/abs(stim1.amp)
     
     // compute total surface area of dendritic compartments
     dendritearea = 0
@@ -145,6 +146,13 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.printf ("vtau0: %g mV\n", vtau0)
     logfile.printf ("tau0: %g ms\n", tau0)
     logfile.printf ("total dendritic surface area: %g\n", dendritearea)
+    
+    printf ("DC input resistance: %g MOhm\n", rn(gc))
+    printf ("DC input resistance 2: %g MOhm\n", rn2)
+    printf ("vmin: %g mV\n", vmin)
+    printf ("vtau0: %g mV\n", vtau0)
+    printf ("tau0: %g ms\n", tau0)
+    printf ("total dendritic surface area: %g\n", dendritearea)
     
     logfile.close()
 }
@@ -330,8 +338,6 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
         }
     }
     
-    vmax = Vlog_soma.max()
-    vmin = Vlog_soma.min()
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
@@ -362,6 +368,10 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     Vlog_soma.remove(0,tlog.indwhere(">",prelength))
     tlog.remove(0,tlog.indwhere(">",prelength))
     
+    vmax = Vlog_soma.max()
+    vmin = Vlog_soma.min()
+    vmax_index = Vlog_soma.max_ind()
+
     dvdtmax = dvdt.max()
     dvdtmax_index = dvdt.max_ind()
     
@@ -373,9 +383,9 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     tlogrev.copy(tlog)
     Vlog_soma_rev.copy(Vlog_soma)
     
-    dvdtrev.remove(dvdtmax_index+1,dvdtrev.size()-1)
-    tlogrev.remove(dvdtmax_index+1,tlogrev.size()-1)
-    Vlog_soma_rev.remove(dvdtmax_index+1,Vlog_soma_rev.size()-1)
+    dvdtrev.remove(dvdtmax_index,dvdtrev.size()-1)
+    tlogrev.remove(dvdtmax_index,tlogrev.size()-1)
+    Vlog_soma_rev.remove(dvdtmax_index,Vlog_soma_rev.size()-1)
     
     dvdtrev.reverse()
     Vlog_soma_rev.reverse()
@@ -396,6 +406,9 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlogrev.x[dvdt10_index])
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
+    
+    printf ("threshold: %g mV at %g ms\n", vthresh, tlogrev.x[dvdt10_index])
+    printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
     
     vmax_index = Vlog_soma.max_ind()
     t_vmax = tlog.x[vmax_index]
