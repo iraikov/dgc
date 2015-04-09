@@ -6,7 +6,7 @@ xopen("DGC_Template_from_file_passive_na8st.hoc")
 
 xopen ("rn.hoc")
 
-v_init = -68
+v_init = -75
 
 
 //**********************************************************************
@@ -84,6 +84,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     gid = $3
     
     print "passive_test: gid = ", gid
+    print "single_ap_test: v_init = ", v_init
 
     strdef log_fn
     
