@@ -3,7 +3,7 @@
 config_path=./config/DGC_forest_hpc_passive.config
 
 ncells=1000
-data_path=/data/users/iraikov/model/DGC_forest/dat
+data_path=/pub/iraikov/DGC_forest/110/GC
 results_path="/pub/iraikov/DGC_forest_test_results/passive/`date +'%Y%m%d%H%M'`"
 
 echo "$ncells" > $config_path
