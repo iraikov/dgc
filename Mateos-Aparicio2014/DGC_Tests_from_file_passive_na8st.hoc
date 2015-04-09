@@ -283,6 +283,8 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     results_path = $s2
     gid = $3
     
+    print "threshold_test: gid = ", gid
+    
     strdef log_fn
     
     prelength = 1000
