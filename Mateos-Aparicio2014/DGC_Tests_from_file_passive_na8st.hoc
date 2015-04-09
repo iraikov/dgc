@@ -378,7 +378,11 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     
     vmax_index = Vlog_soma.max_ind()
     t_vmax = tlog.x[vmax_index]
-    vahp = Vlog_soma.min(vmax_index, tlog.indwhere(">", t_vmax+5))
+    t_ahp_index = tlog.indwhere(">", t_vmax+5)
+    if (t_ahp_index < 0) {
+        t_ahp_index = tlog.x[tlog.size()-1]
+    }
+    vahp = Vlog_soma.min(vmax_index, t_ahp_index)
     logfile.printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
     
     logfile.close()
