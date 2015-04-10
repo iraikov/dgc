@@ -3,7 +3,7 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -75
+    v_init = -68
     
     //Passive properties
     Ra0 = 200       //Ohm.cm
@@ -50,7 +50,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 15.0 // original 0.3
+    BKmult = 10.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20
@@ -74,10 +74,10 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 3.0 // increased from 0.8
+    KDRmult = 4.0 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.004
+    gKAs = 0.02
     gKAa = 0.05
     
     //Calcium channels
