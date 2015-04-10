@@ -22,9 +22,6 @@ local_forest_path = "/home/igr/src/model/DGC_forest/dat/110/014"
 local_results_path = "results"
 
 
-gid = 015
-local_forest_path = "/pub/iraikov/dentate/Slice_50_300_Control/GC/0/0/0/0/"
-local_results_path = "results"
 
 gid = 309
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
@@ -46,12 +43,13 @@ gid = 095
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
-gid = 001
+gid = 062
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
-gid = 062
+gid = 095
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
+local_forest_path = "/pub/iraikov/DGC_forest/110/GC"
 local_results_path = "results"
 
 
