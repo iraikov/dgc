@@ -25,12 +25,6 @@ proc parameters() {
     gna_soma = 18.8
     gENa = 55.0
 
-    // KIn conductance
-    gk_axon = 0.004
-    gk_scale_axon = 5.0
-    gk_distal_axon = 0.010
-    gk_soma = 0.004
-    
     lambda2 = 10.0
     dend_50 = 80.0
     dend_slope = 40.0
@@ -52,14 +46,14 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.001 // increased to 0.001 from 0.0001
+    gsksoma = 0.002 // original 0.0001
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 12.0 // increased to 12.0 from 0.3
+    BKmult = 10.0 // original 0.3
     
     //The sAHP conductance
-    gbarsAHP = 20
+    gbarsAHP = 20 // original 20
     tau1RefsAHP = 400
     tau2sAHP = 200
     c1infsAHP = 0.25
@@ -71,7 +65,7 @@ proc parameters() {
     msAHP = 1
     
     //The ad-hoc unknown conductance
-    gbarUK = 200
+    gbarUK = 20 // original 200
     erevUK = -55
     pUK = 4
     tauUK = 10
@@ -84,7 +78,7 @@ proc parameters() {
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.05
-    gKAa = 0.05
+    gKAa = 0.04
     
     //Calcium channels
     CaTmult = 1.75
