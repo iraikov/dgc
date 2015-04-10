@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 200       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4.5e-05    //S/cm2
+    gpas = 5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV
@@ -65,7 +65,7 @@ proc parameters() {
     msAHP = 1
     
     //The ad-hoc unknown conductance
-    gbarUK = 200 // original 200
+    gbarUK = 20 // original 200
     erevUK = -55
     pUK = 4
     tauUK = 10
