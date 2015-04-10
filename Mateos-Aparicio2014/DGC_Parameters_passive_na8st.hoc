@@ -58,7 +58,7 @@ proc parameters() {
     BKmult = 12.0 // increased to 12.0 from 0.3
     
     //The sAHP conductance
-    gbarsAHP = 10
+    gbarsAHP = 20
     tau1RefsAHP = 400
     tau2sAHP = 200
     c1infsAHP = 0.25
@@ -82,7 +82,7 @@ proc parameters() {
     KDRmult = 4.0 // increased to 4.0 from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.006
+    gKAs = 0.03
     gKAa = 0.004
     
     //Calcium channels
