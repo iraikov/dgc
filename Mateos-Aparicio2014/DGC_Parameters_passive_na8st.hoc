@@ -46,7 +46,7 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.0015 // original 0.0001
+    gsksoma = 0.001 // original 0.0001
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
@@ -74,11 +74,11 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.5 // increased from 0.8
+    KDRmult = 2.0 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.075
-    gKAa = 0.075
+    gKAs = 0.07
+    gKAa = 0.07
     
     //Calcium channels
     CaTmult = 1.75
