@@ -6,7 +6,7 @@ xopen("DGC_Template_from_file_passive_na8st.hoc")
 
 xopen ("rn.hoc")
 
-v_init = -75
+v_init = -68
 
 
 //**********************************************************************

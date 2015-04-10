@@ -24,10 +24,11 @@ proc parameters() {
     gnabar_distal_axon = 38.6152
     gna_soma = 18.8
     gENa = 55.0
-    
+
     // KIn conductance
     gk_axon = 0.004
     gk_distal_axon = 0.010
+    gk_soma = 0.004
     
     lambda2 = 10.0
     dend_50 = 80.0
@@ -50,11 +51,11 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.001 // increased to 0.001 from 0.0002 to reduce excitability
+    gsksoma = 0.001 // increased to 0.001 from 0.0002
     erevSK = EK
-    tauskdiv = 1
+    tauskdiv = 2
     erevBK = EK
-    BKmult = 3.0
+    BKmult = 2.0
     
     //The sAHP conductance
     gbarsAHP = 10
@@ -78,10 +79,10 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 2.0
+    KDRmult = 5.0
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.008
+    gKAs = 0.016
     gKAa = 0.004
     
     //Calcium channels
