@@ -46,16 +46,7 @@ hist(spike_ahp,50);
 title(sprintf("Fast AHP [mV]; mean = %g std = %g",
       mean(spike_ahp),std(spike_ahp)));
 
-subplot(3, 2, 6)
-hist(isi_adaptation4,50);
-title(sprintf("ISI adaptation 3; mean = %g std = %g",
-      mean(isi_adaptation3),std(isi_adaptation3)));
-
-print (h, "DGC_results1.pdf", "-dpdf")
-
-h = figure(2);
-
-s = subplot(2, 2, 1)
+s = subplot(3, 2, 6)
 rel_amplitude_dend1_mean = mean(rel_amplitude_dend1);
 rel_amplitude_dend1_stdev = std(rel_amplitude_dend1);
 rel_amplitude_dend2_mean = mean(rel_amplitude_dend2);
@@ -85,17 +76,31 @@ set(s,'XTick',0:50:250);
 set(s,'YTick',0:0.2:1);
 title("Amplitude of dendritic AP rel. to soma");
 
+print (h, "DGC_results1.pdf", "-dpdf")
+
+h = figure(2);
+
+subplot(2, 2, 1)
+hist(isi_adaptation4,50);
+title(sprintf("ISI adaptation 4; mean = %g std = %g",
+      mean(isi_adaptation4),std(isi_adaptation4)));
+
 subplot(2, 2, 2)
+hist(isi_adaptation3,50);
+title(sprintf("ISI adaptation 3; mean = %g std = %g",
+      mean(isi_adaptation3),std(isi_adaptation3)));
+
+subplot(2, 2, 3)
 hist(number_of_spikes,20);
 title(sprintf("Number of spikes; mean = %g",mean(number_of_spikes)));
 
-subplot(2, 2, 3)
+subplot(2, 2, 4)
 hist(mean_firing_rate,50);
 title(sprintf("Mean firing rate [Hz]"));
 
-subplot(2, 2, 4)
-hist(mean_isi,50);
-title(sprintf("Mean ISI [ms]"));
+%subplot(2, 2, 4)
+%hist(mean_isi,50);
+%title(sprintf("Mean ISI [ms]"));
 
 
 print (h, "DGC_results2.pdf", "-dpdf")
