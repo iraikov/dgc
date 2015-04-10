@@ -14,7 +14,7 @@ NEURON {
     USEION na READ ena WRITE ina
     GLOBAL vShift, vShift_inact, maxrate
     RANGE vShift_inact_local
-    RANGE g, gbar
+    RANGE g, gbar, ina
     RANGE a1_0, a1_1, b1_0, b1_1, a2_0, a2_1
     RANGE b2_0, b2_1, a3_0, a3_1, b3_0, b3_1
     RANGE bh_0, bh_1, bh_2, ah_0, ah_1, ah_2

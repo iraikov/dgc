@@ -6,7 +6,7 @@ proc parameters() {
     v_init = -75
     
     //Passive properties
-    Ra0 = 190       //Ohm.cm
+    Ra0 = 200       //Ohm.cm
     cm0 = 1         //uF/cm2
     gpas = 6e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
@@ -27,6 +27,7 @@ proc parameters() {
 
     // KIn conductance
     gk_axon = 0.004
+    gk_scale_axon = 5.0
     gk_distal_axon = 0.010
     gk_soma = 0.004
     
@@ -82,8 +83,8 @@ proc parameters() {
     KDRmult = 4.0 // increased to 4.0 from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.03
-    gKAa = 0.004
+    gKAs = 0.05
+    gKAa = 0.05
     
     //Calcium channels
     CaTmult = 1.75

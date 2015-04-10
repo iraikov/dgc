@@ -37,7 +37,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     
 }
 
-proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
+proc write_voltage_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
     
     logfile=$o1
     tlog=$o2
@@ -55,6 +55,25 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
                 logfile.printf(" %g", Vlog_dend.x[i])
             }
         }
+        logfile.printf("\n")
+    }
+    
+}
+
+proc write_current_trace() { local logsize  localobj logfile, tlog, isk_log, ibk_log, ika_log, ifkdr_log, ina_log
+    
+    logfile=$o1
+    tlog=$o2
+    isk_log = $o3
+    ibk_log = $o4
+    ifkdr_log  = $o5
+    ika_log  = $o6
+    ina_log = $o7
+    
+    logsize = tlog.size()
+    
+    for i=0,tlog.size()-1 {
+	logfile.printf("%g %g %g %g %g %g", tlog.x[i], isk_log.x[i], ibk_log.x[i], ifkdr_log.x[i], ika_log.x[i], ina_log.x[i])
         logfile.printf("\n")
     }
     
@@ -118,7 +137,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.wopen ( log_fn )
     
     simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     // attempt to compute membrane time constant
@@ -159,7 +178,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
 }
 
 
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, isk_log, ibk_log, ifkdr_log, ika_log, ina_log, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -187,6 +206,17 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
     nc.threshold = 0.0
     nc.record(spikelog)
+    
+    isk_log = new Vector(vec_sizes)
+    isk_log.record (&gc.soma.isk_CadepK(0.5))
+    ibk_log = new Vector(vec_sizes)
+    ibk_log.record (&gc.soma.ibk_CadepK(0.5))
+    ifkdr_log = new Vector(vec_sizes)
+    ifkdr_log.record (&gc.soma.i_fKDR(0.5))
+    ika_log = new Vector(vec_sizes)
+    ika_log.record (&gc.soma.i_KA(0.5))
+    ina_log = new Vector(vec_sizes)
+    ina_log.record (&gc.soma.ina_na8st(0.5))
     
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
@@ -251,9 +281,15 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
             }
         }
     }
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_single_ap_currents_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    write_current_trace(logfile,tlog,isk_log,ibk_log,ifkdr_log,ika_log,ina_log)
+    logfile.close()
+
     vmax = Vlog_soma.max()
     vmin = Vlog_soma.min()
     
@@ -342,7 +378,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,new List())
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,new List())
     logfile.close()
     
     //
@@ -455,7 +491,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     logfile.wopen ( log_fn )
     
     simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
 
     logfile.close()
     

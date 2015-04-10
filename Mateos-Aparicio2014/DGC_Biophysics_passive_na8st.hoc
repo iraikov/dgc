@@ -77,7 +77,6 @@ proc biophys() {
     
     forsec allaxons {
         insert na8st
-        insert KIn
         insert fKDR
         gbar_fKDR = 0.028
         insert KA
@@ -98,8 +97,6 @@ proc biophys() {
     soma {
         insert na8st
         gbar_na8st = gna_soma
-        insert KIn
-        gkbar_KIn = gk_soma
         insert Ca
         gtcabar_Ca = CaTmult*0.0015
         gncabar_Ca = CaNmult*0.002
@@ -287,8 +284,11 @@ proc biophys() {
 	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	    gbar_na8st(x) = gnabar_gauss
             
-            gkbar_ax = gk_axon + fsigm(dist, (gk_distal_axon - gk_axon), 200.0, 100.0)
-            gkbar_KIn(x)  = gkbar_ax
+            if (ismembrane("KIn")) {
+                
+                gkbar_ax = gk_axon + fsigm(dist, (gk_distal_axon - gk_axon), 200.0, 100.0)
+                gkbar_KIn(x)  = gkbar_ax
+            }
 	}
         
     }
