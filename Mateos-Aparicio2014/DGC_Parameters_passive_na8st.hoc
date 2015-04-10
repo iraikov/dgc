@@ -46,7 +46,7 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.001 // original 0.0001
+    gsksoma = 0.0015 // original 0.0001
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
