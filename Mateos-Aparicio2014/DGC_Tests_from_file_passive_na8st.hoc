@@ -149,7 +149,6 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     amp23  = 0.632 * abs (vmax - vmin)
     vtau0  = vrest - amp23
     tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
-    rn2 = abs(vmax - vmin)/abs(stim1.amp)
     
     // compute total surface area of dendritic compartments
     dendritearea = 0
@@ -168,7 +167,6 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.printf ("total dendritic surface area: %g\n", dendritearea)
     
     printf ("DC input resistance: %g MOhm\n", rn(gc))
-    printf ("DC input resistance 2: %g MOhm\n", rn2)
     printf ("vmin: %g mV\n", vmin)
     printf ("vtau0: %g mV\n", vtau0)
     printf ("tau0: %g ms\n", tau0)

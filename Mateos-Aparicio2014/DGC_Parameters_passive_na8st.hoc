@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 200       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4e-05    //S/cm2
+    gpas = 4.5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV
@@ -46,7 +46,7 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.003 // original 0.0001
+    gsksoma = 0.001 // original 0.0001
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
