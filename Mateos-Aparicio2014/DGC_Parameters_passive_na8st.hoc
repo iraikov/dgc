@@ -74,7 +74,7 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 2.0 // increased from 0.8
+    KDRmult = 1.0 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.075
