@@ -6,7 +6,7 @@ proc parameters() {
     v_init = -68
     
     //Passive properties
-    Ra0 = 200       //Ohm.cm
+    Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
     gpas = 4.1e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
@@ -50,7 +50,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 15.0 // original 0.3
+    BKmult = 20.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20
@@ -74,11 +74,11 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.5 // increased from 0.8
+    KDRmult = 1.75 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.02
-    gKAa = 0.05
+    gKAa = 0.06
     
     //Calcium channels
     CaTmult = 1.75
