@@ -50,7 +50,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 20.0 // original 0.3
+    BKmult = 15.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20
@@ -74,7 +74,7 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.75 // increased from 0.8
+    KDRmult = 1.25 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.02
