@@ -43,12 +43,12 @@ gid = 095
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
-gid = 062
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
 gid = 001
-local_forest_path = "/home/igr/src/model/DGC_forest/GC"
+gid = 062
+local_forest_path = "/pub/iraikov/DGC_forest/110/GC"
 local_results_path = "results"
 
 
