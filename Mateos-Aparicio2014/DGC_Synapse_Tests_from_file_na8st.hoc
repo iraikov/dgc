@@ -32,14 +32,12 @@ proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
     sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
     logfile.aopen ( log_fn )
 
-    sprint(msg, "%s synapses:\n", label)
+    sprint(msg, "%s synapses: ", label)
     logfile.printf(msg)
-    logfile.printf("  Amplitude\t\t %f\n",amp)
-    logfile.printf("  10-90 Rise Time\t\t %f\n",t_10_90)
-    logfile.printf("  20-80 Rise Time\t\t %f\n",t_20_80)	
-    logfile.printf("  Time to Peak\t\t %f\n",t_all)	
-    logfile.printf("  Time to 50\t\t %f\n",t_50)
-    logfile.printf("  Decay Time Constant\t %f\n",t_decay)	
+    logfile.printf("  Amplitude %f",amp)
+    logfile.printf("  10-90 Rise Time %f",t_10_90)
+    logfile.printf("  20-80 Rise Time %f",t_20_80)
+    logfile.printf("  Decay Time Constant %f\n",t_decay)
     
     logfile.close()
     
@@ -47,8 +45,6 @@ proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
     printf("  Amplitude\t\t %f\n",amp)
     printf("  10-90 Rise Time\t\t %f\n",t_10_90)
     printf("  20-80 Rise Time\t\t %f\n",t_20_80)	
-    printf("  Time to Peak\t\t %f\n",t_all)	
-    printf("  Time to 50\t\t %f\n",t_50)
     printf("  Decay Time Constant\t %f\n",t_decay)	
 
 }
