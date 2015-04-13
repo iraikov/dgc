@@ -1,10 +1,4 @@
 
-load_file("nrngui.hoc")
-
-// Load the granule cell template
-xopen("DGC_Template_from_file_na8st.hoc")
-
-xopen ("rn.hoc")
 
 objref se
 
@@ -112,7 +106,7 @@ proc synapse_group_test_up () { local gid, w localobj gc, synlist, v, vv, logfil
 }
 
 
-proc synapse_test() { local gid localobj gc strdef forest_path, results_path
+proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -120,15 +114,16 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     
     print "DGC synapse test: gid = ", gid
     
-    gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, "NGFC-GC GABAB", results_path)
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    logfile.close()
     
-    /*
     gc = new DGC(gid, 1, forest_path, 0)
     synapse_group_test(gid, gc, gc.syns_HC,  0.005, -70, "HC-GC", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, "BC-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_BC,  0.00045, -70, "BC-GC", results_path)
     
     
     gc = new DGC(gid, 1, forest_path, 0)
@@ -136,45 +131,14 @@ proc synapse_test() { local gid localobj gc strdef forest_path, results_path
     
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_AA,  0.001,  -70, "AA-GC", results_path)
+    synapse_group_test(gid, gc, gc.syns_AA,  0.0005,  -70, "AA-GC", results_path)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.0002, -90, "NGFC-GC GABAA", results_path)
+    synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.00005, -90, "NGFC-GC GABAA", results_path)
+    
+    /*
+    gc = new DGC(gid, 1, forest_path, 0)
+    synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, "NGFC-GC GABAB", results_path)
     */
+
 }
-
-
-load_file("DGC_protocol.ses")
-
-
-strdef local_forest_path, local_results_path
-
-gid = 016
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 9016
-local_forest_path = "/pub/iraikov/dentate/slice0000/GC/0/0/1/"
-local_results_path = "results"
-
-gid = 003
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 134
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 005
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-gid = 307
-local_forest_path = "/home/igr/src/model/DGC_forest/dat/110"
-local_results_path = "results"
-
-synapse_test(local_forest_path, local_results_path, gid)
-
-objref gc
-gc = new DGC(gid, 1, local_forest_path, 0)
-

@@ -125,7 +125,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.1 syn.tau2 = 1.5 syn.e = -28.99
+            syn.tau1 = 0.2 syn.tau2 = 2.1 syn.e = -28.99
         }
         syns_BC.append(syn)
     }
@@ -137,7 +137,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.3	syn.tau2 = 2.5 syn.e = -28.99
+                    syn.tau1 = 0.3	syn.tau2 = 2.1 syn.e = -28.99
                 }
                 syns_AA.append(syn)
                 break
@@ -152,7 +152,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.3	syn.tau2 = 0.8	syn.e = -28.99
+            syn.tau1 = 0.2	syn.tau2 = 0.8	syn.e = -28.99
         }
         syns_HCC.append(syn)
     }
@@ -163,7 +163,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 0.5	syn.tau2 = 6	syn.e = -38.148
+            syn.tau1 = 0.2	syn.tau2 = 10	syn.e = -38.148
             syns_NGFC_GABAA.append(syn)
             syn = new Exp2Syn(x) 
             syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
