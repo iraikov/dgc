@@ -114,7 +114,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.01	syn.tau2 = 0.5	syn.e = -28.99
+            syn.tau1 = 0.01	syn.tau2 = 5.5	syn.e = -28.99
         }
         syns_HC.append(syn)
     }
@@ -125,7 +125,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.2 syn.tau2 = 2.1 syn.e = -28.99
+            syn.tau1 = 0.2 syn.tau2 = 5.0 syn.e = -28.99
         }
         syns_BC.append(syn)
     }
