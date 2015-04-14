@@ -1,5 +1,6 @@
 #! /usr/bin/octave -qf
 args = argv ();
+graphics_toolkit("gnuplot");
 
 DGC_results = load(args{1});
 
@@ -23,27 +24,28 @@ h = figure(1);
 
 subplot(3, 2, 1)
 hist(input_resistance,50);
-title(sprintf("Input resistance [MOhm]; mean = %g std = %g",
-      mean(input_resistance),std(input_resistance)));
+title(["Input resistance [MOhm]\n";
+       sprintf("mean = %.2f std = %.2f",
+               mean(input_resistance),std(input_resistance))]);
 
 subplot(3, 2, 2)
 hist(membrane_tau,50);
-title(sprintf("Membrane time constant [ms]; mean = %g std = %g",
-      mean(membrane_tau),std(membrane_tau)));
+title(["Membrane time constant [ms]\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(membrane_tau),std(membrane_tau))]);
 
 subplot(3, 2, 3)
 hist(spike_amplitude,50);
-title(sprintf("Rel. AP amplitude [mV]; mean = %g std = %g",
-      mean(spike_amplitude),std(spike_amplitude)));
+title(["Rel. AP amplitude [mV]"; 
+       sprintf("mean = %.2f std = %.2f", mean(spike_amplitude),std(spike_amplitude))]);
 
 subplot(3, 2, 4)
 hist(spike_threshold,50);
-title(sprintf("AP threshold [mV]; mean = %g std = %g",
+title(sprintf("AP threshold [mV]; mean = %.2f std = %.2f",
       mean(spike_threshold),std(spike_threshold)));
 
 subplot(3, 2, 5)
 hist(spike_ahp,50);
-title(sprintf("Fast AHP [mV]; mean = %g std = %g",
+title(sprintf("Fast AHP [mV]; mean = %.2f std = %.2f",
       mean(spike_ahp),std(spike_ahp)));
 
 print (h, "DGC_results1.pdf", "-dpdf")
@@ -52,12 +54,12 @@ h = figure(2);
 
 subplot(2, 2, 1)
 hist(isi_adaptation4,50);
-title(sprintf("ISI adaptation 4; mean = %g std = %g",
+title(sprintf("ISI adaptation 4; mean = %.2f std = %.2f",
       mean(isi_adaptation4),std(isi_adaptation4)));
 
 subplot(2, 2, 2)
 hist(number_of_spikes,20);
-title(sprintf("Number of spikes; mean = %g",mean(number_of_spikes)));
+title(sprintf("Number of spikes; mean = %.2f",mean(number_of_spikes)));
 
 s = subplot(2, 2, 3)
 rel_amplitude_dend1_mean = mean(rel_amplitude_dend1);
@@ -119,51 +121,53 @@ NGFC_GABAA_decay=DGC_results(:,38);
 
 subplot(3, 3, 1)
 hist(HC_amp,50);
-title(sprintf("HIPP syn amp; \n mean = %g std = %g",
-      mean(HC_amp),std(HC_amp)));
+title(["HIPP syn amp\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(HC_amp),std(HC_amp))]);
 
 subplot(3, 3, 2)
 hist(HC_rise,50);
-title(sprintf("HIPP syn rise; \n mean = %g std = %g",
-      mean(HC_rise),std(HC_rise)));
+title(["HIPP syn rise\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(HC_rise),std(HC_rise))]);
 
 subplot(3, 3, 3)
 hist(HC_decay,50);
-title(sprintf("HIPP syn decay; \n mean = %g std = %g",
-      mean(HC_decay),std(HC_decay)));
+title(["HIPP syn decay\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(HC_decay),std(HC_decay))]);
 
 
 subplot(3, 3, 4)
 hist(BC_amp,50);
-title(sprintf("PVBC syn amp; \n mean = %g std = %g",
-      mean(BC_amp),std(BC_amp)));
+title(["PVBC syn amp\n";
+       sprintf("mean = %.2f std = %.2f", mean(BC_amp),std(BC_amp))]);
 
 subplot(3, 3, 5)
 hist(BC_rise,50);
-title(sprintf("PVBC syn rise; \n mean = %g std = %g",
-      mean(BC_rise),std(BC_rise)));
+title(["PVBC syn rise\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(BC_rise),std(BC_rise))]);
 
 subplot(3, 3, 6)
 hist(BC_decay,50);
-title(sprintf("PVBC syn decay; \n mean = %g std = %g",
-      mean(BC_decay),std(BC_decay)));
+title(["PVBC syn decay\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(BC_decay),std(BC_decay))]);
 
 
 subplot(3, 3, 7)
 hist(AA_amp,50);
-title(sprintf("AA syn amp; \n mean = %g std = %g",
-      mean(AA_amp),std(AA_amp)));
+title(["AA syn amp\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(AA_amp),std(AA_amp))]);
 
 subplot(3, 3, 8)
 hist(AA_rise,50);
-title(sprintf("AA syn rise; \n mean = %g std = %g",
-      mean(AA_rise),std(AA_rise)));
+title(["AA syn rise\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(AA_rise),std(AA_rise))]);
 
 subplot(3, 3, 9)
 hist(AA_decay,50);
-title(sprintf("AA syn decay; \n mean = %g std = %g",
-      mean(AA_decay),std(AA_decay)));
-
+title(["AA syn decay\n"; 
+       sprintf("mean = %.2f std = %.2f", mean(AA_decay),std(AA_decay))]);
 
 
 print (h, "DGC_results3.pdf", "-dpdf")
+
+system('pdftk DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf cat output DGC_results.pdf');
+system('rm DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf');
