@@ -116,7 +116,7 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
     synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.00005, -90, "NGFC-GC GABAA", logfile)
     
     gc = new DGC(gid, 1, forest_path, 0)
-    synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, "NGFC-GC GABAB", logfile)
+    //synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, "NGFC-GC GABAB", logfile)
     
     logfile.close()
 
