@@ -22,7 +22,7 @@ proc parameters() {
     // na8st conductance
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
-    gna_soma = 18.8
+    gna_soma = 28.8 // original 18.8
     gENa = 55.0
 
     lambda2 = 10.0
@@ -77,7 +77,7 @@ proc parameters() {
     KDRmult = 1.5 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.008
+    gKAs = 0.009
     gKAa = 0.06
     
     //Calcium channels
