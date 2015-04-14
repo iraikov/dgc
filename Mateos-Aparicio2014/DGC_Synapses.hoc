@@ -193,8 +193,6 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
         se.amp1 = v_holding 
     }
     
-    load_file("DGC_syn.ses")
-    
     mainDT = 0.025
     dt = mainDT
     tstop = 2000
@@ -286,8 +284,6 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
         se.dur1 = 1010
         se.amp1 = v_holding 
     }
-    
-    load_file("DGC_syn.ses")
     
     mainDT = 0.025
     dt = mainDT
