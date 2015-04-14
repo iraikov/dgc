@@ -125,7 +125,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.2 syn.tau2 = 5.0 syn.e = -28.99
+            syn.tau1 = 0.2 syn.tau2 = 15.0 syn.e = -28.99
         }
         syns_BC.append(syn)
     }
@@ -137,7 +137,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.3	syn.tau2 = 2.1 syn.e = -28.99
+                    syn.tau1 = 0.3	syn.tau2 = 20.0 syn.e = -28.99
                 }
                 syns_AA.append(syn)
                 break
