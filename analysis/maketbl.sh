@@ -13,7 +13,7 @@ ncells=1000
 
 path_prefix="$2"
 
-echo "## gid,DC_input_resistance,dendarea,vmin,vtau0,tau0,maximum_Vsoma,minimum_Vsoma,threshold,AP_amplitude_rel_threshold,AHP,Rel_AP_amplitude_dendrite_0,Rel_AP_amplitude_dendrite_1,Rel_AP_amplitude_dendrite_2,Rel_AP_amplitude_dendrite_3,Rel_AP_amplitude_dendrite_4,number_of_spikes,mean_FR,mean_ISI,stdev_ISI,adaptation_ISI1,adaptation_ISI2,adaptation_ISI3,adaptation_ISI3,adaptation_ISI4,HC_amp,HC_rise,HC_decay,BC_amp,BC_rise,BC_decay,HCC_amp,HCC_rise,HCC_decay,AA_amp,AA_rise,AA_decay,NGFC_GABAA_amp,NGFC_GABAA_rise,NGFC_GABAA_decay" > $tblpath
+echo "## gid,DC_input_resistance,dendarea,vmin,vtau0,tau0,maximum_Vsoma,minimum_Vsoma,threshold,AP_amplitude_rel_threshold,AHP,Rel_AP_amplitude_dendrite_0,Rel_AP_amplitude_dendrite_1,Rel_AP_amplitude_dendrite_2,Rel_AP_amplitude_dendrite_3,Rel_AP_amplitude_dendrite_4,number_of_spikes,mean_FR,mean_ISI,stdev_ISI,adaptation_ISI1,adaptation_ISI2,adaptation_ISI3,adaptation_ISI3,adaptation_ISI4,HC_amp,HC_rise,HC_decay,BC_amp,BC_rise,BC_decay,HCC_amp,HCC_rise,HCC_decay,AA_amp,AA_rise,AA_decay,NGFC_GABAA_amp,NGFC_GABAA_rise,NGFC_GABAA_decay,NGFC_GABAB_amp,NGFC_GABAB_rise,NGFC_GABAB_decay" > $tblpath
 
 for (( i = 0; i < ncells; i++ )) do
 
@@ -66,9 +66,12 @@ for (( i = 0; i < ncells; i++ )) do
     NGFC_GABAA_amp=`grep "NGFC-GC GABAA synapses" $synapse_path | cut -f7 -d' '`
     NGFC_GABAA_rise=`grep "NGFC-GC GABAA synapses" $synapse_path | cut -f12 -d' '`
     NGFC_GABAA_decay=`grep "NGFC-GC GABAA synapses" $synapse_path | cut -f17 -d' '`
+    NGFC_GABAB_amp=`grep "NGFC-GC GABAB synapses" $synapse_path | cut -f7 -d' '`
+    NGFC_GABAB_rise=`grep "NGFC-GC GABAB synapses" $synapse_path | cut -f12 -d' '`
+    NGFC_GABAB_decay=`grep "NGFC-GC GABAB synapses" $synapse_path | cut -f17 -d' '`
 
 
-    echo $i,$DC_input_resistance,$dendarea,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$Rel_AP_amplitude_dendrite_3,$Rel_AP_amplitude_dendrite_4,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI1,$adaptation_ISI2,$adaptation_ISI3,$adaptation_ISI4,$HC_amp,$HC_rise,$HC_decay,$BC_amp,$BC_rise,$BC_decay,$HCC_amp,$HCC_rise,$HCC_decay,$AA_amp,$AA_rise,$AA_decay,$NGFC_GABAA_amp,$NGFC_GABAA_rise,$NGFC_GABAA_decay >> $tblpath
+    echo $i,$DC_input_resistance,$dendarea,$vmin,$vtau0,$tau0,$maximum_Vsoma,$minimum_Vsoma,$threshold,$AP_amplitude_rel_threshold,$AHP,$Rel_AP_amplitude_dendrite_0,$Rel_AP_amplitude_dendrite_1,$Rel_AP_amplitude_dendrite_2,$Rel_AP_amplitude_dendrite_3,$Rel_AP_amplitude_dendrite_4,$number_of_spikes,$mean_FR,$mean_ISI,$stdev_ISI,$adaptation_ISI1,$adaptation_ISI2,$adaptation_ISI3,$adaptation_ISI4,$HC_amp,$HC_rise,$HC_decay,$BC_amp,$BC_rise,$BC_decay,$HCC_amp,$HCC_rise,$HCC_decay,$AA_amp,$AA_rise,$AA_decay,$NGFC_GABAA_amp,$NGFC_GABAA_rise,$NGFC_GABAA_decay,$NGFC_GABAB_amp,$NGFC_GABAB_rise,$NGFC_GABAB_decay >> $tblpath
     
 done
 
