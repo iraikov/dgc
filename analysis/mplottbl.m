@@ -1,4 +1,4 @@
-DGC_results = load('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/DGC_forest_110_test_results_passive_201504141201.dat');
+DGC_results = load('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/DGC_forest_110_test_results_passive_201504141502.dat');
 
 input_resistance=DGC_results(:,2);
 membrane_tau=DGC_results(:,6);
@@ -96,9 +96,9 @@ AA_decay=DGC_results(:,36);
 NGFC_GABAA_amp=DGC_results(:,36);
 NGFC_GABAA_rise=DGC_results(:,37);
 NGFC_GABAA_decay=DGC_results(:,38);
-NGFC_GABAB_amp=DGC_results(:,39);
-NGFC_GABAB_rise=DGC_results(:,40);
-NGFC_GABAB_decay=DGC_results(:,41);
+% NGFC_GABAB_amp=DGC_results(:,39);
+% NGFC_GABAB_rise=DGC_results(:,40);
+% NGFC_GABAB_decay=DGC_results(:,41);
 
 h = figure(3);
 
@@ -169,17 +169,17 @@ subplot(3, 3, 6)
 hist(NGFC_GABAA_decay,50);
 title(['NGFC A syn decay ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_decay),std(NGFC_GABAA_decay))]);
 
-subplot(3, 3, 7)
-hist(NGFC_GABAB_amp,50);
-title(['NGFC B syn amp. ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_amp),std(NGFC_GABAB_amp))]);
+% subplot(3, 3, 7)
+% hist(NGFC_GABAB_amp,50);
+% title(['NGFC B syn amp. ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_amp),std(NGFC_GABAB_amp))]);
 
-subplot(3, 3, 8)
-hist(NGFC_GABAB_rise,50);
-title(['NGFCA B syn rise ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_rise),std(NGFC_GABAB_rise))]);
+% subplot(3, 3, 8)
+% hist(NGFC_GABAB_rise,50);
+% title(['NGFCA B syn rise ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_rise),std(NGFC_GABAB_rise))]);
 
-subplot(3, 3, 9)
-hist(NGFC_GABAB_decay,50);
-title(['NGFC B syn decay ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_decay),std(NGFC_GABAB_decay))]);
+% subplot(3, 3, 9)
+% hist(NGFC_GABAB_decay,50);
+% title(['NGFC B syn decay ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_decay),std(NGFC_GABAB_decay))]);
 
 
 print (h, 'DGC_results4.pdf', '-dpdf')

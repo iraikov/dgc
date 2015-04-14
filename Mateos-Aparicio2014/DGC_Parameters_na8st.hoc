@@ -3,14 +3,14 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -75
+    v_init = -68
     
     //Passive properties
-    Ra0 = 200       //Ohm.cm
+    Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 6e-05    //S/cm2
+    gpas = 4e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
-    Epas = -76      //mV
+    Epas = -75      //mV
     EK = -90         //mV
 
     // Parameters from Schmidt-Hieber 2010
@@ -22,15 +22,9 @@ proc parameters() {
     // na8st conductance
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
-    gna_soma = 28.8
+    gna_soma = 18.8
     gnabar_distal_dend = gna_soma * 0.3
     gENa = 55.0
-    
-    // KIn conductance
-    gk_axon = 0.004
-    gk_distal_axon = 0.010
-    
-    gk_soma = 0.004
     
     lambda2 = 10.0
     dend_50 = 80.0
@@ -57,12 +51,12 @@ proc parameters() {
     gskprox = 0.0001 // increase by a factor of 4 to achieve
     gskGCLs = 0.0001 // adaptation closer to Santhakumar 2005
     erevSK = EK
-    tauskdiv = 8
+    tauskdiv = 2
     erevBK = EK
-    BKmult = 1.0
+    BKmult = 1.5
     
     //The sAHP conductance
-    gbarsAHP = 10
+    gbarsAHP = 20
     tau1RefsAHP = 400
     tau2sAHP = 200
     c1infsAHP = 0.25
@@ -74,7 +68,7 @@ proc parameters() {
     msAHP = 1
     
     //The ad-hoc unknown conductance
-    gbarUK = 0
+    gbarUK = 20
     erevUK = -55
     pUK = 4
     tauUK = 10
@@ -83,16 +77,16 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.0
+    KDRmult = 1.5
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.012
-    gKAa = 0.004
+    gKAs = 0.001
+    gKAa = 0.05
     
     //Calcium channels
     CaTmult = 1.75
-    CaNmult = 1.5
-    CaLmult = 1.5
+    CaNmult = 1
+    CaLmult = 1
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1

@@ -49,6 +49,7 @@ local_results_path = "results"
 
 gid = 062
 gid = 001
+gid = 106
 local_forest_path = "/pub/iraikov/DGC_forest/110/GC"
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
