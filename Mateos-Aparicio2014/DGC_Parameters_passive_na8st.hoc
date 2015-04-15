@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4.25e-05    //S/cm2
+    gpas = 4.5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV
@@ -78,7 +78,7 @@ proc parameters() {
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.009
-    gKAa = 0.05
+    gKAa = 0.04
     
     // TODO: try increasing KA
     
