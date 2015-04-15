@@ -78,7 +78,7 @@ proc parameters() {
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.009
-    gKAa = 0.04
+    gKAa = 0.03
     
     // TODO: try increasing KA
     
