@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4.75e-05    //S/cm2
+    gpas = 4.7e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV
@@ -74,10 +74,10 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.35 // increased from 0.8
+    KDRmult = 1.33 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.01
+    gKAs = 0.009
     gKAa = 0.01
     
     //Calcium channels
