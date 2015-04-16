@@ -462,11 +462,11 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     stimdur = 1000
     
     gc = new DGC(gid, 1, forest_path, 0)
-
+    
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.3
+    stim1.amp = 0.1
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -484,13 +484,23 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
+    
+    // Increase the injected current until at least 50 spikes occur
+    while (spikelog.size() < 50) {
+        simulate(prelength,mainlength)
+        
+        if (spikelog.size() < 50) {
+            stim1.amp = stim1.amp + 0.1
+            tlog.clear()
+            Vlog_soma.clear()
+            Vlog_axon.clear()
+        }
+    }
+    
     logfile = new File()
     sprint (log_fn, "%s/DGC_ap_rate_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    
-    simulate(prelength,mainlength)
     write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
-
     logfile.close()
     
     spikefile = new File()
@@ -499,7 +509,6 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     for i=0,spikelog.size()-1 {
         spikefile.printf("%g\n", spikelog.x[i])
     }
-    
     
     isivect = new Vector(spikelog.size()-1, 0.0)
     tspike = spikelog.x[0]
