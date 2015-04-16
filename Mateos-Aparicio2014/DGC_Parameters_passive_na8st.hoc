@@ -77,7 +77,7 @@ proc parameters() {
     KDRmult = 1.33 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.009
+    gKAs = 0.008
     gKAa = 0.01
     
     //Calcium channels
