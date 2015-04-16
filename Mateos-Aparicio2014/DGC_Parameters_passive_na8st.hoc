@@ -50,7 +50,7 @@ proc parameters() {
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 12.0 // original 0.3
+    BKmult = 15.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20
@@ -77,13 +77,13 @@ proc parameters() {
     KDRmult = 1.33 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.008
+    gKAs = 0.005
     gKAa = 0.01
     
     //Calcium channels
     CaTmult = 1.75
-    CaNmult = 1
-    CaLmult = 1
+    CaNmult = 1.2
+    CaLmult = 1.2
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1

@@ -444,7 +444,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
 
 
 
-proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path, errmsg
     
     forest_path = $s1
     results_path = $s2
@@ -490,7 +490,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         simulate(prelength,mainlength)
         
         if (spikelog.size() < 50) {
+            printf ("ap_rate_test: stim1.amp = %g\n", stim1.amp)
             stim1.amp = stim1.amp + 0.1
+            spikelog.clear()
             tlog.clear()
             Vlog_soma.clear()
             Vlog_axon.clear()
@@ -538,7 +540,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     }
     
     if (!(isilastgt > 0)) {
-        execerror("Unable to find ISI greater than first ISI")
+
+        sprint(errmsg, "Unable to find ISI greater than first ISI: forest_path = %s gid = %d", forest_path, gid)
+        execerror(errmsg)
     }
     
     spikefile.printf ("## number of spikes: %g\n", spikelog.size())
