@@ -8,7 +8,7 @@ proc parameters() {
     //Passive properties
     Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4.5e-05    //S/cm2
+    gpas = 4.75e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -75      //mV
     EK = -90         //mV
@@ -77,8 +77,8 @@ proc parameters() {
     KDRmult = 1.35 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.009
-    gKAa = 0.02
+    gKAs = 0.01
+    gKAa = 0.01
     
     //Calcium channels
     CaTmult = 1.75
