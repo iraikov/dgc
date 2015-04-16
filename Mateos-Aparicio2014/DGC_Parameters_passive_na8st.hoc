@@ -82,8 +82,8 @@ proc parameters() {
     
     //Calcium channels
     CaTmult = 1.75
-    CaNmult = 1.2
-    CaLmult = 1.2
+    CaNmult = 1
+    CaLmult = 1
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1

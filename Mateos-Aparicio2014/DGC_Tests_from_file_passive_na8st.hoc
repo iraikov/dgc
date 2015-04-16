@@ -518,7 +518,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         isivect.x[i-1] = spikelog.x[i]-tspike
         tspike = spikelog.x[i]
     }
-    isivect.printf()
+    isivect.remove(0)
     
     isimean = isivect.mean()
     isivar = isivect.var()
@@ -535,13 +535,13 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     // This is necessary because some variants of the model generate spike doublets,
     // (i.e. spike with very short distance between them, which confuse the ISI statistics.
     isilastgt = isivect.size()-1
-    while (isivect.x[isilastgt] < isivect.x[0]) {
+    while (isivect.x[isilastgt] < isivect.x[1]) {
         isilastgt = isilastgt-1
     }
     
     if (!(isilastgt > 0)) {
-
-        sprint(errmsg, "Unable to find ISI greater than first ISI: forest_path = %s gid = %d", forest_path, gid)
+        sprint(errmsg,"Unable to find ISI greater than first ISI: forest_path = %s gid = %d", forest_path, gid)
+        isivect.printf()
         execerror(errmsg)
     }
     
