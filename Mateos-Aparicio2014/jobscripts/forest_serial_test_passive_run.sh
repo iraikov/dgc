@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #$ -q som,asom,free64,pub64
-#$ -t 1-128
+#$ -t 1-256
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
@@ -13,6 +13,6 @@ module load neuron/7.4alpha
 
 set -x
 
-nrniv -nobanner -nogui -c "batch_size=100" -c "task_id=$SGE_TASK_ID - 1" \
+nrniv -nobanner -nogui -c "batch_size=256" -c "task_id=$SGE_TASK_ID - 1" \
 -c "strdef forest_config" -c 'forest_config="./config/DGC_forest_hpc_passive.config"' \
 ./DGC_serial_test_from_forest_passive_na8st.hoc

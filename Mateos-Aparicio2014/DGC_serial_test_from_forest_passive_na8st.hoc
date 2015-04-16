@@ -2,36 +2,40 @@
 xopen("DGC_Tests_from_file_passive_na8st.hoc")
 xopen("DGC_Synapse_Tests_from_file_na8st.hoc")
 
-proc main() { local i, ij, gid localobj f strdef cmd, local_forest_path, local_results_path
-    strdef results_path, forest_path
-    
-    // forest_config and task_id and batch_size are variables that
-    // should be set on the command line, e.g. nrniv -c "task_id=1" 
-    // -c "batch_size=20" -c "strdef forest_config" -c "forest_config=\"config.hoc\""
+proc main() { local i, ij, gid, forest_start_index, forest_end_index, forest_inc localobj f strdef cmd, local_forest_path, local_results_path
+    strdef results_path_prefix, forest_path_prefix
     
     f = new File() 
     f.ropen(forest_config)
     ncells = f.scanvar()
-    f.scanstr(forest_path)
-    f.scanstr(results_path)
+    f.scanstr(forest_path_prefix)
+    f.scanstr(results_path_prefix)
+    forest_start_index = f.scanvar()
+    forest_inc = f.scanvar()
+    forest_end_index = f.scanvar()
     f.close()
     
-    sprint (local_forest_path, "%s", forest_path)
-    sprint (local_results_path, "%s", results_path)
-    
-    sprint(cmd, "mkdir -p %s", local_results_path)
-    system(cmd)
-    
-    for (gid=task_id; gid < ncells; gid += batch_size)  {
+    printf ("forest_start_index = %d forest_inc = %d forest_end_index = %d\n", forest_start_index, forest_inc, forest_end_index)
 
-        printf("DGC_serial_test_from_forest_passive_na8st: gid = %d\n", gid)
+    for (forest_index=forest_start_index; forest_index < forest_end_index; forest_index += forest_inc) {
+
+        sprint (local_forest_path, "%s/%d/GC", forest_path_prefix, forest_index)
+    	sprint (local_results_path, "%s/%d", results_path_prefix, forest_index)
+    
+        sprint(cmd, "mkdir -p %s", local_results_path)
+    	system(cmd)
+    
+        for (gid=task_id; gid < ncells; gid += batch_size)  {
+
+    	    printf("DGC_serial_test_from_forest_passive_na8st: gid = %d\n", gid)
         
-        passive_test (local_forest_path, local_results_path, gid)
-        threshold_test (local_forest_path, local_results_path, gid)
-        single_ap_test (local_forest_path, local_results_path, gid)
-        ap_rate_test (local_forest_path, local_results_path, gid)
-        synapse_test (local_forest_path, local_results_path, gid)
-    }
+	    passive_test (local_forest_path, local_results_path, gid)
+            threshold_test (local_forest_path, local_results_path, gid)
+	    single_ap_test (local_forest_path, local_results_path, gid)
+            ap_rate_test (local_forest_path, local_results_path, gid)
+            synapse_test (local_forest_path, local_results_path, gid)
+    	}
+   }
 }
 
 main()
