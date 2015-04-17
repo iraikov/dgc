@@ -470,7 +470,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
-    nc.threshold = -43.5
+    nc.threshold = -40.0
     nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
@@ -491,7 +491,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         
         if (spikelog.size() < 50) {
             printf ("ap_rate_test: stim1.amp = %g\n", stim1.amp)
-            stim1.amp = stim1.amp + 0.1
+            stim1.amp = 2.0 * stim1.amp 
             spikelog.clear()
             tlog.clear()
             Vlog_soma.clear()
