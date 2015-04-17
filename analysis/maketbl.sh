@@ -27,5 +27,7 @@ for (( i = 0; i < ncells; i++ )) do
     spikes_path="$path/DGC_spikes_$id.dat"
     synapse_path="$path/DGC_synapse_$id.dat"
 
-    awk -v "ID=$i" -f $dirname/csv-filter.awk $passive_results_path $single_ap_results_path $threshold_results_path $spikes_path $synapse_path >> $tblpath
-end
+    awk -v "ID=$i" -f $exec_path/csv-filter.awk $passive_results_path $single_ap_results_path $threshold_results_path $spikes_path $synapse_path >> $tblpath
+
+done
+
