@@ -466,7 +466,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.1
+    stim1.amp = 0.3
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -485,11 +485,12 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     tlog.record (&t)
     
     
-    // Increase the injected current until at least 50 spikes occur
-    while (spikelog.size() < 50) {
+    // Increase the injected current until at least 30 spikes occur
+    while (spikelog.size() < 30) {
+
         simulate(prelength,mainlength)
         
-        if (spikelog.size() < 50) {
+        if (spikelog.size() < 30) {
             printf ("ap_rate_test: stim1.amp = %g\n", stim1.amp)
             stim1.amp = 2.0 * stim1.amp 
             spikelog.clear()
@@ -518,7 +519,6 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         isivect.x[i-1] = spikelog.x[i]-tspike
         tspike = spikelog.x[i]
     }
-    isivect.remove(0)
     
     isimean = isivect.mean()
     isivar = isivect.var()
