@@ -1,7 +1,10 @@
 #! /usr/bin/octave -qf
 args = argv ();
 
-DGC_results = load(args{1});
+DGC_results = [];
+for i = 1:size(args,1)
+    DGC_results = vertcat(DGC_results,load(args{i}));
+end
 
 input_resistance=DGC_results(:,2);
 membrane_tau=DGC_results(:,6);
