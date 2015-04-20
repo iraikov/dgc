@@ -74,11 +74,11 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.33 // increased from 0.8
+    KDRmult = 1.5 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.005
-    gKAa = 0.01
+    gKAs = 0.01
+    gKAa = 0.05
     
     //Calcium channels
     CaTmult = 1.75

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+exec_dir=`dirname $0`
+
 timestamp=$1
 start=$2
 inc=$3
@@ -15,8 +17,8 @@ results_dir=/som/iraikov/DGC_forest_test_results/passive/$timestamp/$index
 echo results_path=$results_path
 echo results_dir=$results_dir
 
-echo ../../analysis/maketbl.sh $results_path $results_dir
-../../analysis/maketbl.sh $results_path $results_dir
+echo $exec_dir/maketbl.sh $results_path $results_dir
+$exec_dir/maketbl.sh $results_path $results_dir
 
 done
 
