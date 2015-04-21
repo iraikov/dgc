@@ -3,7 +3,11 @@ args = argv ();
 
 DGC_results = [];
 for i = 1:size(args,1)
-    DGC_results = vertcat(DGC_results,load(args{i}));
+    i
+    args{i}
+    data = load(args{i});
+    size(data)
+    DGC_results = vertcat(DGC_results,data);
 end
 
 input_resistance=DGC_results(:,2);
@@ -111,12 +115,12 @@ HC_decay=DGC_results(:,27);
 BC_amp=DGC_results(:,28);
 BC_rise=DGC_results(:,29);
 BC_decay=DGC_results(:,30);
-HCC_amp=DGC_results(:,31);
-HCC_rise=DGC_results(:,32);
-HCC_decay=DGC_results(:,33);
 AA_amp=DGC_results(:,34);
 AA_rise=DGC_results(:,35);
 AA_decay=DGC_results(:,36);
+HCC_amp=DGC_results(:,31);
+HCC_rise=DGC_results(:,32);
+HCC_decay=DGC_results(:,33);
 NGFC_GABAA_amp=DGC_results(:,36);
 NGFC_GABAA_rise=DGC_results(:,37);
 NGFC_GABAA_decay=DGC_results(:,38);
@@ -171,5 +175,25 @@ title(['AA syn decay\n';
 
 print (h, 'DGC_results3.pdf', '-dpdf')
 
-system('pdftk DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf cat output DGC_results.pdf');
-system('rm DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf');
+h = figure(4);
+
+subplot(3, 3, 1)
+hist(HCC_amp,50);
+title(['HICAP syn amp\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(HCC_amp),std(HCC_amp))]);
+
+subplot(3, 3, 2)
+hist(HCC_rise,50);
+title(['HICAP syn rise\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(HCC_rise),std(HCC_rise))]);
+
+subplot(3, 3, 3)
+hist(HCC_decay,50);
+title(['HICAP syn decay\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(HCC_decay),std(HCC_decay))]);
+
+
+print (h, 'DGC_results4.pdf', '-dpdf')
+
+system('pdftk DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf DGC_results4.pdf cat output DGC_results.pdf');
+system('rm DGC_results1.pdf DGC_results2.pdf DGC_results3.pdf DGC_results4.pdf');
