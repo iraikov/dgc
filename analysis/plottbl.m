@@ -192,6 +192,21 @@ hist(HCC_decay,50);
 title(['HICAP syn decay\n'; 
        sprintf('mean = %.2f std = %.2f', mean(HCC_decay),std(HCC_decay))]);
 
+subplot(3, 3, 4)
+hist(NGFC_GABAA_amp,50);
+title(['NGFC GABAA syn amp\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_amp),std(NGFC_GABAA_amp))]);
+
+subplot(3, 3, 5)
+hist(NGFC_GABAA_rise,50);
+title(['NGFC GABAA syn rise\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_rise),std(NGFC_GABAA_rise))]);
+
+subplot(3, 3, 6)
+hist(NGFC_GABAA_decay,50);
+title(['NGFC GABAA syn decay\n'; 
+       sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_decay),std(NGFC_GABAA_decay))]);
+
 
 print (h, 'DGC_results4.pdf', '-dpdf')
 
