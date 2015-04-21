@@ -22,7 +22,7 @@ proc parameters() {
     // na8st conductance
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
-    gna_soma = 38 // original 18.8
+    gna_soma = 24 // original 18.8
     gENa = 55.0
 
     lambda2 = 10.0
@@ -74,11 +74,11 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.5 // increased from 0.8
+    KDRmult = 1.35 // increased from 0.8
     V0KDR = 23
     taumultKDR = 1
     gKAs = 0.01
-    gKAa = 0.05
+    gKAa = 0.04
     
     //Calcium channels
     CaTmult = 1.75
