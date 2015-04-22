@@ -121,9 +121,9 @@ AA_decay=DGC_results(:,36);
 HCC_amp=DGC_results(:,31);
 HCC_rise=DGC_results(:,32);
 HCC_decay=DGC_results(:,33);
-NGFC_GABAA_amp=DGC_results(:,36);
-NGFC_GABAA_rise=DGC_results(:,37);
-NGFC_GABAA_decay=DGC_results(:,38);
+NGFC_GABAA_amp=DGC_results(:,37);
+NGFC_GABAA_rise=DGC_results(:,38);
+NGFC_GABAA_decay=DGC_results(:,39);
 
 subplot(3, 3, 1)
 hist(HC_amp,50);
