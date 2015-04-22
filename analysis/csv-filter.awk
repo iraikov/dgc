@@ -167,47 +167,47 @@ BEGIN {
 /HC-GC synapses/ \
 {
     HC_amp=$4
-    HC_rise=$8
-    HC_decay=$12
+    HC_rise=$12
+    HC_decay=$16
     PREVIOUS=1
 }
 
 /BC-GC synapses/ \
 {
     BC_amp=$4
-    BC_rise=$8
-    BC_decay=$12
+    BC_rise=$12
+    BC_decay=$16
     PREVIOUS=1
 }
 
 /HCC-GC synapses/ \
 {
     HCC_amp=$4
-    HCC_rise=$8
-    HCC_decay=$12
+    HCC_rise=$12
+    HCC_decay=$16
     PREVIOUS=1
 }
 
 /AA-GC synapses/ \
 {
     AA_amp=$4
-    AA_rise=$8
-    AA_decay=$12
+    AA_rise=$12
+    AA_decay=$16
     PREVIOUS=1
 }
 
 /NGFC-GC GABAA synapses/ \
 {
     NGFC_GABAA_amp=$5
-    NGFC_GABAA_rise=$9
-    NGFC_GABAA_decay=$13
+    NGFC_GABAA_rise=$13
+    NGFC_GABAA_decay=$17
     PREVIOUS=1
 }
 
 /NGFC-GC GABAB synapses/ \
 {
     NGFC_GABAB_amp=$5
-    NGFC_GABAB_rise=$9
-    NGFC_GABAB_decay=$13
+    NGFC_GABAB_rise=$13
+    NGFC_GABAB_decay=$17
     PREVIOUS=1
 }
