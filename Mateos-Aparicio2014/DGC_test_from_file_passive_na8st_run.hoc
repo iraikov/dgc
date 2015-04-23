@@ -40,10 +40,6 @@ gid = 125
 local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
-gid = 309
-local_forest_path = "/home/igr/src/model/DGC_forest/GC"
-local_results_path = "results"
-
 gid = 005
 local_results_path = "results"
 
@@ -52,6 +48,10 @@ gid = 001
 gid = 106
 gid = 315
 local_forest_path = "/pub/iraikov/DGC_forest/10/GC"
+local_results_path = "results"
+
+gid = 062
+local_forest_path = "/home/igr/src/model/DGC_forest/GC"
 local_results_path = "results"
 
 
