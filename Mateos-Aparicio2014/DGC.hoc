@@ -15,18 +15,18 @@ begintemplate DGC
 // syns_BC - connections from PV+ basket cells
 // syns_AA - connections from axo-axonic cells
 // syns_HCC - connections from HICAP cells
-// syns_NGFC_GABAA, syns_NGFC_GABAB - connections from neurogliaform cells
+// syns_NGFC - connections from neurogliaform cells
 //
 
-public connect2target, is_art, is_connected
 public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
-public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
-public syn_stim
-
+public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 public ndendpts
 public verbose
+public syntest, syntest_up
+public syn_stim
+public is_art, connect2target
 
 verbose = 1
 gid = -1
@@ -38,16 +38,17 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
-objref syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB
+objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
 objref syn_stim
 
 strdef forest_path
 strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
 
-xopen("DGC_Parameters_na8st.hoc")
+xopen("DGC_Parameters_passive_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
-xopen("DGC_Biophysics_na8st.hoc")
+xopen("DGC_Biophysics_passive_na8st.hoc")
 xopen("DGC_Synapses.hoc")
+
 
 proc assert() { local test strdef errmsg
     
@@ -61,18 +62,14 @@ proc assert() { local test strdef errmsg
 
 proc read_Na_rates() { localobj fileS, fileA
     
-    strdef fname
-
     rates_soma = new Vector()
     rates_axon = new Vector()
     
     fileS = new File()
     fileA = new File()
-
-    sprint(fname,"%sdat/soma_st8.dat",getcwd())    
-    fileS.ropen(fname)
-    sprint(fname,"%sdat/axon_st8.dat",getcwd())    
-    fileA.ropen(fname)
+    
+    fileS.ropen("./dat/soma_st8.dat")
+    fileA.ropen("./dat/axon_st8.dat")
     
     while (fileS.eof==0){
 	rates_soma.append( fileS.scanvar() )
@@ -91,7 +88,7 @@ proc init() {
     forest_path = $s3
     
     if (numarg() > 3) {
-        verbose = 1
+        verbose = $4
     }
     
     sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)
@@ -112,11 +109,10 @@ proc init() {
 proc celldef() {
     
     GCLDidxs = new Vector()
-    PDidxs   = new Vector()
-    MDidxs   = new Vector()
-    DDidxs   = new Vector()
+    PDidxs  = new Vector()
+    MDidxs  = new Vector()
+    DDidxs  = new Vector()
     
-    syns = new List()
     syns_GC   = new List()
     syns_MC   = new List()
     syns_HC   = new List()
@@ -125,16 +121,7 @@ proc celldef() {
     syns_HCC  = new List()
     syns_NGFC_GABAA = new List()
     syns_NGFC_GABAB = new List()
-
-    syns.append(syns_GC)    
-    syns.append(syns_MC)    
-    syns.append(syns_HC)    
-    syns.append(syns_BC)    
-    syns.append(syns_AA)    
-    syns.append(syns_HCC)    
-    syns.append(syns_NGFC_GABAA)
-    syns.append(syns_NGFC_GABAB)
-
+    
     topol()
     subsets()
     geom()
@@ -151,5 +138,6 @@ obfunc connect2target() { localobj nc // $o1 target point process, optional $o2 
   if (numarg() == 2) { $o2 = nc } // for backward compatibility
   return nc
 }
+
 
 endtemplate DGC
