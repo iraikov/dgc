@@ -1,4 +1,4 @@
-DGC_results = load('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/DGC_forest_110_test_results_passive_201504141502.dat');
+DGC_results = load('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/DGC_forest_110_test_results_passive_201504161020.dat');
 
 input_resistance=DGC_results(:,2);
 membrane_tau=DGC_results(:,6);

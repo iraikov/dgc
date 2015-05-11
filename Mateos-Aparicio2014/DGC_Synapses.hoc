@@ -47,7 +47,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     
     nsyns_GC   = 1
     nsyns_MC   = 1
-    nsyns_HC   = 3
+    nsyns_HC   = 4
     nsyns_BC   = 10
     nsyns_AA   = 4
     nsyns_HCC  = 10
@@ -114,7 +114,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.001	syn.tau2 = 0.0005	syn.e = -28.99
+            syn.tau1 = 0.05  	syn.tau2 = 2.25	syn.e = -85.7 //syn.e = -28.99
         }
         syns_HC.append(syn)
     }
@@ -189,17 +189,17 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
     se = $o2
     w = $3
     v_holding = $4
-    v_init = -75
+    v_init = $5
     
     soma { 
         se.rs = 1
-        se.dur1 = 2000
+        se.dur1 = 3010
         se.amp1 = v_holding 
     }
     
-    mainDT = 0.025
+    mainDT = 0.001
     dt = mainDT
-    tstop = 2000
+    tstop = 3000
     
     vec_size = tstop/mainDT + 1
     
@@ -210,9 +210,9 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
     tlog.record(&t)
     
     ns = new NetStim()
-    ns.interval = 1000
+    ns.interval = 3000
     ns.number = 1
-    ns.start  = 200
+    ns.start  = 2200
     ns.noise  = 0
     
     nclist = new List()
@@ -239,8 +239,10 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
     i_peak = vec.max()
     t_peak = tlog.x[vec.indwhere("==",i_peak)]
     
-    print i_peak, t_peak
-    
+    print "i_peak = ", i_peak
+    print "i_holding = ", i_holding
+    print "i_peak - i_holding = ", i_peak - i_holding
+
     amp = abs(i_peak - i_holding) * 1000
     
     i_0001 = i_holding + (i_peak - i_holding) * 1/10000
@@ -281,15 +283,15 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     se = $o2
     w = $3
     v_holding = $4
-    v_init = -75
+    v_init = -68
     
     soma { 
-        se.rs = 1
+        se.rs = 10
         se.dur1 = 1010
         se.amp1 = v_holding 
     }
     
-    mainDT = 0.025
+    mainDT = 0.001
     dt = mainDT
     tstop = 1000
     
@@ -331,7 +333,9 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     i_peak = vec.min()
     t_peak = tlog.x[vec.indwhere("==",i_peak)]
     
-    print i_peak, t_peak
+    print "i_peak = ", i_peak
+    print "i_holding = ", i_holding
+    print "i_peak - i_holding = ", i_peak - i_holding
     
     amp = abs(i_peak - i_holding) * 1000
     
