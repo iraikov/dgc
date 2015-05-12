@@ -486,8 +486,8 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     it = 0    
     // Increase the injected current until at least 30 spikes occur
-    // or up to 6 steps
-    while ((spikelog.size() < 30) && (it < 6)) {
+    // or up to 2 steps
+    while ((spikelog.size() < 30) && (it < 2)) {
 
         simulate(prelength,mainlength)
         
