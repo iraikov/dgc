@@ -486,14 +486,14 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     it = 1
     // Increase the injected current until at least 30 spikes occur
-    // or up to 2 steps
+    // or up to 3 steps
     while (spikelog.size() < 30) {
 
         simulate(prelength,mainlength)
         
-        if ((spikelog.size() < 30) && (it < 2)) {
+        if ((spikelog.size() < 30) && (it < 3)) {
             printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
-            stim1.amp = 2.0 * stim1.amp 
+            stim1.amp = stim1.amp + 0.2
             spikelog.clear()
             tlog.clear()
             Vlog_soma.clear()
