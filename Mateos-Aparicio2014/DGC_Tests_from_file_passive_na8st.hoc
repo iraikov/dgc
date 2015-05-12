@@ -524,6 +524,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         tspike = spikelog.x[i]
     }
     
+    printf ("ap_rate_test: isivect.size = %d\n", isivect.size())
     isimean = isivect.mean()
     isivar = isivect.var()
     isistdev = isivect.stdev()
