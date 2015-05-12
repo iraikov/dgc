@@ -23,7 +23,7 @@ proc main() { local i, ij, gid, forest_start_index, forest_end_index, forest_inc
 
     for (forest_index=forest_start_index; forest_index <= forest_end_index; forest_index += forest_inc) {
 
-        sprint (local_forest_path, "%s/%d/GC", forest_path_prefix, forest_index)
+        sprint (local_forest_path, "%s/%d", forest_path_prefix, forest_index)
     	sprint (local_results_path, "%s/%d", results_path_prefix, forest_index)
     
         sprint(cmd, "mkdir -p %s", local_results_path)

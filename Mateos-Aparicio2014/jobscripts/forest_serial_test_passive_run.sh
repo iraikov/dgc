@@ -7,7 +7,6 @@
 #$ -S /bin/bash
 #$ -N DGC_forest_test_MateosAparicio2014_passive_na8st
 #$ -o ./results/forest_test_MateosAparicio2014_passive_na8st.$JOB_ID.o
-#$ -ckpt restart
 
 module load neuron/7.4alpha
 
