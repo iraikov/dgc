@@ -492,7 +492,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         simulate(prelength,mainlength)
         
         if (spikelog.size() < 30) {
-            printf ("ap_rate_test: stim1.amp = %g\n", stim1.amp)
+            printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
             stim1.amp = 2.0 * stim1.amp 
             spikelog.clear()
             tlog.clear()
