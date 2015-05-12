@@ -484,7 +484,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
-    it = 0    
+    it = 1
     // Increase the injected current until at least 30 spikes occur
     // or up to 2 steps
     while (spikelog.size() < 30) {
