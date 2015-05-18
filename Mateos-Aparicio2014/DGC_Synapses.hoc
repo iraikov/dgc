@@ -1,4 +1,6 @@
 
+load_file("nrngui.hoc")
+
 
 
 
@@ -182,7 +184,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
 
 }
 
-external continuerun, cvode_active
+external continuerun, cvode_active, cvode
 obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
     synlist = $o1
@@ -223,10 +225,13 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
         nclist.append(nc)
     }
     
-    finitialize(v_init)
     cvode_active(1)
+    cvode.use_daspk(1)
+    cvode.dae_init_dteps(1e-9, 2)
+    finitialize(v_init)
     fadvance()
     continuerun(tstop)
+
     
     i_holding = vec.x[tlog.indwhere(">=",ns.start)]
     idx = tlog.indwhere(">=",ns.start) - 1
@@ -279,6 +284,7 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
 
 obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
+    
     synlist = $o1
     se = $o2
     w = $3
@@ -317,8 +323,10 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
         nclist.append(nc)
     }
     
-    finitialize(v_init)
     cvode_active(1)
+    cvode.use_daspk(1)
+    cvode.dae_init_dteps(1e-9, 2)
+    finitialize(v_init)
     fadvance()
     continuerun(tstop)
     
