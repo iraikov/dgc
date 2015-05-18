@@ -5,7 +5,7 @@ config_path=./config/DGC_forest_hpc_passive.config
 ncells=1000
 data_path_prefix=/som/iraikov/DGC_forest
 results_path_prefix="/som/iraikov/DGC_forest_test_results/passive/`date +'%Y%m%d%H%M'`"
-forest_seq="10 10 10"
+forest_seq="10 100 1000"
 
 echo "$ncells" > $config_path
 echo "$data_path_prefix" >> $config_path
