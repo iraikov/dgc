@@ -30,17 +30,17 @@ func lambda_f() { local i, x1, x2, d1, d2, lam, freq
 
     //  length of the section in units of lambda
     lam *= sqrt(2) * 1e-5*sqrt(4*PI*freq*Ra*cm)
-
+    
     return L/lam
 }
 
 
 proc topol_from_file() { local i,j,p,dimsize localobj f, m
-
+    
     f = new File ()
     
     f.ropen (dendrite_topology_fn)
-
+    
     dimsize = f.scanvar()
     GCLDidxs.scanf(f,dimsize)
     dimsize = f.scanvar()
@@ -95,7 +95,7 @@ proc topol_from_file() { local i,j,p,dimsize localobj f, m
         i = m.getval(p,1)
         j = m.getval(p,0)
         if (verbose) {
-            printf ("connecting dendrites[%d] and dendrites[%d]\n", i, j)
+            printf ("connecting dendrites[%d] and dendrites[%d]\n", j, i)
         }
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
         assert (j < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
@@ -114,7 +114,7 @@ proc topol_from_file() { local i,j,p,dimsize localobj f, m
         i = m.getval(p,1)
         j = m.getval(p,0)
         if (verbose) {
-            printf ("connecting dendrites[%d] and soma\n", i, j)
+            printf ("connecting dendrites[%d] and soma\n", j)
         }
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
         connect dendrites[j](0),soma(1)
@@ -142,25 +142,6 @@ proc shape() {
     shape_from_file()
 }
 
-// When adding points to a compartment, test if the current point is
-// the same as the previous one.
-func pointcheck() { local k,dx,dy,dz  localobj m
-    m = $o1
-    k = $2
-    if (k > 0) {
-        dx = (m.getval(k,0) - m.getval(k-1,0))
-        dy = (m.getval(k,1) - m.getval(k-1,1))
-        dz = (m.getval(k,2) - m.getval(k-1,2))
-        if (sqrt(dx*dx + dy*dy + dz*dz) < 1e-6) {
-            return 0
-        } else {
-            return 1
-        }
-    } else {
-        return 1
-    }
-}
-
 proc shape_from_file() { local i,j,k localobj f, m
     
     f = new File ()
@@ -183,12 +164,9 @@ proc shape_from_file() { local i,j,k localobj f, m
     k = 0
     for i=0, nDends-1 dendrites[i] { 
         //printf("i = %d ndendpts.x[i] = %d\n",i,ndendpts.x[i])
-
         for j=0, ndendpts.x[i]-1 {
-            if (pointcheck(m,k) > 0) {
-	        pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
+	    pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
 	        //printf("i = %d k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",i,k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
-            }
 
             k = k+1
         }
