@@ -103,7 +103,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     gid = $3
     
     print "passive_test: gid = ", gid
-    print "single_ap_test: v_init = ", v_init
+    print "passive_test: v_init = ", v_init
 
     strdef log_fn
     
