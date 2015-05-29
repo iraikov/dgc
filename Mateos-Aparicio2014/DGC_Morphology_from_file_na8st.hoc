@@ -140,7 +140,7 @@ proc shape() {
     shape_from_file()
 }
 
-proc shape_from_file() { local i,j,k localobj f, m
+proc shape_from_file() { local i,j,k,tol localobj f, m
     
     f = new File ()
     
@@ -159,19 +159,20 @@ proc shape_from_file() { local i,j,k localobj f, m
         printf ("dendrite point matrix dimensions =  %d, %d\n", m.nrow, m.ncol)
     }
 
+    tol = 5e-4
     k = 0
     for i=0, nDends-1 dendrites[i] { 
         //printf("i = %d ndendpts.x[i] = %d\n",i,ndendpts.x[i])
 	pt3dclear()
         for j=0, ndendpts.x[i]-1 {
-            if (k == 0) {
+            if (j == 0) {
                 pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
             } else {
-                if ((k == 0) || (abs(m.getval(k,0) - m.getval(k-1,0)) > 1e-4) && (abs(m.getval(k,1) - m.getval(k-1,1)) > 1e-4)  && (abs(m.getval(k,2) - m.getval(k-1,2)) > 1e-4)) {
+                if ((abs(m.getval(k,0) - m.getval(k-1,0)) > tol) && (abs(m.getval(k,1) - m.getval(k-1,1)) > tol)  && (abs(m.getval(k,2) - m.getval(k-1,2)) > tol)) {
 	            pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
+                    //printf("i = %d k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",i,k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
                 }
             }
-	        //printf("i = %d k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",i,k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
 
             k = k+1
         }
@@ -249,7 +250,7 @@ proc geom_spines() { localobj spine_density, f
 
 proc geom_nseg() { local freq, d_lambda, l
     
-    freq = 100 // Hz, frequency at which AC length constant will be computed
+    freq = 200 // Hz, frequency at which AC length constant will be computed
     d_lambda = 0.1
 
     forall { 
