@@ -1,16 +1,13 @@
 /*////////////// Topology and geometry //////////////// */
 
 func lambda_f() { local i, x1, x2, d1, d2, lam, freq 
-
 /*
     printf("lambda_f: n3d() = %g\n", n3d())
     for i=0, n3d()-1 {
        printf("lambda_f: x3d(%d) = %.11f y3d(%d) = %.11f z3d(%d) = %.11f\n", i, x3d(i), i, y3d(i), i, z3d(i))
        printf("lambda_f: arc3d(%d) = %.11f area = %g\n", i, arc3d(i), area(0.5))
     }
-*/
-   
-    
+*/    
     freq = $1
 
     if (n3d() <= 1) {
@@ -167,7 +164,13 @@ proc shape_from_file() { local i,j,k localobj f, m
         //printf("i = %d ndendpts.x[i] = %d\n",i,ndendpts.x[i])
 	pt3dclear()
         for j=0, ndendpts.x[i]-1 {
-	        pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
+            if (k == 0) {
+                pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
+            } else {
+                if ((k == 0) || (abs(m.getval(k,0) - m.getval(k-1,0)) > 1e-4) && (abs(m.getval(k,1) - m.getval(k-1,1)) > 1e-4)  && (abs(m.getval(k,2) - m.getval(k-1,2)) > 1e-4)) {
+	            pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
+                }
+            }
 	        //printf("i = %d k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",i,k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
 
             k = k+1
