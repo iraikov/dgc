@@ -253,36 +253,39 @@ proc biophys() {
                 rates_seg.printf()
             }
 
-	    a1_0_na8st(x)= rates_seg.x[0]
-	    a1_1_na8st(x)= rates_seg.x[1]
-	    
-	    b1_0_na8st(x)= rates_seg.x[2]
-	    b1_1_na8st(x)= rates_seg.x[3]
-            
-	    a2_0_na8st(x)= rates_seg.x[4]
-	    a2_1_na8st(x)= rates_seg.x[5]
-            
-	    b2_0_na8st(x)= rates_seg.x[6]
-	    b2_1_na8st(x)= rates_seg.x[7]
-            
-	    a3_0_na8st(x)= rates_seg.x[8]
-	    a3_1_na8st(x)= rates_seg.x[9]
-            
-	    b3_0_na8st(x)= rates_seg.x[10]
-	    b3_1_na8st(x)= rates_seg.x[11]
-            
-	    bh_0_na8st(x)= rates_seg.x[12]
-	    bh_1_na8st(x)= rates_seg.x[13]
-	    bh_2_na8st(x)= rates_seg.x[14]
-            
-	    ah_0_na8st(x)= rates_seg.x[15]
-	    ah_1_na8st(x)= rates_seg.x[16]
-	    ah_2_na8st(x)= rates_seg.x[17]
-	    
-	    vShift_inact_local_na8st = 10
-            
-	    gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
-	    gbar_na8st(x) = gnabar_gauss
+            if (ismembrane("na8st")) {
+                
+	        a1_0_na8st(x)= rates_seg.x[0]
+	        a1_1_na8st(x)= rates_seg.x[1]
+	        
+	        b1_0_na8st(x)= rates_seg.x[2]
+	        b1_1_na8st(x)= rates_seg.x[3]
+                
+	        a2_0_na8st(x)= rates_seg.x[4]
+	        a2_1_na8st(x)= rates_seg.x[5]
+                
+	        b2_0_na8st(x)= rates_seg.x[6]
+	        b2_1_na8st(x)= rates_seg.x[7]
+                
+	        a3_0_na8st(x)= rates_seg.x[8]
+	        a3_1_na8st(x)= rates_seg.x[9]
+                
+	        b3_0_na8st(x)= rates_seg.x[10]
+	        b3_1_na8st(x)= rates_seg.x[11]
+                
+	        bh_0_na8st(x)= rates_seg.x[12]
+	        bh_1_na8st(x)= rates_seg.x[13]
+	        bh_2_na8st(x)= rates_seg.x[14]
+                
+	        ah_0_na8st(x)= rates_seg.x[15]
+	        ah_1_na8st(x)= rates_seg.x[16]
+	        ah_2_na8st(x)= rates_seg.x[17]
+	        
+	        vShift_inact_local_na8st = 10
+                
+	        gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
+	        gbar_na8st(x) = gnabar_gauss
+            }
             
             if (ismembrane("KIn")) {
                 

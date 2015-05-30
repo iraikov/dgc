@@ -128,6 +128,8 @@ proc celldef() {
     geom_spines()
     biophys()
     synapses()
+    
+    finitialize(v_init)
 }
 
 func is_art()  { return 0 }
