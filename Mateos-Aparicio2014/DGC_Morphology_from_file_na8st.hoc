@@ -1,20 +1,20 @@
 /*////////////// Topology and geometry //////////////// */
 
 func lambda_f() { local i, x, y, z, x1, x2, d1, d2, lam
-
-/*
+    
+    /*
     printf("lambda_f: n3d() = %d\n", n3d())
     if (n3d() <= 3) {
-    for i=0, n3d()-1 {
-        x = x3d(i)
-        y = x3d(i)
-        z = x3d(i)
-        d = diam3d(i)
-        printf("lambda_f: i = %d x = %g y = %g z = %g\n", i, x3d(i), y3d(i), z3d(i))
+        for i=0, n3d()-1 {
+            x = x3d(i)
+            y = x3d(i)
+            z = x3d(i)
+            d = diam3d(i)
+            printf("lambda_f: i = %d x = %g y = %g z = %g\n", i, x3d(i), y3d(i), z3d(i))
+        }
     }
-    }
-*/  
-  
+    */
+    
     if (n3d() < 2) {
         return 1e5*sqrt(diam/(4*PI*$1*Ra*cm))
     }
@@ -51,6 +51,7 @@ proc topol_from_file() { local i,j,p,dimsize localobj f, m
     dimsize = f.scanvar()
     ndendpts  = new Vector()
     ndendpts.scanf(f,dimsize)
+    ndendpts.printf()
 
     if (verbose) {
 
@@ -140,7 +141,7 @@ proc shape() {
     shape_from_file()
 }
 
-proc shape_from_file() { local i,j,k,l,tol localobj f, m
+proc shape_from_file() { local i,j,k localobj f, m
     
     f = new File ()
     
@@ -159,22 +160,12 @@ proc shape_from_file() { local i,j,k,l,tol localobj f, m
         printf ("dendrite point matrix dimensions =  %d, %d\n", m.nrow, m.ncol)
     }
     
-    tol = 0.5
-    l = k = 0
+    k = 0
+    
     for i=0, nDends-1 dendrites[i] { 
-        printf("i = %d ndendpts.x[i] = %d\n",i,ndendpts.x[i])
-	pt3dclear()
+        pt3dconst(0)
         for j=0, ndendpts.x[i]-1 {
-                if (k == 0) {
-                   pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3)) 
-                   printf("k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
-                } else {
-                if ((abs(m.getval(k,0) - m.getval(l,0)) > tol) && (abs(m.getval(k,1) - m.getval(l,1)) > tol)  && (abs(m.getval(k,2) - m.getval(l,2)) > tol)) {
-	            pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3)) 
-                    l = k
-                    printf("k = %d x = %.11f y = %.11f z = %.11f diam = %.11f\n",k,m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3))
-                }
-               }
+            pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3)) 
             k = k+1
         }
         //printf("%d: arc3d(%d) = %.11f area = %g\n", i, 1, arc3d(1), area(0.5))
