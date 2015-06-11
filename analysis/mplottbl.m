@@ -1,4 +1,14 @@
-DGC_results = load('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/DGC_forest_110_test_results_passive_201504161020.dat');
+D = dir('/home/igr/src/model/DGC/Mateos-Aparicio2014/results/forest/*.dat');
+
+DGC_results = [];
+for i = 1:size(D,1)
+    i
+    D(i).name
+    data = load(['/home/igr/src/model/DGC/Mateos-Aparicio2014/' ...
+                 'results/forest/' D(i).name]);
+    size(data)
+    DGC_results = vertcat(DGC_results,data);
+end
 
 input_resistance=DGC_results(:,2);
 membrane_tau=DGC_results(:,6);
