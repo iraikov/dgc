@@ -124,6 +124,9 @@ HCC_decay=DGC_results(:,33);
 NGFC_GABAA_amp=DGC_results(:,37);
 NGFC_GABAA_rise=DGC_results(:,38);
 NGFC_GABAA_decay=DGC_results(:,39);
+% NGFC_GABAB_amp=DGC_results(:,39);
+% NGFC_GABAB_rise=DGC_results(:,40);
+% NGFC_GABAB_decay=DGC_results(:,41);
 
 subplot(3, 3, 1)
 hist(HC_amp,50);
@@ -207,6 +210,17 @@ hist(NGFC_GABAA_decay,50);
 title(['NGFC GABAA syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_decay),std(NGFC_GABAA_decay))]);
 
+% subplot(3, 3, 7)
+% hist(NGFC_GABAB_amp,50);
+% title(['NGFC B syn amp. ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_amp),std(NGFC_GABAB_amp))]);
+
+% subplot(3, 3, 8)
+% hist(NGFC_GABAB_rise,50);
+% title(['NGFCA B syn rise ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_rise),std(NGFC_GABAB_rise))]);
+
+% subplot(3, 3, 9)
+% hist(NGFC_GABAB_decay,50);
+% title(['NGFC B syn decay ', sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAB_decay),std(NGFC_GABAB_decay))]);
 
 print (h, 'DGC_results4.pdf', '-dpdf')
 
