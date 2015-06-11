@@ -1,4 +1,4 @@
-#! /usr/bin/octave -qf
+#! /home/igr/bin/octave/bin/octave -qf
 args = argv ();
 
 DGC_results = [];
@@ -127,49 +127,49 @@ NGFC_GABAA_decay=DGC_results(:,39);
 
 subplot(3, 3, 1)
 hist(HC_amp,50);
-title(['HIPP syn amp\n'; 
+title(['HIPP syn amp'; 
        sprintf('mean = %.2f std = %.2f', mean(HC_amp),std(HC_amp))]);
 
 subplot(3, 3, 2)
 hist(HC_rise,50);
-title(['HIPP syn rise\n'; 
+title(['HIPP syn rise'; 
        sprintf('mean = %.2f std = %.2f', mean(HC_rise),std(HC_rise))]);
 
 subplot(3, 3, 3)
 hist(HC_decay,50);
-title(['HIPP syn decay\n'; 
+title(['HIPP syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(HC_decay),std(HC_decay))]);
 
 
 subplot(3, 3, 4)
 hist(BC_amp,50);
-title(['PVBC syn amp\n';
+title(['PVBC syn amp';
        sprintf('mean = %.2f std = %.2f', mean(BC_amp),std(BC_amp))]);
 
 subplot(3, 3, 5)
 hist(BC_rise,50);
-title(['PVBC syn rise\n'; 
+title(['PVBC syn rise'; 
        sprintf('mean = %.2f std = %.2f', mean(BC_rise),std(BC_rise))]);
 
 subplot(3, 3, 6)
 hist(BC_decay,50);
-title(['PVBC syn decay\n'; 
+title(['PVBC syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(BC_decay),std(BC_decay))]);
 
 
 subplot(3, 3, 7)
 hist(AA_amp,50);
-title(['AA syn amp\n'; 
+title(['AA syn amp'; 
        sprintf('mean = %.2f std = %.2f', mean(AA_amp),std(AA_amp))]);
 
 subplot(3, 3, 8)
 hist(AA_rise,50);
-title(['AA syn rise\n'; 
+title(['AA syn rise'; 
        sprintf('mean = %.2f std = %.2f', mean(AA_rise),std(AA_rise))]);
 
 subplot(3, 3, 9)
 hist(AA_decay,50);
-title(['AA syn decay\n'; 
+title(['AA syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(AA_decay),std(AA_decay))]);
 
 
@@ -179,32 +179,32 @@ h = figure(4);
 
 subplot(3, 3, 1)
 hist(HCC_amp,50);
-title(['HICAP syn amp\n'; 
+title(['HICAP syn amp'; 
        sprintf('mean = %.2f std = %.2f', mean(HCC_amp),std(HCC_amp))]);
 
 subplot(3, 3, 2)
 hist(HCC_rise,50);
-title(['HICAP syn rise\n'; 
+title(['HICAP syn rise'; 
        sprintf('mean = %.2f std = %.2f', mean(HCC_rise),std(HCC_rise))]);
 
 subplot(3, 3, 3)
 hist(HCC_decay,50);
-title(['HICAP syn decay\n'; 
+title(['HICAP syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(HCC_decay),std(HCC_decay))]);
 
 subplot(3, 3, 4)
 hist(NGFC_GABAA_amp,50);
-title(['NGFC GABAA syn amp\n'; 
+title(['NGFC GABAA syn amp'; 
        sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_amp),std(NGFC_GABAA_amp))]);
 
 subplot(3, 3, 5)
 hist(NGFC_GABAA_rise,50);
-title(['NGFC GABAA syn rise\n'; 
+title(['NGFC GABAA syn rise'; 
        sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_rise),std(NGFC_GABAA_rise))]);
 
 subplot(3, 3, 6)
 hist(NGFC_GABAA_decay,50);
-title(['NGFC GABAA syn decay\n'; 
+title(['NGFC GABAA syn decay'; 
        sprintf('mean = %.2f std = %.2f', mean(NGFC_GABAA_decay),std(NGFC_GABAA_decay))]);
 
 
