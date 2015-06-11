@@ -30,13 +30,13 @@ h = figure(1);
 
 subplot(3, 2, 1)
 hist(input_resistance,50);
-title(['Input resistance [MOhm]\n';
+title(['Input resistance [MOhm]';
        sprintf('mean = %.2f std = %.2f',
                mean(input_resistance),std(input_resistance))]);
 
 subplot(3, 2, 2)
 hist(membrane_tau,50);
-title(['Membrane time constant [ms]\n'; 
+title(['Membrane time constant [ms]'; 
        sprintf('mean = %.2f std = %.2f', mean(membrane_tau),std(membrane_tau))]);
 
 subplot(3, 2, 3)
