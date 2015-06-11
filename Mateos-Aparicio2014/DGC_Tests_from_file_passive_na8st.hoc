@@ -17,7 +17,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     mainlength = $2
 
     cvode_active (1)
-    cvode.use_daspk(1)
+    cvode.use_daspk(0)
     
     finitialize(v_init)
     
@@ -481,9 +481,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
 
         simulate(prelength,mainlength)
         
-        if ((spikelog.size() < 30) && (it < 3)) {
+        if ((spikelog.size() < 30) && (it < 5)) {
             printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
-            stim1.amp = stim1.amp + 0.2
+            stim1.amp = stim1.amp + 0.1
             spikelog.clear()
             tlog.clear()
             Vlog_soma.clear()
