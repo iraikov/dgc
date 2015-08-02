@@ -60,8 +60,17 @@ BREAKPOINT {
 
 DERIVATIVE state {
 	ca_i' = -B*ica - taucadiv*(ca_i-ca0)/tauca
-  minf = 1/(1 + exp(-(v-Vhalf)/k))
-	qinf = 1 - exp(-ca_i/kca)
+        minf = 1/(1 + exptrap(1,-(v-Vhalf)/k))
+	qinf = 1 - exptrap(2,-ca_i/kca)
 	q' = (minf*qinf - q)/tau
 } 
+
+FUNCTION exptrap(loc,x) {
+  if (x>=700) {
+    printf("exptrap DGC_UK [%d]: x = %g\n", loc, x)
+    exptrap = exp(700)
+  } else {
+    exptrap = exp(x)
+  }
+}
 

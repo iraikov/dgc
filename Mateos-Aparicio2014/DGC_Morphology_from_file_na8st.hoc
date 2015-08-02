@@ -224,18 +224,20 @@ proc geom() {
 }
 
 
-proc geom_spines() { localobj spine_density, f
+proc geom_spines() { localobj spine_density, f strdef msg
     
     f = new File()
     f.ropen (spine_density_fn)
     spine_density = new Vector()
-    spine_density.scanf (f)
+    spine_density.scanf (f, nDends)
     f.close()
+
+    sprint (msg, "spine_density is not the same length (%d) as the number of dendritic compartments (%d)", spine_density.size(), nDends)
+    assert (spine_density.size() == nDends,  msg)
 
     for (i = 0; i < nDends; i = i+1) dendrites[i] {
         insert spines
         scale_spines = spine_density.x[i]
-        
     }
 }
 

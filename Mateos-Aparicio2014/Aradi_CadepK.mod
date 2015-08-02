@@ -75,8 +75,8 @@ INITIAL {
 	ca_i = ca0
 	q = alphaq(ca_i)/(alphaq(ca_i)+betaq(ca_i))
 	r = alphar/(alphar+betar(v))
-  s = sinf(ca_i)
-  gbar = gbkbar + gskbar
+        s = sinf(ca_i)
+        gbar = gbkbar + gskbar
 }
 
 FUNCTION exp1(A (/ms), d, k, x (mM)) (/ms) {
@@ -95,7 +95,7 @@ FUNCTION betaq(x (mM)) (/ms) {
 
 FUNCTION betar(v (mV)) (/ms) {
 	UNITSOFF
-	betar = 0.11/exp((v-35)/14.9)
+	betar = 0.11/exptrap(1,(v-35)/14.9)
 	UNITSON
 }
 
@@ -103,4 +103,13 @@ FUNCTION sinf(x (mM)) {
 	UNITSOFF
 	sinf = 1/(1+4/(1000*x))
 	UNITSON
+}
+
+FUNCTION exptrap(loc,x) {
+  if (x>=700) {
+    printf("exptrap Aradi_CadepK [%d]: x = %g\n", loc, x)
+    exptrap = exp(700)
+  } else {
+    exptrap = exp(x)
+  }
 }

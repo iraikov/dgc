@@ -115,15 +115,15 @@ PROCEDURE rates(v (mV)) {
   tadjtau = q10tau^((celsius - temptau)/ten)
 	frt = FoverR/(temp0 + celsius)
 
-  alpha1 = exp(z1*gamma*frt*(v - Vhalf1))
-  beta1 = exp(-z1*(1-gamma)*frt*(v - Vhalf1))
+  alpha1 = exptrap(1,z1*gamma*frt*(v - Vhalf1))
+  beta1 = exptrap(2,-z1*(1-gamma)*frt*(v - Vhalf1))
   tau1 = (Dtau1/(alpha1 + beta1) + tau01)/(tadjtau*taudiv)
   
-  alpha2 = exp(z2*gamma*frt*(v - Vhalf2))
-  beta2 = exp(-z2*(1-gamma)*frt*(v - Vhalf2))
+  alpha2 = exptrap(3,z2*gamma*frt*(v - Vhalf2))
+  beta2 = exptrap(4,-z2*(1-gamma)*frt*(v - Vhalf2))
   tau2 = (Dtau2/(alpha2 + beta2) + tau02)/(tadjtau*taudiv)
 
-  minf = 1/(1 + exp(-(v - Vhalf - Vshift)/k))
+  minf = 1/(1 + exptrap(5,-(v - Vhalf - Vshift)/k))
   ginf = gbar*minf^3
 }
 
@@ -135,4 +135,13 @@ FUNCTION gsat (v (mV)) {
 	}
 }
 
+
+FUNCTION exptrap(loc,x) {
+  if (x>=700) {
+    printf("exptrap DGC_M [%d]: x = %g\n", loc, x)
+    exptrap = exp(700)
+  } else {
+    exptrap = exp(x)
+  }
+}
 

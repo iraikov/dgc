@@ -53,9 +53,9 @@ DERIVATIVE states {
 }
 
 PROCEDURE rates(v (mV)) {
-TABLE minf, mtau
-DEPEND taumult, v0
-FROM vmin TO vmax WITH 199
+:TABLE minf, mtau
+:DEPEND taumult, v0
+:FROM vmin TO vmax WITH 199
   malpha = 0.07*(v+v0)/(1-exp(-0.166*(v+v0)))
   mbeta = 0.264*exp(-0.025*(v+48))
   mtau = taumult/(malpha + mbeta)

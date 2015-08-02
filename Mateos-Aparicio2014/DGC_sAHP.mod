@@ -65,7 +65,7 @@ INITIAL {
 	b2 = 1/tau2 - a2
 	a1maxCaRef = 1/tau1Ref - b1 
 	a1max = a1maxCaRef/CaRef
-	a1ca = (a1max*ca_i)/(1+exp(-(ca_i-cah)/kca))
+	a1ca = (a1max*ca_i)/(1+exptrap(1,-(ca_i-cah)/kca))
 	tau1 = 1/(a1ca + b1)
 	o = (a2*(-1 + b1*tau1)*tau2)/(-1 + a2*b1*tau1*tau2)
 	c1 = (b1*tau1*(-1 + a2*tau2))/(-1 + a2*b1*tau1*tau2)
@@ -80,7 +80,16 @@ BREAKPOINT {
 
 DERIVATIVE state {
 	ca_i' = -B*ica - taucadiv*(ca_i-ca0)/tau
-	a1ca = (a1max*ca_i)/(1+exp(-(ca_i-cah)/kca))
+	a1ca = (a1max*ca_i)/(1+exptrap(2,-(ca_i-cah)/kca))
 	c1' = b1*(1 - o) - c1*(a1ca + b1)
 	o' = a2*(1 - c1) - o*(a2 + b2)
+}
+
+FUNCTION exptrap(loc,x) {
+  if (x>=700) {
+    printf("exptrap DGC_sAHP [%d]: x = %g\n", loc, x)
+    exptrap = exp(700)
+  } else {
+    exptrap = exp(x)
+  }
 }

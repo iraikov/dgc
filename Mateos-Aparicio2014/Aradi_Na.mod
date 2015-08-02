@@ -60,9 +60,9 @@ DERIVATIVE states {
 }
 
 PROCEDURE rates(v (mV)) {
-TABLE minf, mtau, hinf, htau
-DEPEND taumult, htaumult
-FROM vmin TO vmax WITH 199
+:TABLE minf, mtau, hinf, htau
+:DEPEND taumult, htaumult
+:FROM vmin TO vmax WITH 199
   malpha = 0.3*(v+45)/(1-exp(-0.2*(v+45)))
   mbeta = -0.3*(v+17)/(1-exp(0.2*(v+17)))
   mtau = taumult/(malpha + mbeta)
@@ -70,7 +70,7 @@ FROM vmin TO vmax WITH 199
 
   halpha = 0.23*exp(-0.05*(v+67))
   hbeta = 3.33/(1+exp(-0.1*(v+14.5)))
-	htau = htaumult/(halpha + hbeta)
-	hinf = halpha/(halpha + hbeta)
+  htau = htaumult/(halpha + hbeta)
+  hinf = halpha/(halpha + hbeta)
 }
 
