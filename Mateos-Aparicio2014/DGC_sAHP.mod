@@ -86,9 +86,9 @@ DERIVATIVE state {
 }
 
 FUNCTION exptrap(loc,x) {
-  if (x>=700) {
+  if (x>=700.0) {
     printf("exptrap DGC_sAHP [%d]: x = %g\n", loc, x)
-    exptrap = exp(700)
+    exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
   }

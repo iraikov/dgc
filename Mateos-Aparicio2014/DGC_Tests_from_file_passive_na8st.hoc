@@ -16,7 +16,7 @@ proc simulate() { local prelength, mainlength, preDT, mainDT
     prelength = $1
     mainlength = $2
 
-    cvode_active (1)
+    cvode_active (0)
     cvode.use_daspk(0)
     
     finitialize(v_init)

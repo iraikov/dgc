@@ -81,7 +81,7 @@ INITIAL {
 
 FUNCTION exp1(A (/ms), d, k, x (mM)) (/ms) {
 	UNITSOFF
-	exp1 = A/exp((12*log10(x)+d)/k)
+	exp1 = A/exptrap(0,(12*log10(x)+d)/k)
 	UNITSON
 }
 
@@ -106,9 +106,9 @@ FUNCTION sinf(x (mM)) {
 }
 
 FUNCTION exptrap(loc,x) {
-  if (x>=700) {
+  if (x>=700.0) {
     printf("exptrap Aradi_CadepK [%d]: x = %g\n", loc, x)
-    exptrap = exp(700)
+    exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
   }

@@ -131,15 +131,15 @@ FUNCTION gsat (v (mV)) {
 	gsat = 1
 	v0 = v0erev + erev  
 	IF (v > v0) {
-		gsat = 1+(v0-v+kV*(1-exp(-(v-v0)/kV)))/(v-erev)
+		gsat = 1+(v0-v+kV*(1-exptrap(0,-(v-v0)/kV)))/(v-erev)
 	}
 }
 
 
 FUNCTION exptrap(loc,x) {
-  if (x>=700) {
+  if (x>=700.0) {
     printf("exptrap DGC_M [%d]: x = %g\n", loc, x)
-    exptrap = exp(700)
+    exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
   }

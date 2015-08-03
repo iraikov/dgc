@@ -76,13 +76,13 @@ PROCEDURE rates(v(mV)) {  :Computes rate and other constants at current v.
 
 UNITSOFF
     alpha = scale_a*.01*vtrap(-(v+55),10) 
-    beta = scale_a*.125*exp(-(v+65)/80)
+    beta = scale_a*.125*exptrap(1,-(v+65)/80)
     sum = alpha + beta
     ntau = 1/sum
     ninf = alpha/sum
     
-    alpha = scale_i*0.0000256077*exp(-v/45.4217)
-    beta = scale_i*0.0330402/(exp(-(v+45.6599)/2.30235) + 1) :Recombinant Kv1.4
+    alpha = scale_i*0.0000256077*exptrap(2,-v/45.4217)
+    beta = scale_i*0.0330402/(exptrap(3,-(v+45.6599)/2.30235) + 1) :Recombinant Kv1.4
     sum = alpha + beta
     htau = 1/sum
     hinf = alpha/sum
@@ -92,8 +92,17 @@ FUNCTION vtrap(x,y) {            :Traps for 0 in denominator of rate eqns., base
     if (fabs(x/y) < 1e-6) {
         vtrap = y*(1 - x/y/2)
     } else {
-        vtrap = x/(exp(x/y) - 1)
+        vtrap = x/(exptrap(0,x/y) - 1)
     }
 }
  
+FUNCTION exptrap(loc,x) {
+  if (x>=700.0) {
+    printf("exptrap SH_KIn [%d]: x = %g\n", loc, x)
+    exptrap = exp(700.0)
+  } else {
+    exptrap = exp(x)
+  }
+}
+
 UNITSON

@@ -109,23 +109,32 @@ PROCEDURE rates(v(millivolt)) {
     LOCAL vS
     vS = v-vShift
 
-    a1 = a1_0*exp( a1_1*vS)
+    a1 = a1_0*exptrap(1, a1_1*vS)
     a1 = a1*maxrate / (a1+maxrate)
-    b1 = b1_0*exp(-b1_1*vS)
+    b1 = b1_0*exptrap(2, -b1_1*vS)
     b1 = b1*maxrate / (b1+maxrate)
     
-    a2 = a2_0*exp( a2_1*vS)
+    a2 = a2_0*exptrap(3, a2_1*vS)
     a2 = a2*maxrate / (a2+maxrate)
-    b2 = b2_0*exp(-b2_1*vS)
+    b2 = b2_0*exptrap(4, -b2_1*vS)
     b2 = b2*maxrate / (b2+maxrate)
     
-    a3 = a3_0*exp( a3_1*vS)
+    a3 = a3_0*exptrap(5, a3_1*vS)
     a3 = a3*maxrate / (a3+maxrate)
-    b3 = b3_0*exp(-b3_1*vS)
+    b3 = b3_0*exptrap(6, -b3_1*vS)
     b3 = b3*maxrate / (b3+maxrate)
     
-    bh = bh_0/(1+bh_1*exp(-bh_2*(vS-vShift_inact-vShift_inact_local)))
+    bh = bh_0/(1+bh_1*exptrap(7, -bh_2*(vS-vShift_inact-vShift_inact_local)))
     bh = bh*maxrate / (bh+maxrate)
-    ah = ah_0/(1+ah_1*exp( ah_2*(vS-vShift_inact-vShift_inact_local)))
+    ah = ah_0/(1+ah_1*exptrap(8, ah_2*(vS-vShift_inact-vShift_inact_local)))
     ah = ah*maxrate / (ah+maxrate)
+}
+ 
+FUNCTION exptrap(loc,x) {
+  if (x>=700.0) {
+    printf("exptrap SH_na8st [%d]: x = %g\n", loc, x)
+    exptrap = exp(700.0)
+  } else {
+    exptrap = exp(x)
+  }
 }

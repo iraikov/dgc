@@ -48,8 +48,8 @@ STATE {
 
 INITIAL {
 	ca_i = ca0
-	minf = 1/(1 + exp(-(v-Vhalf)/k))
-	q = minf*(1 - exp(-ca_i/kca))
+	minf = 1/(1 + exptrap(0,-(v-Vhalf)/k))
+	q = minf*(1 - exptrap(0,-ca_i/kca))
 }
 
 BREAKPOINT {
@@ -66,9 +66,9 @@ DERIVATIVE state {
 } 
 
 FUNCTION exptrap(loc,x) {
-  if (x>=700) {
+  if (x>=700.0) {
     printf("exptrap DGC_UK [%d]: x = %g\n", loc, x)
-    exptrap = exp(700)
+    exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
   }

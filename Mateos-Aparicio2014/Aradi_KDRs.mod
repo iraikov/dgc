@@ -53,9 +53,20 @@ DERIVATIVE states {
 PROCEDURE rates(v (mV)) {
 :TABLE minf, mtau
 :FROM vmin TO vmax WITH 199
-  malpha = 0.028*(v+35)/(1-exp(-0.166*(v+35)))
-  mbeta = 0.1056*exp(-0.025*(v+60))
+  malpha = 0.028*(v+35)/(1-exptrap(1, -0.166*(v+35)))
+  mbeta = 0.1056*exptrap(2, -0.025*(v+60))
   mtau = 1/(malpha + mbeta)
   minf = malpha/(malpha + mbeta)
 }
+
+
+FUNCTION exptrap(loc,x) {
+  if (x>=700.0) {
+    printf("exptrap Aradi_KDRs [%d]: x = %g\n", loc, x)
+    exptrap = exp(700.0)
+  } else {
+    exptrap = exp(x)
+  }
+}
+
 
