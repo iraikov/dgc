@@ -14,6 +14,11 @@
 
 (define comment-pat (string->irregex "^%.*"))
 
+(define (decimal-string x)
+  (sprintf "~A.~A"
+           (inexact->exact (truncate x))
+           (inexact->exact (truncate (round (* 100.0 (- x (truncate x))))))))
+
 (define (sample n v)
   (let ((ub (vector-length v)))
     (let ((idxs (list-tabulate n (lambda (i) (random ub)))))
@@ -22,48 +27,110 @@
     )
 
 
-(define (fresults1 port)
-  (lambda (vs)
-    (for-each
-     (lambda (v)
-       (let (
-             (input-resistance (f64vector-ref v 1))
-             (membrane-tau (f64vector-ref v 6))
-             (spike-threshold (f64vector-ref v 9))
-             (spike-amplitude(f64vector-ref v 10))
-             (spike-ahp (f64vector-ref v 11))
-             (rel-amplitude-dend1 (f64vector-ref v 12))
-             (rel-amplitude-dend2 (f64vector-ref v 13))
-             (rel-amplitude-dend3 (f64vector-ref v 14))
-             (rel-amplitude-dend4 (f64vector-ref v 15))
-             (rel-amplitude-dend5 (f64vector-ref v 16))
-             (number-of-spikes (f64vector-ref v 17))
-             (mean-firing-rate (f64vector-ref v 18))
-             (mean-isi (f64vector-ref v 19))
-             (isi-adaptation3 (f64vector-ref v 23))
-             (isi-adaptation4 (f64vector-ref v 24))
-             )
-         (fprintf port
-                  "~A,~A,~A,~A,~A,~A,~A,~A,~A,~A,~A,~A,~A,~A,~A~%" 
-                  input-resistance
-                  membrane-tau
-                  spike-threshold
-                  spike-amplitude
-                  spike-ahp
-                  rel-amplitude-dend1
-                  rel-amplitude-dend2
-                  rel-amplitude-dend3
-                  rel-amplitude-dend4
-                  rel-amplitude-dend5
-                  number-of-spikes
-                  mean-firing-rate
-                  mean-isi
-                  isi-adaptation3
-                  isi-adaptation4)
-         
-         ))
-     vs)
+(define data-indices
+  `(
+    (input-resistance . 1)
+    (membrane-tau . 6)
+    (spike-threshold . 9)
+    (spike-amplitude . 10)
+    (spike-ahp . 11)
+    (rel-amplitude-dend1 . 12)
+    (rel-amplitude-dend2 . 13)
+    (rel-amplitude-dend3 . 14)
+    (rel-amplitude-dend4 . 15)
+    (rel-amplitude-dend5 . 16)
+    (number-of-spikes . 17)
+    (mean-firing-rate . 18)
+    (mean-isi . 19)
+    (isi-adaptation3 . 23)
+    (isi-adaptation4 . 24)
+    )
+  )
+
+
+(define (select-data data varname)
+  (let ((var-index (alist-ref varname data-indices)))
+    (match-let (((xlst xmin xmax xsum n)
+                 (fold 
+                  (lambda (vs ax)
+                    (fold
+                     (match-lambda* ((v (lst xmin xmax xsum n))
+                                     (let ((x (f64vector-ref v var-index)))
+                                       (list (cons x lst)
+                                             (min x xmin)
+                                             (max x xmax)
+                                             (+ x xsum)
+                                             (+ n 1)))))
+                     ax vs))
+                  '(() +inf.0 -inf.0 0.0 0) data)))
+               (list (sort xlst <) xmin xmax (/ xsum n))
+               ))
+    )
+
+
+
+(define (output-data data data-path)
+  (let ((dataport (open-output-file data-path)))
+    (for-each (lambda (x) (fprintf dataport "~A~%" x)) data)
+    (close-output-port dataport)
     ))
+
+
+
+(define (plot-data data-path plot-label xlabel xmin xmax xmean)
+	 
+  (plot:proc "getdata"
+             `(
+              ;("showdata"   . "yes")
+               ("delim"      . "comma")
+               ("fieldnames" . "input")
+               ("pathname"   . ,data-path)
+               ))
+
+  (plot:proc "processdata"
+             `(
+               ;("showdata"   . "yes")
+               ("action"      . "count")
+               ("binsize"    . 10)
+               ("fields" . "input")
+               ("fieldnames" . "inputBin inputCount")
+               ))
+  
+
+  (plot:proc "areadef"
+             `(("title"     . ,(sprintf "~A (Mean: ~A)" 
+                                        plot-label (decimal-string xmean)))
+                                        
+               ("titledetails" . "adjust=0,0.2")
+               ("rectangle" . "2 3.5 8 10.5")
+               ("areacolor" . "white")
+
+               ("xrange"          . ,(sprintf "~A ~A" xmin xmax))
+               ("xaxis.axisline"  . "no")
+               ("xaxis.tics"      . "yes")
+               ("xaxis.stubs"     . "inc 100")
+               ("xaxis.stubrange" . "0")
+  	       ("xaxis.label"     . ,xlabel)
+               ;("xaxis.stubdetails" . "adjust=0,1")
+
+               ("yautorange"      . "datafield=inputCount lowfix=0")
+  	       ("yaxis.label"     . "Cell count")
+               ("yaxis.axisline"  . "no")
+               ("yaxis.tics"      . "yes")
+               ("yaxis.stubs"     . "inc 10000")
+               ("yaxis.stubrange" . "0")
+               ("yaxis.stubdetails"  . "adjust=-0.1,0")
+  	       ("yaxis.labeldetails" . "adjust=-0.3,0")
+               )
+             )
+		    
+  (plot:proc "bars"
+             `(("locfield"    .  "inputBin")
+               ("lenfield"    .  "inputCount")
+               ("thinbarline"    .  "color=gray(0.5)")
+               ))
+  )
+
 
 (define (tbl-plot plot-label . data-files)
 
@@ -87,83 +154,28 @@
 	       )
 	 (file-close fd1)
 
-         (let ((data1 (sort
-                       (fold 
-                        (lambda (vs ax)
-                          (fold
-                           (lambda (v ax)
-                             (let ((input-resistance (f64vector-ref v 1)))
-                               (cons input-resistance ax)))
-                           ax vs))
-                        '() data) <))
-               (dataport (open-output-file temp-path1)))
-           (for-each (lambda (x) (fprintf dataport "~A~%" x)) data1)
-	   (close-output-port dataport))
-	 
-	 (plot:init 'png (make-pathname
-                          "." 
-                          (sprintf "~A_results.png" 
-                                   (pathname-strip-directory
-                                    (pathname-strip-extension plot-label )))))
-	 
-	 (plot:arg "-cm" )
-	 (plot:arg "-pagesize"   "12,20");;PAPER
-	 (plot:arg "-textsize"   "12")
-	 (plot:arg "-cpulimit"   "360")
-	 (plot:arg "-maxrows"    "2001000")
-	 (plot:arg "-maxfields"  "2800000")
-	 (plot:arg "-maxvector"  "700000")
-	 
-	 (plot:proc "getdata"
-		  `(
-;		    ("showdata"   . "yes")
-		    ("delim"      . "comma")
-		    ("fieldnames" . "inputR")
-		    ("pathname"   . ,temp-path1)
-		    ))
+         (match-let (((data1 xmin1 xmax1 xmean1) (select-data data 'input-resistance)))
 
-	 (plot:proc "processdata"
-		  `(
-		    ("showdata"   . "yes")
-		    ("action"      . "count")
-                    ("binsize"    . 10)
-		    ("fields" . "inputR")
-		    ("fieldnames" . "inputRbin inputRcount")
-		    ))
+                    (plot:init 'png (make-pathname
+                                     "." 
+                                     (sprintf "~A_results.png" 
+                                              (pathname-strip-directory
+                                               (pathname-strip-extension plot-label )))))
+                    
+                    (plot:arg "-cm" )
+                    (plot:arg "-pagesize"   "12,20");;PAPER
+                    (plot:arg "-textsize"   "12")
+                    (plot:arg "-cpulimit"   "360")
+                    (plot:arg "-maxrows"    "2001000")
+                    (plot:arg "-maxfields"  "3000000")
+                    (plot:arg "-maxvector"  "700000")
 
-
-	 (plot:proc "areadef"
-		  `(("title"     . ,(sprintf "~A" plot-label))
-                    ("titledetails" . "adjust=0,0.2")
-		    ("rectangle" . "2 3.5 8 10.5")
-;;		    ("rectangle" . "2 5 10 14")
-		    ("areacolor" . "white")
-
-		    ("xrange"          . "0 1000")
-		    ("xaxis.axisline"  . "no")
-		    ("xaxis.tics"      . "no")
-		    ("xaxis.stubs"     . "inc 200")
-		    ("xaxis.stubrange" . "0")
-;;		    ("xaxis.stubdetails" . "adjust=0,1")
-
-		    ("yautorange"      . "datafield=inputRcount lowfix=0")
-;;		    ("yaxis.label"     . "Neuron #")
-		    ("yaxis.axisline"  . "no")
-		    ("yaxis.tics"      . "no")
-		    ("yaxis.stubs"     . "inc 10000")
-;;		    ("yaxis.stubrange" . "0")
-		    )
-		  )
-		    
-       (plot:proc "bars"
-		  `(("locfield"    .  "inputRbin")
-		    ("lenfield"    .  "inputRcount")
-		    ("thinbarline"    .  "color=gray(0.5)")
+                    (output-data data1 temp-path1)
+                    (plot-data temp-path1 "Input Resistance" "MOhm" 0 xmax1 xmean1)
+         
+                    (plot:end)
+         
                     ))
-       
-       (plot:end)
-
-       ))
-)
+  ))
 
 (apply tbl-plot (command-line-arguments))
