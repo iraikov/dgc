@@ -17,7 +17,7 @@
 (define (decimal-string x)
   (sprintf "~A.~A"
            (inexact->exact (truncate x))
-           (inexact->exact (truncate (round (* 100.0 (- x (truncate x))))))))
+           (inexact->exact (truncate (round (* 100.0 (abs (- x (truncate x)))))))))
 
 (define (sample n v)
   (let ((ub (vector-length v)))
@@ -30,10 +30,10 @@
 (define data-indices
   `(
     (input-resistance . 1)
-    (membrane-tau . 6)
-    (spike-threshold . 9)
-    (spike-amplitude . 10)
-    (spike-ahp . 11)
+    (membrane-tau . 5)
+    (ap-threshold . 8)
+    (ap-amplitude . 9)
+    (ap-ahp . 10)
     (rel-amplitude-dend1 . 12)
     (rel-amplitude-dend2 . 13)
     (rel-amplitude-dend3 . 14)
@@ -77,7 +77,7 @@
 
 
 
-(define (plot-data data-path plot-label xlabel xmin xmax xmean)
+(define (plot-data x y data-path binsize plot-label xlabel xinc xmin xmax xmean ylabel yinc)
 	 
   (plot:proc "getdata"
              `(
@@ -91,43 +91,45 @@
              `(
                ;("showdata"   . "yes")
                ("action"      . "count")
-               ("binsize"    . 10)
-               ("fields" . "input")
-               ("fieldnames" . "inputBin inputCount")
+               ("binsize"     . ,binsize)
+               ("fields"      . "input")
+               ("fieldnames"  . "inputBin inputCount")
                ))
   
 
   (plot:proc "areadef"
-             `(("title"     . ,(sprintf "~A (Mean: ~A)" 
+             `(("title"     . ,(sprintf "~A\n(Mean: ~A)" 
                                         plot-label (decimal-string xmean)))
                                         
                ("titledetails" . "adjust=0,0.2")
-               ("rectangle" . "2 3.5 8 10.5")
+               ("rectangle" . ,(sprintf "~A ~A ~A ~A" x y (+ 6 x) (+ 7 y)))
                ("areacolor" . "white")
 
                ("xrange"          . ,(sprintf "~A ~A" xmin xmax))
                ("xaxis.axisline"  . "no")
                ("xaxis.tics"      . "yes")
-               ("xaxis.stubs"     . "inc 100")
+               ("xaxis.stubs"     . ,(sprintf "inc ~A" xinc))
                ("xaxis.stubrange" . "0")
   	       ("xaxis.label"     . ,xlabel)
-               ;("xaxis.stubdetails" . "adjust=0,1")
+  	       ("xaxis.labeldetails" . "adjust=0,-0.3")
+               ;"xaxis.stubdetails" . "adjust=0,-0.1")
 
                ("yautorange"      . "datafield=inputCount lowfix=0")
-  	       ("yaxis.label"     . "Cell count")
+  	       ("yaxis.label"     . ,ylabel)
                ("yaxis.axisline"  . "no")
                ("yaxis.tics"      . "yes")
-               ("yaxis.stubs"     . "inc 10000")
+               ("yaxis.stubs"     . ,(sprintf "inc ~A" yinc))
                ("yaxis.stubrange" . "0")
                ("yaxis.stubdetails"  . "adjust=-0.1,0")
-  	       ("yaxis.labeldetails" . "adjust=-0.3,0")
+  	       ("yaxis.labeldetails" . "adjust=-0.5")
                )
              )
 		    
   (plot:proc "bars"
              `(("locfield"    .  "inputBin")
                ("lenfield"    .  "inputCount")
-               ("thinbarline"    .  "color=gray(0.5)")
+               ("color"       .  "oceanblue")
+               ;("thinbarline"    .  "color=gray(0.5)")
                ))
   )
 
@@ -154,24 +156,42 @@
 	       )
 	 (file-close fd1)
 
-         (match-let (((data1 xmin1 xmax1 xmean1) (select-data data 'input-resistance)))
+         (match-let (
+                     ((data1 xmin1 xmax1 xmean1) (select-data data 'input-resistance))
+                     ((data2 xmin2 xmax2 xmean2) (select-data data 'membrane-tau))
+                     ((data3 xmin3 xmax3 xmean3) (select-data data 'ap-threshold))
+                     ((data4 xmin4 xmax4 xmean4) (select-data data 'ap-amplitude))
+                     ((data5 xmin5 xmax5 xmean5) (select-data data 'ap-ahp))
+                     )
 
-                    (plot:init 'png (make-pathname
+                    (plot:init 'eps (make-pathname
                                      "." 
-                                     (sprintf "~A_results.png" 
+                                     (sprintf "~A_results.eps" 
                                               (pathname-strip-directory
                                                (pathname-strip-extension plot-label )))))
                     
                     (plot:arg "-cm" )
-                    (plot:arg "-pagesize"   "12,20");;PAPER
+                    (plot:arg "-pagesize"   "20,25");;PAPER
                     (plot:arg "-textsize"   "12")
-                    (plot:arg "-cpulimit"   "360")
+                    (plot:arg "-cpulimit"   "400")
                     (plot:arg "-maxrows"    "2001000")
                     (plot:arg "-maxfields"  "3000000")
                     (plot:arg "-maxvector"  "700000")
 
                     (output-data data1 temp-path1)
-                    (plot-data temp-path1 "Input Resistance" "MOhm" 0 xmax1 xmean1)
+                    (plot-data 2 3.5 temp-path1 10
+                               "Input Resistance" "Input Resistance [MOhm]" 
+                               100 0 xmax1 xmean1 "Cell count" 10000)
+
+                    (output-data data2 temp-path1)
+                    (plot-data 10 3.5 temp-path1 1 
+                               "Membrane Time Constant" "Membrane Time Constant [ms]" 
+                               5 0 xmax2 xmean2 "" 50000)
+
+                    (output-data data3 temp-path1)
+                    (plot-data 2 14 temp-path1 1 
+                               "AP Threshold" "AP Threshold [mV]" 
+                               4 (floor xmin3) (ceiling xmax3) xmean3 "" 50000)
          
                     (plot:end)
          
