@@ -34,11 +34,11 @@
     (ap-threshold . 8)
     (ap-amplitude . 9)
     (ap-ahp . 10)
-    (rel-amplitude-dend1 . 12)
-    (rel-amplitude-dend2 . 13)
-    (rel-amplitude-dend3 . 14)
-    (rel-amplitude-dend4 . 15)
-    (rel-amplitude-dend5 . 16)
+    (rel-amplitude-dend1 . 11)
+    (rel-amplitude-dend2 . 12)
+    (rel-amplitude-dend3 . 13)
+    (rel-amplitude-dend4 . 14)
+    (rel-amplitude-dend5 . 15)
     (number-of-spikes . 17)
     (mean-firing-rate . 18)
     (mean-isi . 19)
@@ -63,7 +63,7 @@
                                              (+ n 1)))))
                      ax vs))
                   '(() +inf.0 -inf.0 0.0 0) data)))
-               (list (sort xlst <) xmin xmax (/ xsum n))
+               (list xlst xmin xmax (/ xsum n))
                ))
     )
 
@@ -76,8 +76,22 @@
     ))
 
 
+(define (output-data-range data data-path)
+  (let ((n (length (car data)))
+        (dataport (open-output-file data-path)))
+    (let recur ((i 0) (data data))
+      (if (< i n)
+          (let ((row (map car data)))
+            (for-each (lambda (x) (fprintf dataport "~A" x)) (intersperse row ","))
+            (fprintf dataport "~%")
+            (recur (+ i 1) (map cdr data)))
+          ))
+    (close-output-port dataport)
+    ))
 
-(define (plot-data x y data-path binsize plot-label xlabel xinc xmin xmax xmean ylabel yinc)
+
+
+(define (plot-hist x y data-path binsize plot-label xlabel xinc xmin xmax xmean ylabel yinc)
 	 
   (plot:proc "getdata"
              `(
@@ -109,7 +123,7 @@
                ("xaxis.axisline"  . "no")
                ("xaxis.tics"      . "yes")
                ("xaxis.stubs"     . ,(sprintf "inc ~A" xinc))
-               ("xaxis.stubrange" . "0")
+               ;("xaxis.stubrange" . "0")
   	       ("xaxis.label"     . ,xlabel)
   	       ("xaxis.labeldetails" . "adjust=0,-0.3")
                ;"xaxis.stubdetails" . "adjust=0,-0.1")
@@ -131,6 +145,73 @@
                ("color"       .  "oceanblue")
                ;("thinbarline"    .  "color=gray(0.5)")
                ))
+  )
+
+
+(define (plot-rangebar x y data-path n plot-label xlabel xinc ylabel yinc)
+	 
+  (plot:proc "getdata"
+             `(
+               ("delim"      . "comma")
+               ("pathname"   . ,data-path)
+               ))
+
+  (plot:proc "areadef"
+             `(("title"     . ,(sprintf "~A" plot-label))
+                                        
+               ("titledetails" . "adjust=0,0.2")
+               ("rectangle" . ,(sprintf "~A ~A ~A ~A" x y (+ 6 x) (+ 7 y)))
+               ("areacolor" . "white")
+
+               ("xrange"          . "0 2")
+               ("xaxis.axisline"  . "no")
+               ("xaxis.tics"      . "yes")
+               ;("xaxis.stubs"     . ,(sprintf "inc ~A" xinc))
+               ("xaxis.stubrange" . "0")
+  	       ("xaxis.label"     . ,xlabel)
+  	       ("xaxis.labeldetails" . "adjust=0,-0.3")
+               ;"xaxis.stubdetails" . "adjust=0,-0.1")
+
+               ("yautorange"      . "datafield=1,2")
+  	       ("yaxis.label"     . ,ylabel)
+               ("yaxis.axisline"  . "no")
+               ("yaxis.tics"      . "yes")
+               ;("yaxis.stubs"     . ,(sprintf "inc ~A" yinc))
+               ("yaxis.stubdetails"  . "adjust=-0.1,0")
+  	       ("yaxis.labeldetails" . "adjust=-0.5")
+               )
+             )
+
+
+  (plot:proc "categories" 
+             '(("axis" . "x") 
+               ("slideamount" . "-2")))
+
+
+  (let recur ((i 1))
+    (if (<= i n)
+        (begin
+	 
+          (plot:proc "processdata"
+                     `(
+                       ("showdata"    . "yes")
+                       ("action"      . "summary")
+                       ("valfield"    . ,i)
+                       ))
+  
+
+          (plot:proc "boxplot"
+                     `(
+                       ("basis"       .  "mean")
+                       ("color"       .  "oceanblue")
+                       ("printn"      , "no")
+                       ("mediansym"   . "shape=circle style=fill fillcolor=pink radius=0.03")
+                     ))
+
+          (plot:proc "usedata" '())
+
+          (recur (+ i 1)))
+        ))
   )
 
 
@@ -157,12 +238,25 @@
 	 (file-close fd1)
 
          (match-let (
-                     ((data1 xmin1 xmax1 xmean1) (select-data data 'input-resistance))
-                     ((data2 xmin2 xmax2 xmean2) (select-data data 'membrane-tau))
-                     ((data3 xmin3 xmax3 xmean3) (select-data data 'ap-threshold))
-                     ((data4 xmin4 xmax4 xmean4) (select-data data 'ap-amplitude))
-                     ((data5 xmin5 xmax5 xmean5) (select-data data 'ap-ahp))
+                     ((udata1 xmin1 xmax1 xmean1) (select-data data 'input-resistance))
+                     ((udata2 xmin2 xmax2 xmean2) (select-data data 'membrane-tau))
+                     ((udata3 xmin3 xmax3 xmean3) (select-data data 'ap-threshold))
+                     ((udata4 xmin4 xmax4 xmean4) (select-data data 'ap-amplitude))
+                     ((udata5 xmin5 xmax5 xmean5) (select-data data 'ap-ahp))
+                     ((udata6 xmin6 xmax6 xmean6) (select-data data 'rel-amplitude-dend1))
+                     ((udata7 xmin7 xmax7 xmean7) (select-data data 'rel-amplitude-dend2))
+                     ((udata8 xmin8 xmax8 xmean8) (select-data data 'rel-amplitude-dend3))
+                     ((udata9 xmin9 xmax9 xmean9) (select-data data 'rel-amplitude-dend4))
+                     ((udata10 xmin10 xmax10 xmean10) (select-data data 'rel-amplitude-dend5))
                      )
+
+                    (let (
+                          (data1 (sort udata1 <))
+                          (data2 (sort udata2 <))
+                          (data3 (sort udata3 <))
+                          (data4 (sort udata4 <))
+                          (data5 (sort udata5 <))
+                          )
 
                     (plot:init 'eps (make-pathname
                                      "." 
@@ -171,31 +265,51 @@
                                                (pathname-strip-extension plot-label )))))
                     
                     (plot:arg "-cm" )
-                    (plot:arg "-pagesize"   "20,25");;PAPER
+                    (plot:arg "-pagesize"   "21.5,27.9");;PAPER
                     (plot:arg "-textsize"   "12")
-                    (plot:arg "-cpulimit"   "400")
+                    (plot:arg "-cpulimit"   "500")
                     (plot:arg "-maxrows"    "2001000")
                     (plot:arg "-maxfields"  "3000000")
                     (plot:arg "-maxvector"  "700000")
 
                     (output-data data1 temp-path1)
-                    (plot-data 2 3.5 temp-path1 10
+                    (plot-hist 2 3.5 temp-path1 10
                                "Input Resistance" "Input Resistance [MOhm]" 
                                100 0 xmax1 xmean1 "Cell count" 10000)
 
                     (output-data data2 temp-path1)
-                    (plot-data 10 3.5 temp-path1 1 
+                    (plot-hist 10 3.5 temp-path1 1 
                                "Membrane Time Constant" "Membrane Time Constant [ms]" 
                                5 0 xmax2 xmean2 "" 50000)
 
                     (output-data data3 temp-path1)
-                    (plot-data 2 14 temp-path1 1 
+                    (plot-hist 2 24 temp-path1 1 
                                "AP Threshold" "AP Threshold [mV]" 
                                4 (floor xmin3) (ceiling xmax3) xmean3 "" 50000)
+
+                    (output-data data4 temp-path1)
+                    (plot-hist 10 24 temp-path1 1 
+                               "AP Amplitude" "AP Amplitude [mV]" 
+                               20 (floor xmin4) (ceiling xmax4) xmean4 "" 10000)
+
+                    (output-data data5 temp-path1)
+                    (plot-hist 4 14 temp-path1 1 
+                               "Fast AHP" "Fast AHP [mV]" 
+                               5 (floor xmin5) (ceiling xmax5) xmean5 "" 50000)
+
+                    
+                    (plot:proc "page" '())
+
+                    (output-data-range (list udata6 udata7) temp-path1)
+                    (plot-rangebar 2 3.5 temp-path1 2
+                               "Dendritic Attenuation" 
+                               "Dendritic AP Amplitude [mV]" 10
+                               "Cell count" 10000)
          
                     (plot:end)
          
                     ))
   ))
+  )
 
 (apply tbl-plot (command-line-arguments))
