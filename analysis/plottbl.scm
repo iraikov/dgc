@@ -77,17 +77,20 @@
 
 
 (define (output-data-range data data-path)
-  (let ((n (length (car data)))
-        (dataport (open-output-file data-path)))
-    (let recur ((i 0) (data data))
-      (if (< i n)
-          (let ((row (map car data)))
-            (for-each (lambda (x) (fprintf dataport "~A" x)) (intersperse row ","))
-            (fprintf dataport "~%")
-            (recur (+ i 1) (map cdr data)))
-          ))
-    (close-output-port dataport)
-    ))
+  (let ((ids (map car data))
+        (vals (map cdr data))) 
+    (let ((n (length (car vals)))
+          (dataport (open-output-file data-path)))
+      (let recur ((i 0) (ids ids) (data vals))
+        (if (not (null? data))
+            (let ((col (car data))
+                  (id (car ids)))
+              (for-each (lambda (x) (fprintf dataport "~A,~A~%" id x)) col)
+              (recur (+ i 1) (cdr ids) (cdr data)))
+            ))
+      (close-output-port dataport)
+      ))
+  )
 
 
 
@@ -156,6 +159,12 @@
                ("pathname"   . ,data-path)
                ))
 
+  (plot:proc "categories"
+             `(
+               ("axis"      . "x")
+               ("datafield"   . 1)
+               ))
+
   (plot:proc "areadef"
              `(("title"     . ,(sprintf "~A" plot-label))
                                         
@@ -163,7 +172,7 @@
                ("rectangle" . ,(sprintf "~A ~A ~A ~A" x y (+ 6 x) (+ 7 y)))
                ("areacolor" . "white")
 
-               ("xrange"          . "0 10")
+               ("xrange"          . "categories")
                ("xaxis.axisline"  . "no")
                ("xaxis.tics"      . "yes")
                ;("xaxis.stubs"     . ,(sprintf "inc ~A" xinc))
@@ -172,48 +181,37 @@
   	       ("xaxis.labeldetails" . "adjust=0,-0.3")
                ;"xaxis.stubdetails" . "adjust=0,-0.1")
 
-               ("yautorange"      . "datafield=1,2")
+               ("yautorange"      . "datafield=2")
   	       ("yaxis.label"     . ,ylabel)
                ("yaxis.axisline"  . "no")
                ("yaxis.tics"      . "yes")
-               ;("yaxis.stubs"     . ,(sprintf "inc ~A" yinc))
+               ("yaxis.stubs"     . ,(sprintf "inc ~A" yinc))
                ("yaxis.stubdetails"  . "adjust=-0.1,0")
   	       ("yaxis.labeldetails" . "adjust=-0.9")
                )
              )
 
 
-  (plot:proc "categories" 
-             '(("axis" . "x") 
-               ("slideamount" . "2")))
-
-
-  (let recur ((i 1))
-    (if (<= i n)
-        (begin
-	 
-          (plot:proc "processdata"
-                     `(
-                       ("showdata"    . "yes")
-                       ("action"      . "summary")
-                       ("valfield"    . ,(+ 1 i))
-                       ("keepfields"  . 1)
-                       ))
+  (plot:proc "processdata"
+             `(
+               ("showdata"    . "yes")
+               ("action"      . "summary")
+               ("fields"      . 1)
+               ("valfield"    . 2)
+               ))
   
+  
+  (plot:proc "boxplot"
+             `(
+               ("basis"       .  "mean")
+               ("color"       .  "oceanblue")
+               ("printn"      , "no")
+               ("mediansym"   . "shape=circle style=fill fillcolor=pink radius=0.03")
+               ("locfield"    . 1)
+               ))
 
-          (plot:proc "boxplot"
-                     `(
-                       ("basis"       .  "mean")
-                       ("color"       .  "oceanblue")
-                       ("printn"      , "no")
-                       ("mediansym"   . "shape=circle style=fill fillcolor=pink radius=0.03")
-                       ("locfield"    . 1)
-                     ))
+  (plot:proc "usedata" '())
 
-          (plot:proc "usedata" '())
-
-          (recur (+ i 1)))
-        ))
   )
 
 
@@ -272,10 +270,10 @@
                     (plot:arg "-pagesize"   "21.5,27.9");;PAPER
                     (plot:arg "-textsize"   "12")
                     (plot:arg "-cpulimit"   "700")
-                    (plot:arg "-maxrows"    "2001000")
-                    (plot:arg "-maxfields"  "8000000")
+                    (plot:arg "-maxrows"    "8000000")
+                    (plot:arg "-maxfields"  "20000000")
                     (plot:arg "-maxvector"  "1000000")
-#|
+
                     (output-data data1 temp-path1)
                     (plot-hist 2 3.5 temp-path1 10
                                "Input Resistance" "Input Resistance [MOhm]" 
@@ -308,12 +306,20 @@
 
                     
                     (plot:proc "page" '())
-|#
-                    (output-data-range (list udata6 udata7 udata8 udata9 udata10) temp-path2)
+
+                    (output-data-range 
+                     `(
+                       ("d50" . ,udata6)
+                       ("d100" . ,udata7)
+                       ("d150" . ,udata8)
+                       ("d200" . ,udata9)
+                       ("d250" . ,udata10)
+                       ) 
+                     temp-path2)
                     (plot-rangebar 2 3.5 temp-path2 5
                                "Dendritic Attenuation" 
-                               "Dendritic AP Amplitude [mV]" 10
-                               "Number of cells" 10000)
+                               "" 10
+                               "Attenuation relative to soma" 0.1)
          
                     (plot:end)
          
