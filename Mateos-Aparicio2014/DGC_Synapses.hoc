@@ -54,6 +54,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     nsyns_AA   = 4
     nsyns_HCC  = 10
     nsyns_NGFC = 10
+    nsyns_PP   = 1200
     naxons_AA = 3
     
     // Generate a new random stream, setting
@@ -177,6 +178,17 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         }
     }
 
+    // PP-GC synapses; location is MMML
+    for i=0, nsyns_PP-1 {
+        j = choose_index(MDidxs,MDweights,rs) // randomly select middle dendrite
+        x = rx.repick()
+        dendrites[j] { 
+            syn = new Exp2Syn(x) 
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+            syns_PP.append(syn)
+        }
+    }
+
     soma {
         syn_stim = new ExpSyn(0.5)
         syn_stim.tau = 1
@@ -289,7 +301,7 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     se = $o2
     w = $3
     v_holding = $4
-    v_init = -68
+    v_init = $5
     
     soma { 
         se.rs = 10
@@ -376,5 +388,63 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     nc = nil
     
     return results
+}
+
+
+obfunc synpulsetest() { local vec_size, w, wsum, idx localobj ns, nc, nclist, vec, synlist, weights, results, tlog, r, nil
+    
+    
+    synlist = $o1
+    weights = $o2
+    groupsize = $3
+    v_init = $4
+    
+    r = new Random()
+    r.discunif(0,synlist.count()-1)
+    
+    mainDT = 0.001
+    dt = mainDT
+    tstop = 1000
+    
+    vec_size = tstop/mainDT + 1
+    
+    vec = new Vector(vec_size)
+    soma { vec.record(&v(0.5)) }
+    
+    tlog = new Vector(vec_size)
+    tlog.record(&t)
+    
+    ns = new NetStim()
+    ns.interval = 1
+    ns.number = 1
+    ns.start  = 200
+    ns.noise  = 0
+    
+    nclist = new List()
+    wsum = 0
+    for idx=0, groupsize-1 {
+        sidx = r.repick()
+        nc = new NetCon(ns,synlist.o(sidx))
+        nc.weight = weights.x[sidx]
+        wsum = wsum + weights.x[sidx]
+        nc.delay = 0
+        nclist.append(nc)
+    }
+    printf("synpulsetest: wsum = %g\n", wsum)
+    
+    cvode_active(1)
+    cvode.use_daspk(1)
+    cvode.dae_init_dteps(1e-9, 2)
+    finitialize(v_init)
+    fadvance()
+    continuerun(tstop)
+    
+    vec.printf()
+    tlog.printf()
+    
+    ns = nil
+    nc = nil
+    
+    return vec
 }
 

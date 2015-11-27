@@ -21,10 +21,10 @@ begintemplate DGC
 public soma, axon, dendrites
 public all, allaxons, alldendrites
 public nDends, nGCLD, nPD, nMD, nDD
-public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
+public syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_PP
 public ndendpts
 public verbose
-public syntest, syntest_up
+public syntest, syntest_up, synpulsetest
 public syn_stim
 public is_art, connect2target
 
@@ -38,7 +38,7 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
-objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB 
+objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_PP
 objref syn_stim
 
 strdef forest_path
@@ -121,6 +121,7 @@ proc celldef() {
     syns_HCC  = new List()
     syns_NGFC_GABAA = new List()
     syns_NGFC_GABAB = new List()
+    syns_PP  = new List()
     
     topol()
     subsets()
