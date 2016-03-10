@@ -54,8 +54,9 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     nsyns_AA   = 4
     nsyns_HCC  = 10
     nsyns_NGFC = 10
-    nsyns_PP   = 1200
     naxons_AA = 3
+    nsyns_LPP   = 1500
+    nsyns_MPP   = 1200
     
     // Generate a new random stream, setting
     //	aside 'random_stream_offset' random numbers
@@ -178,14 +179,25 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
         }
     }
 
-    // PP-GC synapses; location is MMML
-    for i=0, nsyns_PP-1 {
+    // LPP-GC synapses; location is MMML/OMML
+    for i=0, nsyns_LPP-1 {
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
+        x = rx.repick()
+        dendrites[j] { 
+            syn = new Exp2Syn(x) 
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+            syns_LPP.append(syn)
+        }
+    }
+
+    // MPP-GC synapses; location is MMML
+    for i=0, nsyns_MPP-1 {
         j = choose_index(MDidxs,MDweights,rs) // randomly select middle dendrite
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
             syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-            syns_PP.append(syn)
+            syns_MPP.append(syn)
         }
     }
 

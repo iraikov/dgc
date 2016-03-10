@@ -127,7 +127,7 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
     print "DGC synapse test: cell created"
     
     
-    // Zhang and Buckmster 2009 used cesium to block voltage-activated potassium channels.
+    // Zhang and Buckmaster 2009 used cesium to block voltage-activated potassium channels.
     gc.soma { 
         gbkbar_CadepK = 0.0
         gbar_fKDR = 0.0
@@ -188,7 +188,8 @@ proc pp_synapse_test() { local gid localobj gc, weights, f, logfile strdef log_f
     
     weights.mul(0.5)
     weights.printf()
-    synapse_group_pulse_test(gid, gc, gc.syns_PP,  weights, 50, -70, "PP-GC", logfile)
+    synapse_group_pulse_test(gid, gc, gc.syns_MPP,  weights, 50, -70, "MPP-GC", logfile)
+    synapse_group_pulse_test(gid, gc, gc.syns_LPP,  weights, 50, -70, "LPP-GC", logfile)
 
     v_init = -70
     
