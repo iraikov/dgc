@@ -165,13 +165,14 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
 
 }
 
-proc pp_synapse_test() { local gid localobj gc, weights, f, logfile strdef log_fn, forest_path, results_path
+proc pp_synapse_test() { local gid localobj gc, mppweights, lppweights, f, logfile strdef log_fn, forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
     gid = $3
     
-    weights = new Vector()
+    mppweights = new Vector()
+    lppweights = new Vector()
     
     print "DGC synapse test: gid = ", gid
     
@@ -182,14 +183,20 @@ proc pp_synapse_test() { local gid localobj gc, weights, f, logfile strdef log_f
     gc = new DGC(gid, 1, forest_path, 0)
     
     f = new File ()
-    f.ropen ("dat/ppsyns.dat")
-    weights.scanf(f)
+    f.ropen ("dat/MPPsynweights.dat")
+    mppweights.scanf(f)
     f.close()
     
-    weights.mul(0.5)
-    weights.printf()
-    synapse_group_pulse_test(gid, gc, gc.syns_MPP,  weights, 50, -70, "MPP-GC", logfile)
-    synapse_group_pulse_test(gid, gc, gc.syns_LPP,  weights, 50, -70, "LPP-GC", logfile)
+    f = new File ()
+    f.ropen ("dat/LPPsynweights.dat")
+    lppweights.scanf(f)
+    f.close()
+    
+    mppweights.mul(0.8)
+    lppweights.mul(0.6)
+    
+    synapse_group_pulse_test(gid, gc, gc.syns_MPP,  mppweights, 50, -70, "MPP-GC", logfile)
+    synapse_group_pulse_test(gid, gc, gc.syns_LPP,  lppweights, 50, -70, "LPP-GC", logfile)
 
     v_init = -70
     

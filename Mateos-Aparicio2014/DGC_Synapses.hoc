@@ -4,13 +4,13 @@ load_file("nrngui.hoc")
 
 
 
-func choose_index() { local i, x, Lsum localobj vect, weights, r
+func choose_index() { local i, x, Lsum localobj idxs, weights, r
     
-    vect = $o1
+    idxs = $o1
     weights = $o2
     r = $o3
     
-    if (vect.size() > 0) {
+    if (idxs.size() > 0) {
         x = r.repick()
         for i=0, weights.size()-1 {
             if (x < weights.x[i]) {
@@ -19,7 +19,7 @@ func choose_index() { local i, x, Lsum localobj vect, weights, r
                 x = x-weights.x[i]
             }
         }
-        return vect.x[i]
+        return idxs.x[i]
     } else {
        return -1
    }
@@ -45,7 +45,7 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
     return weights 
 }
 
-proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
+proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
     
     nsyns_GC   = 1
     nsyns_MC   = 1
@@ -167,7 +167,7 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     
     // NGFC-GC synapses; location is MMML/MOML
     for i=0, nsyns_NGFC-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/proximal dendrite
+        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
@@ -180,26 +180,33 @@ proc synapses() { local i, j, x, Lsum localobj syn, rs, rx, lengths, GCLDweights
     }
 
     // LPP-GC synapses; location is MMML/OMML
-    for i=0, nsyns_LPP-1 {
-        j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle dendrite
-        x = rx.repick()
+    for i=0, MDDidxs.size()-1 {
+        j = MDDidxs.x[i]
+        n = int((nsyns_LPP/2) * MDDweights.x[i])
         dendrites[j] { 
-            syn = new Exp2Syn(x) 
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-            syns_LPP.append(syn)
+            for k = 0, n-1 {
+                x = rx.repick()
+                syn = new Exp2Syn(x) 
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+                syns_LPP.append(syn)
+            }
         }
     }
-
-    // MPP-GC synapses; location is MMML
-    for i=0, nsyns_MPP-1 {
-        j = choose_index(MDidxs,MDweights,rs) // randomly select middle dendrite
-        x = rx.repick()
+    
+    // MPP-GC synapses; location is MMML/OMML
+    for i=0, MDidxs.size()-1 {
+        j = MDidxs.x[i]
+        n = int(nsyns_MPP * MDweights.x[i])
         dendrites[j] { 
-            syn = new Exp2Syn(x) 
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-            syns_MPP.append(syn)
+            for k = 0, n-1 {
+                x = rx.repick()
+                syn = new Exp2Syn(x) 
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+                syns_MPP.append(syn)
+            }
         }
     }
+    
 
     soma {
         syn_stim = new ExpSyn(0.5)
