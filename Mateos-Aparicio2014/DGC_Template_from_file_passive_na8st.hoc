@@ -38,6 +38,7 @@ objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
+objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
 objref syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 objref syn_stim
 
@@ -112,7 +113,7 @@ proc celldef() {
     PDidxs  = new Vector()
     MDidxs  = new Vector()
     DDidxs  = new Vector()
-    
+
     syns_GC   = new List()
     syns_MC   = new List()
     syns_HC   = new List()

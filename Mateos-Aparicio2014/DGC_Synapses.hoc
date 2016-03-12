@@ -45,7 +45,7 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
     return weights 
 }
 
-proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths, GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
+proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths
     
     nsyns_GC   = 1
     nsyns_MC   = 1
