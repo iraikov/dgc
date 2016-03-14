@@ -45,6 +45,45 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
     return weights 
 }
 
+
+// LPP and MPP synapses: because the number of PP synapses is
+// variable, function addSyn is used to add synapses PP per section.
+
+func addSyn () { local i, section, syntype, synidx, node, x localobj syn
+    
+    syntype = $1
+    section = $2
+    node    = $3
+    
+    synidx = -1
+    
+    if (syntype == 9) { 
+        // LPP-GC synapses; location is MMML/OMML
+        dendrites[section] { 
+            x = node / n3d()
+            assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+            syn = new Exp2Syn(x) 
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+            syns_LPP.append(syn)
+            synidx = syns_LPP.count()-1
+        }
+    } else if  (syntype == 10) { 
+        
+        // MPP-GC synapses; location is MMML/OMML
+            dendrites[section] { 
+                x = node / n3d()
+                assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+                syn = new Exp2Syn(x) 
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+                syns_MPP.append(syn)
+                synidx = syns_MPP.count()-1
+            }
+        }
+        
+    return synidx
+}
+    
+
 proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths
     
     nsyns_GC   = 1
@@ -178,36 +217,9 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths
             syns_NGFC_GABAB.append(syn)
         }
     }
-
-    // LPP-GC synapses; location is MMML/OMML
-    for i=0, MDDidxs.size()-1 {
-        j = MDDidxs.x[i]
-        n = int((nsyns_LPP/2) * MDDweights.x[i])
-        dendrites[j] { 
-            for k = 0, n-1 {
-                x = rx.repick()
-                syn = new Exp2Syn(x) 
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-                syns_LPP.append(syn)
-            }
-        }
-    }
     
-    // MPP-GC synapses; location is MMML/OMML
-    for i=0, MDidxs.size()-1 {
-        j = MDidxs.x[i]
-        n = int(nsyns_MPP * MDweights.x[i])
-        dendrites[j] { 
-            for k = 0, n-1 {
-                x = rx.repick()
-                syn = new Exp2Syn(x) 
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-                syns_MPP.append(syn)
-            }
-        }
-    }
+    // LPP and MPP synapses are dynamically added via addSyn
     
-
     soma {
         syn_stim = new ExpSyn(0.5)
         syn_stim.tau = 1

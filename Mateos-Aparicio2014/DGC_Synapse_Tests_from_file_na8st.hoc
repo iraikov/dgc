@@ -165,7 +165,7 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
 
 }
 
-proc pp_synapse_test() { local gid localobj gc, mppweights, lppweights, f, logfile strdef log_fn, forest_path, results_path
+proc pp_synapse_test() { local i, j, x, npts, gid localobj gc, mppweights, lppweights, rsec, rx, f, logfile strdef log_fn, forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -194,6 +194,31 @@ proc pp_synapse_test() { local gid localobj gc, mppweights, lppweights, f, logfi
     
     mppweights.mul(0.8)
     lppweights.mul(0.6)
+    
+    rsec = new Random()
+    rsec.discunif(0,gc.nDends-1)
+    rx = new Random()
+    rx.uniform(0,1)
+    
+    for i = 0, lppweights.size()-1 {
+        j = rsec.repick()
+        x = rx.repick()
+        gc.dendrites[j] {
+            npts = n3d()
+        }
+        gc.addSyn(9, j, x * npts)
+    }
+    for i = 0, mppweights.size()-1 {
+        j = rsec.repick()
+        x = rx.repick()
+        gc.dendrites[j] {
+            npts = n3d()
+        }
+        gc.addSyn(10, j, x * npts)
+    }
+    
+    printf("gc.syns_MPP.count() = %d\n", gc.syns_MPP.count())
+    printf("gc.syns_LPP.count() = %d\n", gc.syns_LPP.count())
     
     synapse_group_pulse_test(gid, gc, gc.syns_MPP,  mppweights, 50, -70, "MPP-GC", logfile)
     synapse_group_pulse_test(gid, gc, gc.syns_LPP,  lppweights, 50, -70, "LPP-GC", logfile)
