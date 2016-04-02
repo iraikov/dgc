@@ -49,42 +49,46 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
 // LPP and MPP synapses: because the number of PP synapses is
 // variable, function addSyn is used to add synapses PP per section.
 
-func addSyn () { local i, section, syntype, synidx, node, x localobj syn
+func addSyn () { local i, secindex, syntype, synidx, node, x localobj syn
     
     syntype = $1
-    section = $2
+    secindex = $2
     node    = $3
     
     synidx = -1
     
-    if (syntype == 9) { 
+    //printf("addSyn: syntype = %d secindex = %d node = %d\n", syntype, secindex, node)
+  
+    if (syntype == 8) { 
         // LPP-GC synapses; location is MMML/OMML
-        dendrites[section] { 
-            x = node / n3d()
-            assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+        x = nodesecmap.x[node]
+        assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+        assert(secindex < nDends, "invalid section index")            
+        alldendritesList.o(secindex) { 
             syn = new Exp2Syn(x) 
             syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
             syns_LPP.append(syn)
-            synidx = syns_LPP.count()-1
         }
-    } else if  (syntype == 10) { 
+        synidx = syns_LPP.count()-1
+    } else if  (syntype == 9) { 
         
         // MPP-GC synapses; location is MMML/OMML
-            dendrites[section] { 
-                x = node / n3d()
-                assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+            x = nodesecmap.x[node]
+            assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
+            assert(secindex < nDends, "invalid section index")            
+            alldendritesList.o(secindex) { 
                 syn = new Exp2Syn(x) 
                 syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
-                syns_MPP.append(syn)
-                synidx = syns_MPP.count()-1
+		syns_MPP.append(syn)
             }
+            synidx = syns_MPP.count()-1
         }
         
     return synidx
 }
     
 
-proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths
+proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
     
     nsyns_GC   = 1
     nsyns_MC   = 1
@@ -218,7 +222,17 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, rs, rx, lengths
         }
     }
     
-    // LPP and MPP synapses are dynamically added via addSyn
+    // LPP and MPP synapses are dynamically added via addSyn;
+    /*
+    for i=0, nDends-1 {
+        dendrites[i] { 
+            lst = new List()
+            syns_LPP.append(lst)
+            lst = new List()
+            syns_MPP.append(lst)
+        }
+    }
+    */
     
     soma {
         syn_stim = new ExpSyn(0.5)

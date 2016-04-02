@@ -52,7 +52,7 @@ proc topol_from_file() { local i,j,p,dimsize localobj f, m
     ndendpts  = new Vector()
     ndendpts.scanf(f,dimsize)
     ndendpts.printf()
-
+    
     if (verbose) {
 
         printf ("GCLD compartment indices = ")
@@ -141,7 +141,7 @@ proc shape() {
     shape_from_file()
 }
 
-proc shape_from_file() { local i,j,k localobj f, m
+proc shape_from_file() { local i,j,k,nsecpts localobj f, m
     
     f = new File ()
     
@@ -151,6 +151,8 @@ proc shape_from_file() { local i,j,k localobj f, m
     f.close()
     
     assert (m.nrow == ndendpts.sum(),  "dendritic point matrix is of different size that number of points in ndendpts")
+
+    nodesecmap = new Vector()
     
     if (verbose) {
         if (verbose >= 2) {
@@ -164,9 +166,11 @@ proc shape_from_file() { local i,j,k localobj f, m
     
     for i=0, nDends-1 dendrites[i] { 
         pt3dconst(0)
-        for j=0, ndendpts.x[i]-1 {
+	nsecpts = ndendpts.x[i]-1
+        for j=0, nsecpts {
             pt3dadd(m.getval(k,0), m.getval(k,1), m.getval(k,2), m.getval(k,3)) 
             k = k+1
+	    nodesecmap.append(j / nsecpts)
         }
         //printf("%d: arc3d(%d) = %.11f area = %g\n", i, 1, arc3d(1), area(0.5))
     }
@@ -174,7 +178,7 @@ proc shape_from_file() { local i,j,k localobj f, m
 }
 
 
-proc subsets() { local i
+proc subsets() { local i localobj sref
 
   all = new SectionList()
   soma all.append()
@@ -182,12 +186,17 @@ proc subsets() { local i
   for i=0, nDends-1 dendrites[i] all.append()
   
   alldendrites = new SectionList()
+  alldendritesList = new List()
   GCLDs = new SectionList()
   PDs = new SectionList()
   MDs = new SectionList()
   DDs = new SectionList()
   
   for i=0, nDends-1 dendrites[i] alldendrites.append()
+  for i=0, nDends-1 dendrites[i] {
+    sref = new SectionRef()
+    alldendritesList.append(sref)
+  }	
   
   for i=0, nGCLD-1 dendrites[GCLDidxs.x[i]] GCLDs.append()
   for i=0, nPD-1 dendrites[PDidxs.x[i]] PDs.append()
