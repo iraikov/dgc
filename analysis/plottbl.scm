@@ -83,6 +83,7 @@
     ))
 
 
+
 (define (output-data-range data data-path #!key (groups #f ))
   (let ((dataport (open-output-file data-path)))
     (let recur ((groups (or groups (list-tabulate (length data) (lambda (i) (+ i 1))))) 
@@ -119,8 +120,8 @@
   
 
   (plot:proc "areadef"
-             `(("title"     . ,(sprintf "~A\n(Mean: ~A)" 
-                                        plot-label (decimal-string xmean)))
+             `(("title"     . ,(sprintf "~A\n(Mean: ~A ~A)" 
+                                        plot-label (decimal-string xmean) xunits))
                                         
                ("titledetails" . "adjust=-0,0.2")
                ("rectangle" . ,(sprintf "~A ~A ~A ~A" x y (+ 12 x) (+ 10 y)))
@@ -141,6 +142,7 @@
                ("yaxis.tics"      . "yes")
                ("yaxis.stubs"     . ,(sprintf "inc ~A" yinc))
                ("yaxis.stubrange" . "0")
+
                ("yaxis.stubdetails"  . "adjust=-0.1,0,size=16")
   	       ("yaxis.labeldetails" . "adjust=-1.0,0")
                )
@@ -161,6 +163,12 @@
              `(
                ("delim"      . "comma")
                ("pathname"   . ,data-path)
+               ))
+
+  (plot:proc "categories"
+             `(
+               ("axis"      . "x")
+               ("datafield"   . 1)
                ))
 
   (plot:proc "areadef"
@@ -202,6 +210,7 @@
   
   (plot:proc "boxplot"
              `(
+
                ("locfield"    . 1)
                ("basis"       . "mean")
                ("color"       . "oceanblue")
@@ -231,8 +240,10 @@
 
   (let-values (
                ((fd1 temp-path1) (file-mkstemp "/tmp/tbl-plot.s1.XXXXXX"))
+               ((fd2 temp-path2) (file-mkstemp "/tmp/range-plot.s1.XXXXXX"))
 	       )
 	 (file-close fd1)
+	 (file-close fd2)
 
          (match-let (
                      ((udata1 xmin1 xmax1 xmean1) (select-data data 'input-resistance))
