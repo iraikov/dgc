@@ -64,7 +64,7 @@ func addSyn () { local i, secindex, syntype, synidx, node, x localobj syn
         x = nodesecmap.x[node]
         assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
         assert(secindex < nDends, "invalid section index")            
-        alldendritesList.o(secindex) { 
+        alldendritesList.o(secindex).sec { 
             syn = new Exp2Syn(x) 
             syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
             syns_LPP.append(syn)
@@ -76,7 +76,7 @@ func addSyn () { local i, secindex, syntype, synidx, node, x localobj syn
             x = nodesecmap.x[node]
             assert ((x >= 0.0) && (x <= 1.0), "invalid synapse node location")
             assert(secindex < nDends, "invalid section index")            
-            alldendritesList.o(secindex) { 
+            alldendritesList.o(secindex).sec { 
                 syn = new Exp2Syn(x) 
                 syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
 		syns_MPP.append(syn)
@@ -467,14 +467,18 @@ obfunc synpulsetest() { local vec_size, w, wsum, idx localobj ns, nc, nclist, ve
     
     nclist = new List()
     wsum = 0
+    printf("synpulsetest: synlist.count = %d\n", synlist.count())
+    printf("synpulsetest: weights.size = %d\n", weights.size())
     for idx=0, groupsize-1 {
         sidx = r.repick()
         nc = new NetCon(ns,synlist.o(sidx))
         nc.weight = weights.x[sidx]
+        printf("synpulsetest: nc.weight = %g\n", nc.weight)
         wsum = wsum + weights.x[sidx]
         nc.delay = 0
         nclist.append(nc)
     }
+    printf("synpulsetest: nclist.count = %d\n", nclist.count())
     printf("synpulsetest: wsum = %g\n", wsum)
     
     cvode_active(1)
