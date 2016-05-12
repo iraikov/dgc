@@ -51,7 +51,6 @@ proc topol_from_file() { local i,j,p,dimsize localobj f, m
     dimsize = f.scanvar()
     ndendpts  = new Vector()
     ndendpts.scanf(f,dimsize)
-    ndendpts.printf()
     
     if (verbose) {
 
