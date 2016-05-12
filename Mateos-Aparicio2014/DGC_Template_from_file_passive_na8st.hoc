@@ -21,6 +21,7 @@ begintemplate DGC
 public soma, axon, dendrites
 public all, allaxons, alldendrites, alldendritesList
 public nDends, nGCLD, nPD, nMD, nDD
+public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 public ndendpts
 public verbose

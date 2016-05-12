@@ -11,8 +11,8 @@ proc parameters() {
     gpas = 4.5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -70      //mV
-    //EK = -90        //mV
-    EK = -77        //mV: Value used for epileptic slice unmasking
+    EK = -90        //mV
+    //EK = -77        //mV: Value used for epileptic slice unmasking
 
     // Parameters from Schmidt-Hieber 2010
     Ra_soma = Ra0
