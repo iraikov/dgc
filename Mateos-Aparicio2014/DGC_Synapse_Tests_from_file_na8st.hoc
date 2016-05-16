@@ -194,8 +194,8 @@ proc pp_synapse_test() { local i, j, x, npts, gid localobj mppweights, lppweight
     lppweights.scanf(f)
     f.close()
     
-    mppweights.mul(2.5)
-    lppweights.mul(2.5)
+    mppweights.mul(0.235)
+    lppweights.mul(0.3)
     
     mdsec = new Random()
     mdsec.discunif(0,gc.MDidxs.size()-1)
@@ -224,8 +224,8 @@ proc pp_synapse_test() { local i, j, x, npts, gid localobj mppweights, lppweight
     printf("gc.syns_MPP.count() = %d\n", gc.syns_MPP.count())
     printf("gc.syns_LPP.count() = %d\n", gc.syns_LPP.count())
     
-    synapse_group_pulse_test(gid, gc, gc.syns_MPP,  mppweights, 50, -70, "MPP-GC", logfile)
-    synapse_group_pulse_test(gid, gc, gc.syns_LPP,  lppweights, 50, -70, "LPP-GC", logfile)
+    synapse_group_pulse_test(gid, gc, gc.syns_MPP,  mppweights, 400, -70, "MPP-GC", logfile)
+    synapse_group_pulse_test(gid, gc, gc.syns_LPP,  lppweights, 400, -70, "LPP-GC", logfile)
 
     v_init = -70
     
