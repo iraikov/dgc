@@ -101,9 +101,6 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
     nsyns_LPP   = 1500
     nsyns_MPP   = 1200
     
-    // Generate a new random stream, setting
-    //	aside 'random_stream_offset' random numbers
-    //	for this cell based on its gid
     rs = new Random()
     rs.Random123(random_stream_offset,gid)
     rs.uniform(0,1)
@@ -161,7 +158,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.05  	syn.tau2 = 1.25	syn.e = -85.7 //syn.e = -28.99
+            syn.tau1 = 0.05  	syn.tau2 = 1.25	syn.e = -85.7 
         }
         syns_HC.append(syn)
     }

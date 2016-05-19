@@ -30,6 +30,7 @@ public syn_stim
 public is_art, connect2target
 
 verbose = 0
+id  = -1
 gid = -1
 random_stream_offset = 0
 
@@ -86,17 +87,18 @@ proc read_Na_rates() { localobj fileS, fileA
 
 proc init() {
     
-    gid = $1
-    random_stream_offset = $2
-    forest_path = $s3
+    id  = $1
+    gid = $2
+    random_stream_offset = $3
+    forest_path = $s4
     
     if (numarg() > 3) {
-        verbose = $4
+        verbose = $5
     }
     
-    sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, gid)
-    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, gid)
-    sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, gid)
+    sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
+    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
+    sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
     
     if (verbose) {
         printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
