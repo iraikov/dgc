@@ -92,7 +92,7 @@ proc init() {
     random_stream_offset = $3
     forest_path = $s4
     
-    if (numarg() > 3) {
+    if (numarg() > 4) {
         verbose = $5
     }
     
