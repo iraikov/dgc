@@ -47,8 +47,8 @@ objref syn_stim
 objref nodesecmap
 
 strdef forest_path
-strdef layer_topology_fn, section_topology_fn, dendrite_topology_fn, soma_topology_fn, dendrite_points_fn, spine_density_fn
-strdef layer_index_topology_fn, section_index_topology_fn, dendrite_index_topology_fn, soma_index_topology_fn, dendrite_points_index_fn, spine_density_index_fn
+strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
+strdef dendrite_topology_index_fn, dendrite_points_index_fn, spine_density_index_fn
 
 
 xopen("DGC_Parameters_passive_na8st.hoc")
@@ -96,21 +96,21 @@ proc init() {
     forest_path = $s4
     
     if (numarg() > 4) {
-        verbose = $5
+        binarymode = $5
+    } else {
+        binarymode = 0
+    }
+    
+    if ((!binarymode) && (numarg() > 5)) {
+        verbose = $6
     }
     
     if (binarymode) {
-        sprint(layer_topology_fn, "%s/topology-layers.bin", forest_path)
-        sprint(section_topology_fn, "%s/topology-sections.bin", forest_path)
-        sprint(dendrite_topology_fn, "%s/topology-dend.bin", forest_path)
-        sprint(soma_topology_fn, "%s/topology-soma.bin", forest_path)
+        sprint(dendrite_topology_fn, "%s/topology.bin", forest_path)
         sprint(dendrite_points_fn, "%s/points.bin", forest_path)
         sprint(spine_density_fn, "%s/spines.bin", forest_path)
         
-        sprint(layer_topology_index_fn, "%s/topology-layers.index.bin", forest_path)
-        sprint(section_topology_index_fn, "%s/topology-sections.index.bin", forest_path)
-        sprint(dendrite_topology_index_fn, "%s/topology-dend.index.bin", forest_path)
-        sprint(soma_topology_index_fn, "%s/topology-soma.index.bin", forest_path)
+        sprint(dendrite_topology_index_fn, "%s/topology.index.bin", forest_path)
         sprint(dendrite_points_index_fn, "%s/points.index.bin", forest_path)
         sprint(spine_density_index_fn, "%s/spines.index.bin", forest_path)
         

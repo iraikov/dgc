@@ -43,42 +43,52 @@ proc topol_from_file() {
 }
 
 
-proc topol_from_bin_file() { local i,j,p,dimsize localobj f, m, v
+proc topol_from_bin_file() { local i,j,p,dimsize localobj f, m, vindex, vlayers, vdend, vsoma
+    
+    vindex = new Vector ()
+    ndendpts = new Vector ()
+    vlayers = new Vector ()
+    vdend = new Vector ()
+    vsoma = new Vector ()
     
     f = new File ()
-    v = new Vector ()
     
-    f.ropen (layer_topology_index_fn)
-    v.vread(f)
+    f.ropen (dendrite_topology_index_fn)
+    vindex.vread(f)
     f.close()
     
-    f.ropen (layer_topology_fn)
-    f.seek(v.x[id*2])
-    v.vread(f)
+    f.ropen (dendrite_topology_fn)
+    f.seek(vindex.x[id*2+1])
+    vlayers.vread(f)
+    ndendpts.vread(f)
+    vdend.vread(f)
+    vsoma.vread(f)
     f.close()
     
     i = 0
-    dimsize = v.x[i]
+    dimsize = vlayers.x[i]
     i = i+1
-    GCLDidxs = v.at(i,i+dimsize)
+    if (dimsize > 0) {
+        GCLDidxs = vlayers.at(i,i+dimsize-1)
+    }
     i = i+dimsize
-    dimsize = v.x[i]
+    dimsize = vlayers.x[i]
     i = i+1
-    PDidxs = v.at(i,i+dimsize)
+    if (dimsize > 0) {
+        PDidxs = vlayers.at(i,i+dimsize-1)
+    }
     i = i+dimsize
-    dimsize = v.x[i]
+    dimsize = vlayers.x[i]
     i = i+1
-    MDidxs = v.at(i,i+dimsize)
+    if (dimsize > 0) {
+        MDidxs = vlayers.at(i,i+dimsize-1)
+    }
     i = i+dimsize
-    dimsize = v.x[i]
+    dimsize = vlayers.x[i]
     i = i+1
-    DDidxs = v.at(i,i+dimsize)
-
-    i = i+dimsize
-    dimsize = v.x[i]
-    i = i+1
-    ndendpts = v.at(i,i+dimsize)
-
+    if (dimsize > 0) {
+        DDidxs = vlayers.at(i,i+dimsize-1)
+    }
     
     if (verbose) {
 
@@ -107,19 +117,10 @@ proc topol_from_bin_file() { local i,j,p,dimsize localobj f, m, v
     }
     assert (ndendpts.size() == nDends,  "ndendpts is not the same length as the number of dendritic compartments")
     
-    f.ropen (dendrite_topology_index_fn)
-    v.vread(f)
-    f.close()
-    
-    f.ropen (dendrite_topology_fn)
-    f.seek(v.x[id*2])
-    v.vread(f)
-    f.close()
-
     create dendrites[nDends]
     
-    m = new Matrix(v.size()/2,2)
-    m.from_vector (v)
+    m = new Matrix(vdend.size()/2,2)
+    m.from_vector (vdend)
     
     if (verbose) {
         printf ("dendrite topology matrix = ")
@@ -137,17 +138,8 @@ proc topol_from_bin_file() { local i,j,p,dimsize localobj f, m, v
         connect dendrites[j](0),dendrites[i](1)
     }
     
-    f.ropen (soma_topology_index_fn)
-    v.vread(f)
-    f.close()
-    
-    f.ropen (soma_topology_fn)
-    f.seek(v.x[id*2])
-    v.vread(f)
-    f.close()
-
-    m = new Matrix(v.size()/2,2)
-    m.from_vector (v)
+    m = new Matrix(vsoma.size()/2,2)
+    m.from_vector (vsoma)
     
     if (verbose) {
         printf ("dendrite/soma topology matrix = ")
@@ -294,7 +286,7 @@ proc shape_from_bin_file() { local i,j,k,nsecpts localobj f, m, v
     f.close()
     
     f.ropen (dendrite_points_fn)
-    f.seek(v.x[id*2])
+    f.seek(v.x[id*2+1])
     v.vread(f)
     f.close()
     
@@ -443,7 +435,7 @@ proc geom_spines_from_bin_file() { localobj spine_density, f, v strdef msg
     
     spine_density = new Vector()
     f.ropen (spine_density_fn)
-    f.seek(v.x[id*2])
+    f.seek(v.x[id*2+1])
     spine_density.vread(f)
     f.close()
 
