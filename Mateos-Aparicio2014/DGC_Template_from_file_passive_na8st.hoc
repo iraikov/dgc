@@ -24,12 +24,13 @@ public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 public ndendpts
-public verbose
+public verbose, binarymode
 public addSyn, syntest, syntest_up, synpulsetest
 public syn_stim
 public is_art, connect2target
 
 verbose = 0
+binarymode = 1
 id  = -1
 gid = -1
 random_stream_offset = 0
@@ -46,7 +47,9 @@ objref syn_stim
 objref nodesecmap
 
 strdef forest_path
-strdef dendrite_topology_fn, dendrite_points_fn, spine_density_fn
+strdef layer_topology_fn, section_topology_fn, dendrite_topology_fn, soma_topology_fn, dendrite_points_fn, spine_density_fn
+strdef layer_index_topology_fn, section_index_topology_fn, dendrite_index_topology_fn, soma_index_topology_fn, dendrite_points_index_fn, spine_density_index_fn
+
 
 xopen("DGC_Parameters_passive_na8st.hoc")
 xopen("DGC_Morphology_from_file_na8st.hoc")
@@ -96,9 +99,26 @@ proc init() {
         verbose = $5
     }
     
-    sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
-    sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
-    sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
+    if (binarymode) {
+        sprint(layer_topology_fn, "%s/topology-layers.bin", forest_path)
+        sprint(section_topology_fn, "%s/topology-sections.bin", forest_path)
+        sprint(dendrite_topology_fn, "%s/topology-dend.bin", forest_path)
+        sprint(soma_topology_fn, "%s/topology-soma.bin", forest_path)
+        sprint(dendrite_points_fn, "%s/points.bin", forest_path)
+        sprint(spine_density_fn, "%s/spines.bin", forest_path)
+        
+        sprint(layer_topology_index_fn, "%s/topology-layers.index.bin", forest_path)
+        sprint(section_topology_index_fn, "%s/topology-sections.index.bin", forest_path)
+        sprint(dendrite_topology_index_fn, "%s/topology-dend.index.bin", forest_path)
+        sprint(soma_topology_index_fn, "%s/topology-soma.index.bin", forest_path)
+        sprint(dendrite_points_index_fn, "%s/points.index.bin", forest_path)
+        sprint(spine_density_index_fn, "%s/spines.index.bin", forest_path)
+        
+    } else {
+        sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
+        sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
+        sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
+    }
     
     if (verbose) {
         printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
