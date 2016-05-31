@@ -24,13 +24,13 @@ public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 public ndendpts
-public verbose, binarymode
+public verbose, filemode
 public addSyn, syntest, syntest_up, synpulsetest
 public syn_stim
 public is_art, connect2target
 
 verbose = 0
-binarymode = 1
+filemode = 1
 id  = -1
 gid = -1
 random_stream_offset = 0
@@ -96,29 +96,35 @@ proc init() {
     forest_path = $s4
     
     if (numarg() > 4) {
-        binarymode = $5
+        filemode = $5
     } else {
-        binarymode = 0
+        filemode = 1
     }
     
-    if ((!binarymode) && (numarg() > 5)) {
-        verbose = $6
-    }
-    
-    if (binarymode) {
-        sprint(dendrite_topology_fn, "%s/topology.bin", forest_path)
-        sprint(dendrite_points_fn, "%s/points.bin", forest_path)
-        sprint(spine_density_fn, "%s/spines.bin", forest_path)
+    if (filemode) {
         
-        sprint(dendrite_topology_index_fn, "%s/topology.index.bin", forest_path)
-        sprint(dendrite_points_index_fn, "%s/points.index.bin", forest_path)
-        sprint(spine_density_index_fn, "%s/spines.index.bin", forest_path)
+        if (numarg() > 5) { 
+            verbose = $6
+        }
         
-    } else {
-        sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
-        sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
-        sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
-    }
+        if (filemode == 2) {
+            
+            sprint(dendrite_topology_fn, "%s/topology.bin", forest_path)
+            sprint(dendrite_points_fn, "%s/points.bin", forest_path)
+            sprint(spine_density_fn, "%s/spines.bin", forest_path)
+            
+            sprint(dendrite_topology_index_fn, "%s/topology.index.bin", forest_path)
+            sprint(dendrite_points_index_fn, "%s/points.index.bin", forest_path)
+            sprint(spine_density_index_fn, "%s/spines.index.bin", forest_path)
+            
+        } else {
+            
+            sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
+            sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
+            sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
+        }
+        
+    } 
     
     if (verbose) {
         printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
@@ -128,8 +134,23 @@ proc init() {
     
     parameters()
     read_Na_rates()
-    celldef()
+    if (filemode > 0) {
+        celldef()
+    } else {
+        if (numarg() > 11) {
+            verbose = $12
+        }
+        celldef($o6,$o7,$o8,$o9,$o10,$o11)
+        $o6.buffer_size(0)
+        $o7.buffer_size(0)
+        $o8.buffer_size(0)
+        $o9.buffer_size(0)
+        $o10.buffer_size(0)
+        $o11.buffer_size(0)
+    }
+    
 }
+
 
 proc celldef() {
     
@@ -161,10 +182,24 @@ proc celldef() {
     syns.append(syns_LPP)
     syns.append(syns_MPP)
 
-    topol()
+    if (numarg() > 1) {
+        topol($o1,$o2,$o3,$o4)
+    } else {
+        topol()
+    }
+
+    if (numarg() > 1) {
+        shape($o5)
+    } else {
+        shape()
+    }
     subsets()
     geom()
-    geom_spines()
+    if (numarg() > 1) {
+        geom_spines($o6)
+    } else {
+        geom_spines()
+    }
     biophys()
     synapses()
     
