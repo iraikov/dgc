@@ -148,7 +148,10 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+            // Original values calculated in Santhakumar et al. 2005:
+            // syn.tau1 = 1.5	syn.tau2 = 5.5	
+            // Values that match Lysetskiy et al. 2005:
+            syn.tau1 = 0.1	syn.tau2 = 1.5	syn.e = 0
         }
         syns_MC.append(syn)
     }
@@ -168,13 +171,13 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -28.99
+            syn.tau1 = 0.25 syn.tau2 = 2.5  syn.e = -28.99
         }
         syns_BC.append(syn)
     }
     soma { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -28.99
+            syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0
         }
     syns_BC.append(syn)
     
