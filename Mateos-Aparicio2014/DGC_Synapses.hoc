@@ -242,7 +242,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
 }
 
 external continuerun, cvode_active, cvode
-obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
+obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
     synlist = $o1
     se = $o2
@@ -288,9 +288,11 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
     finitialize(v_init)
     fadvance()
     continuerun(tstop)
-
     
-    i_holding = vec.x[tlog.indwhere(">=",ns.start)]
+    
+    t_holding_index = tlog.indwhere(">=",ns.start)
+    t_holding = tlog.x(t_holding_index)
+    i_holding = vec.x[t_holding_index]
     idx = tlog.indwhere(">=",ns.start) - 1
     vec.remove(0,idx)
     tlog.remove(0,idx)
@@ -304,6 +306,8 @@ obfunc syntest_up() { local vec_size, i_holding, w, idx localobj se, ns, nc, ncl
     print "i_peak = ", i_peak
     print "i_holding = ", i_holding
     print "i_peak - i_holding = ", i_peak - i_holding
+    print "t_peak = ", t_peak
+    print "t_holding = ", t_holding
 
     amp = abs(i_peak - i_holding) * 1000
     
