@@ -149,9 +149,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             // Original values calculated in Santhakumar et al. 2005:
-            // syn.tau1 = 1.5	syn.tau2 = 5.5	
-            // Values that match Lysetskiy et al. 2005:
-            syn.tau1 = 0.1	syn.tau2 = 1.5	syn.e = 0
+            syn.tau1 = 1.5	syn.tau2 = 5.5	
         }
         syns_MC.append(syn)
     }
@@ -171,13 +169,17 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
+            //syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
+            // Values that match Zhang and Buckmaster, 2009:
+            syn.tau1 = 0.55 syn.tau2 = 7.5 syn.e = -70.0 //syn.e = -28.99
         }
         syns_BC.append(syn)
     }
     soma { 
             syn = new Exp2Syn(rx.repick())
-            syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
+            //syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
+            // Values that match Zhang and Buckmaster, 2009:
+            syn.tau1 = 0.55 syn.tau2 = 7.5 syn.e = -70.0 //syn.e = -28.99
         }
     syns_BC.append(syn)
     
@@ -251,7 +253,6 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     v_init = $5
     
     soma { 
-        se.rs = 1
         se.dur1 = 3010
         se.amp1 = v_holding 
     }
@@ -343,7 +344,7 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
 }
 
 
-obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
+obfunc syntest() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
     
     synlist = $o1
@@ -353,7 +354,6 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     v_init = $5
     
     soma { 
-        se.rs = 10
         se.dur1 = 1010
         se.amp1 = v_holding 
     }
@@ -391,7 +391,9 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     fadvance()
     continuerun(tstop)
     
-    i_holding = vec.x[tlog.indwhere(">=",ns.start)]
+    t_holding_index = tlog.indwhere(">=",ns.start)
+    t_holding = tlog.x[t_holding_index]
+    i_holding = vec.x[t_holding_index]
     idx = tlog.indwhere(">=",ns.start) - 1
     vec.remove(0,idx)
     tlog.remove(0,idx)
@@ -405,6 +407,8 @@ obfunc syntest() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist
     print "i_peak = ", i_peak
     print "i_holding = ", i_holding
     print "i_peak - i_holding = ", i_peak - i_holding
+    print "t_peak = ", t_peak
+    print "t_holding = ", t_holding
     
     amp = abs(i_peak - i_holding) * 1000
     
