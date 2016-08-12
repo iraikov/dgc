@@ -18,7 +18,7 @@ proc synapse_group_pulse_test () { local gid, groupsize localobj gc, synlist, w,
 }
 
 
-proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
+proc synapse_group_test () { local gid, w, rs localobj gc, synlist, v, vv, logfile
     
     strdef label, msg, log_fn
     
@@ -26,16 +26,20 @@ proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
     gc = $o2
     synlist = $o3
     w = $4
-    v_holding = $5
-    v_init = $6
-    label = $s7
-    logfile = $o8
+    rs = $5
+    v_holding = $6
+    v_init = $7
+    label = $s8
+    logfile = $o9
     
     vv = new Vector()
     vv.append(0,0,0,0,0,0)
     
     
-    gc.soma { se = new SEClamp(0.5) }
+    gc.soma { 
+        se = new SEClamp(0.5) 
+        se.rs = rs
+    }
     xopen("DGC_syn.ses")
     v = gc.syntest(synlist,se,w,v_holding,v_init)
     vv = vv.add(v)
@@ -64,7 +68,7 @@ proc synapse_group_test () { local gid, w localobj gc, synlist, v, vv, logfile
 }
 
 
-proc synapse_group_test_up () { local gid, w localobj gc, synlist, v, vv, logfile
+proc synapse_group_test_up () { local gid, w, rs localobj gc, synlist, v, vv, logfile
     
     strdef label, msg, log_fn
     
@@ -72,15 +76,19 @@ proc synapse_group_test_up () { local gid, w localobj gc, synlist, v, vv, logfil
     gc = $o2
     synlist = $o3
     w = $4
-    v_holding = $5
-    v_init = $6
-    label = $s7
-    logfile = $o8
+    rs = $5
+    v_holding = $6
+    v_init = $7
+    label = $s8
+    logfile = $o9
     
     vv = new Vector()
     vv.append(0,0,0,0,0,0)
     
-    gc.soma { se = new SEClamp(0.5) }
+    gc.soma { 
+        se = new SEClamp(0.5) 
+        se.rs = rs
+    }
     xopen("DGC_syn.ses")
     
     v = gc.syntest_up(synlist,se,w,v_holding,v_init)
@@ -121,11 +129,12 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
     sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    gc = new DGC(gid, 1, 1, forest_path, 1)
-    synapse_group_test(gid, gc, gc.syns_MC,  0.0003, -70, -70, "MC-GC", logfile)
+    //gc = new DGC(gid, 1, 1, forest_path, 1)
+    //synapse_group_test(gid, gc, gc.syns_MC,  0.0002, 1, -52, -52, "MC-GC", logfile)
     
     /*
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(gid, 1, 1, forest_path, 1)
+    
     // Zhang and Buckmaster 2009 used cesium to block voltage-activated potassium channels.
     gc.soma { 
         gbkbar_CadepK = 0.0
@@ -140,12 +149,14 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
 	gbar_KA = 0.0
 	gbar_KM = 0.0
     }
-   
     
+    //synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, -70, "BC-GC", logfile)
+    synapse_group_test_up(gid, gc, gc.syns_BC,  0.0004, 0, -70, "BC-GC", logfile)
+    */
+    
+    /*
     synapse_group_test_up(gid, gc, gc.syns_HC,  0.006, 0, 0, "HC-GC", logfile)
     
-    gc = new DGC(gid, 1, 1, forest_path, 1)
-    synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, -70, "BC-GC", logfile)
 
     gc = new DGC(gid, 1, 1, forest_path, 1)
     synapse_group_test(gid, gc, gc.syns_AA,  0.0008,  -70, -70, "AA-GC", logfile)
