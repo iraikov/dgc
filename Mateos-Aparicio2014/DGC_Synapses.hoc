@@ -160,7 +160,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             // Values to match Harney and Jones 2002
-            syn.tau1 = 0.1  	syn.tau2 = 10.25	syn.e = -71.0 
+            syn.tau1 = 0.1  	syn.tau2 = 12.25	syn.e = -71.0 
         }
         syns_HC.append(syn)
     }
