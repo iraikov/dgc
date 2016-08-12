@@ -117,7 +117,7 @@ proc synapse_group_test_up () { local gid, w, rs localobj gc, synlist, v, vv, lo
 }
 
 
-proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path, results_path
+proc synapse_test() { local gid localobj gc, syn, logfile strdef log_fn, forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -129,39 +129,38 @@ proc synapse_test() { local gid localobj gc, logfile strdef log_fn, forest_path,
     sprint (log_fn, "%s/DGC_synapse_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
     
-    //gc = new DGC(gid, 1, 1, forest_path, 1)
-    //synapse_group_test(gid, gc, gc.syns_MC,  0.0002, 1, -52, -52, "MC-GC", logfile)
-    
-    /*
     gc = new DGC(gid, 1, 1, forest_path, 1)
+    synapse_group_test(gid, gc, gc.syns_MC,  0.0002, 1, -52, -52, "MC-GC", logfile)
     
-    // Zhang and Buckmaster 2009 used cesium to block voltage-activated potassium channels.
-    gc.soma { 
-        gbkbar_CadepK = 0.0
-        gbar_fKDR = 0.0
-        gbar_sKDR = 0.0
-    	gbar_KA = 0.0
-        gbar_UK = 0.0
-   
+    // HC/BC-GC synapse test; data used from Harney and Jones, 2002
+    // Experiments were done at room temperature (21-24 C);
+    // 140 mM KCl intracellular solution, 2 mM MgCl extracellular
+    gc = new DGC(gid, 1, 1, forest_path, 1)
+    celsius = 24 
+    for i=0, gc.syns_BC.count()-1 {
+        syn = gc.syns_BC.o(i)
+        syn.e = 108.73
     }
-    forsec gc.allaxons {
-        gbar_fKDR = 0.0
-	gbar_KA = 0.0
-	gbar_KM = 0.0
+    for i=0, gc.syns_HC.count()-1 {
+        syn = gc.syns_HC.o(i)
+        syn.e = 108.73
     }
+    synapse_group_test(gid, gc, gc.syns_BC,  0.0001, 5, -60, -70, "BC-GC", logfile)
+    synapse_group_test(gid, gc, gc.syns_HC,  0.0007, 5, -60, -70, "HC-GC", logfile)
     
-    //synapse_group_test(gid, gc, gc.syns_BC,  0.00065, -70, -70, "BC-GC", logfile)
-    synapse_group_test_up(gid, gc, gc.syns_BC,  0.0004, 0, -70, "BC-GC", logfile)
-    */
+    //gc = new DGC(gid, 1, 1, forest_path, 1)
+    //synapse_group_test_up(gid, gc, gc.syns_BC,  0.0001, 5, -60, -70, "BC-GC", logfile)
+    //synapse_group_test_up(gid, gc, gc.syns_HC,  0.0007, 5, -60, -70, "HC-GC", logfile)
     
     /*
-    synapse_group_test_up(gid, gc, gc.syns_HC,  0.006, 0, 0, "HC-GC", logfile)
     
 
     gc = new DGC(gid, 1, 1, forest_path, 1)
-    synapse_group_test(gid, gc, gc.syns_AA,  0.0008,  -70, -70, "AA-GC", logfile)
+    //
+    //synapse_group_test(gid, gc, gc.syns_AA,  0.0008, 5, 0, -70, "AA-GC", logfile)
     
-    gc = new DGC(gid, 1, 1, forest_path, 1)
+    
+1    gc = new DGC(gid, 1, 1, forest_path, 1)
     synapse_group_test(gid, gc, gc.syns_HCC, 0.00015, -70, -70, "HCC-GC", logfile)
    
     gc = new DGC(gid, 1, 1, forest_path, 1)

@@ -149,7 +149,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             // Original values calculated in Santhakumar et al. 2005:
-            syn.tau1 = 1.5	syn.tau2 = 5.5	
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
         }
         syns_MC.append(syn)
     }
@@ -159,7 +159,8 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.05  	syn.tau2 = 1.25	syn.e = -70.0 // syn.e = -85.7 
+            // Values to match Harney and Jones 2002
+            syn.tau1 = 0.1  	syn.tau2 = 10.25	syn.e = -71.0 
         }
         syns_HC.append(syn)
     }
@@ -169,17 +170,15 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(GCLDidxs,GCLDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
-            //syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
-            // Values that match Zhang and Buckmaster, 2009:
-            syn.tau1 = 0.55 syn.tau2 = 7.5 syn.e = -70.0 //syn.e = -28.99
+            // Values to match Harney and Jones 2002
+            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = -71.0
         }
         syns_BC.append(syn)
     }
     soma { 
             syn = new Exp2Syn(rx.repick())
-            //syn.tau1 = 0.25 syn.tau2 = 2.5 syn.e = -70.0 //syn.e = -28.99
-            // Values that match Zhang and Buckmaster, 2009:
-            syn.tau1 = 0.55 syn.tau2 = 7.5 syn.e = -70.0 //syn.e = -28.99
+            // Values to match Harney and Jones 2002
+            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = -71.0
         }
     syns_BC.append(syn)
     
@@ -190,7 +189,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.3	syn.tau2 = 2.9 syn.e = -70.0 //syn.e = -28.99
+                    syn.tau1 = 0.3	syn.tau2 = 2.9 syn.e = -71.0
                 }
                 syns_AA.append(syn)
                 break
@@ -205,7 +204,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.04	syn.tau2 = 1.1	syn.e = -70.0 //syn.e = -28.99
+            syn.tau1 = 0.04	syn.tau2 = 1.1	syn.e = -71.0
         }
         syns_HCC.append(syn)
     }
@@ -216,7 +215,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 0.1	syn.tau2 = 10	syn.e = -70.0 //syn.e = -38.148
+            syn.tau1 = 0.1	syn.tau2 = 10	syn.e = -71.0
             syns_NGFC_GABAA.append(syn)
             syn = new Exp2Syn(x) 
             syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
@@ -253,13 +252,13 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     v_init = $5
     
     soma { 
-        se.dur1 = 3010
+        se.dur1 = 1010
         se.amp1 = v_holding 
     }
     
     mainDT = 0.001
     dt = mainDT
-    tstop = 3000
+    tstop = 1000
     
     vec_size = tstop/mainDT + 1
     
@@ -270,9 +269,9 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     tlog.record(&t)
     
     ns = new NetStim()
-    ns.interval = 3000
+    ns.interval = 1000
     ns.number = 1
-    ns.start  = 2200
+    ns.start  = 200
     ns.noise  = 0
     
     nclist = new List()
@@ -304,6 +303,7 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     i_peak = vec.max()
     t_peak = tlog.x[vec.indwhere("==",i_peak)]
     
+    print "celsius = ", celsius
     print "i_peak = ", i_peak
     print "i_holding = ", i_holding
     print "i_peak - i_holding = ", i_peak - i_holding
