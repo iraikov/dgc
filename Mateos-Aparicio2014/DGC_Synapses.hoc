@@ -66,7 +66,7 @@ func addSyn () { local i, secindex, syntype, synidx, node, x localobj syn
         assert(secindex < nDends, "invalid section index")            
         alldendritesList.o(secindex).sec { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = E_AMPA
             syns_LPP.append(syn)
         }
         synidx = syns_LPP.count()-1
@@ -78,7 +78,7 @@ func addSyn () { local i, secindex, syntype, synidx, node, x localobj syn
             assert(secindex < nDends, "invalid section index")            
             alldendritesList.o(secindex).sec { 
                 syn = new Exp2Syn(x) 
-                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0.0
+                syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = E_AMPA
 		syns_MPP.append(syn)
             }
             synidx = syns_MPP.count()-1
@@ -138,7 +138,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(GCLPDidxs,GCLPDweights,rs) // randomly select GCL dendrite
         dendrites[j] { 
             syn = new Exp2Syn(0.5)
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = E_AMPA
         } 
         syns_GC.append(syn)
     }
@@ -149,7 +149,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             // Original values calculated in Santhakumar et al. 2005:
-            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = 0
+            syn.tau1 = 1.5	syn.tau2 = 5.5	syn.e = E_AMPA
         }
         syns_MC.append(syn)
     }
@@ -160,7 +160,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
             // Values to match Harney and Jones 2002
-            syn.tau1 = 0.1  	syn.tau2 = 12.25	syn.e = -71.0 
+            syn.tau1 = 0.1  	syn.tau2 = 12.25	syn.e = E_GABAA
         }
         syns_HC.append(syn)
     }
@@ -171,14 +171,14 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick())
             // Values to match Harney and Jones 2002
-            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = -71.0
+            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = E_GABAA
         }
         syns_BC.append(syn)
     }
     soma { 
             syn = new Exp2Syn(rx.repick())
             // Values to match Harney and Jones 2002
-            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = -71.0
+            syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = E_GABAA
         }
     syns_BC.append(syn)
     
@@ -189,7 +189,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.3	syn.tau2 = 12.9 syn.e = -71.0
+                    syn.tau1 = 0.7 syn.tau2 = 17.5 syn.e = E_GABAA
                 }
                 syns_AA.append(syn)
                 break
@@ -204,7 +204,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(PDidxs,PDweights,rs) // randomly select proximal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.04	syn.tau2 = 1.1	syn.e = -71.0
+            syn.tau1 = 0.04	syn.tau2 = 1.1	syn.e = E_GABAA
         }
         syns_HCC.append(syn)
     }
@@ -215,10 +215,10 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         x = rx.repick()
         dendrites[j] { 
             syn = new Exp2Syn(x) 
-            syn.tau1 = 0.1	syn.tau2 = 10	syn.e = -71.0
+            syn.tau1 = 0.1	syn.tau2 = 10	syn.e = E_GABAA
             syns_NGFC_GABAA.append(syn)
             syn = new Exp2Syn(x) 
-            syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = -90
+            syn.tau1 = 86.8	syn.tau2 = 428.1 syn.e = E_GABAB
             syns_NGFC_GABAB.append(syn)
         }
     }

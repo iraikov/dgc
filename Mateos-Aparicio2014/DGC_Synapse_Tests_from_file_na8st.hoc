@@ -135,6 +135,11 @@ proc synapse_test() { local gid localobj gc, syn, logfile strdef log_fn, forest_
     // HC/BC-GC synapse test; data used from Harney and Jones, 2002
     // Experiments were done at room temperature (21-24 C);
     // 140 mM KCl intracellular solution, 2 mM MgCl extracellular
+    //
+    // See also:
+    // Associative Plasticity at Excitatory Synapses Facilitates Recruitment of Fast-Spiking Interneurons in the Dentate Gyrus
+    // Sivakumar Sambandan, Jonas-Frederic Sauer, Imre Vida, and Marlene Bartos 
+    //
     gc = new DGC(gid, 1, 1, forest_path, 1)
     celsius = 24 
     for i=0, gc.syns_BC.count()-1 {
@@ -145,23 +150,27 @@ proc synapse_test() { local gid localobj gc, syn, logfile strdef log_fn, forest_
         syn = gc.syns_HC.o(i)
         syn.e = 108.73
     }
+    for i=0, gc.syns_AA.count()-1 {
+        syn = gc.syns_AA.o(i)
+        syn.e = 108.73
+    }
     synapse_group_test(gid, gc, gc.syns_BC,  0.0001, 5, -60, -70, "BC-GC", logfile)
     synapse_group_test(gid, gc, gc.syns_HC,  0.0006, 5, -60, -70, "HC-GC", logfile)
-
+    synapse_group_test(gid, gc, gc.syns_AA,  0.0004, 5, -60, -70, "AA-GC", logfile)
+    
+    // HCC/GC synapse test; data used from Savanthrapadian et al., J Neurosci 2014
+    gc = new DGC(gid, 1, 1, forest_path, 1)
+    for i=0, gc.syns_HCC.count()-1 {
+        syn = gc.syns_HCC.o(i)
+        syn.e = -29.17
+    }
+    synapse_group_test(gid, gc, gc.syns_HCC, 0.00015, 5, -70, -70, "HCC-GC", logfile)
+    
+    /*
     gc = new DGC(gid, 1, 1, forest_path, 1)
     synapse_group_test_up(gid, gc, gc.syns_BC,  0.0001, 5, -60, -70, "BC-GC", logfile)
     synapse_group_test_up(gid, gc, gc.syns_HC,  0.0006, 5, -60, -70, "HC-GC", logfile)
-    
-    /*
-    
-
-    gc = new DGC(gid, 1, 1, forest_path, 1)
-    //
-    //synapse_group_test(gid, gc, gc.syns_AA,  0.0008, 5, 0, -70, "AA-GC", logfile)
-    
-    
-    gc = new DGC(gid, 1, 1, forest_path, 1)
-    synapse_group_test(gid, gc, gc.syns_HCC, 0.00015, -70, -70, "HCC-GC", logfile)
+    synapse_group_test_up(gid, gc, gc.syns_AA,  0.0004, 5, -60, -70, "AA-GC", logfile)
    
     gc = new DGC(gid, 1, 1, forest_path, 1)
     synapse_group_test(gid, gc, gc.syns_NGFC_GABAA, 0.00005, -90, -70, "NGFC-GC GABAA", logfile)
@@ -170,7 +179,7 @@ proc synapse_test() { local gid localobj gc, syn, logfile strdef log_fn, forest_
     synapse_group_test_up(gid, gc, gc.syns_NGFC_GABAB, 0.0001, -60, -70, "NGFC-GC GABAB", logfile)
     */
     
-    v_init = -70
+    v_init = -68
     
     logfile.close()
     
@@ -237,7 +246,7 @@ proc pp_synapse_test() { local i, j, x, npts, gid localobj mppweights, lppweight
     synapse_group_pulse_test(gid, gc, gc.syns_MPP,  mppweights, 50, -70, "MPP-GC", logfile)
     synapse_group_pulse_test(gid, gc, gc.syns_LPP,  lppweights, 50, -70, "LPP-GC", logfile)
 
-    v_init = -70
+    v_init = -68
     
     printf("gc.syns_MPP.count() = %d\n", gc.syns_MPP.count())
     printf("gc.syns_LPP.count() = %d\n", gc.syns_LPP.count())

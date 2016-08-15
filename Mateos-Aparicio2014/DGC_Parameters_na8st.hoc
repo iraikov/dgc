@@ -3,14 +3,14 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -70
+    v_init = -68
     
     //Passive properties
     Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 3.5e-05    //S/cm2
+    gpas = 4e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
-    Epas = -70      //mV
+    Epas = -68      //mV (original: -70)
     EK = -90         //mV
     //EK = -77        //mV: Value used for epileptic slice unmasking
 
@@ -99,6 +99,10 @@ proc parameters() {
     htaumultNa = 1
     ENa = 42
     
+    // Synaptic reversal potentials
+    E_GABAA = -71
+    E_GABAB = -90
+    E_AMPA  = 0
+    
+    
 }
-
-
