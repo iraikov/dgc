@@ -3,31 +3,32 @@ load_file("nrngui.hoc")
 
 // Load the granule cell template
 xopen("DGC_Template_from_file_na8st.hoc")
-//xopen("DGC.hoc")
 
 xopen ("rn.hoc")
 
-v_init = -75
+v_init = -68
 
 //**********************************************************************
 proc simulate() { local prelength, mainlength, preDT, mainDT
     
+    printf("entering simulate\n")
     
     prelength = $1
     mainlength = $2
-    
-    t = 0
-    
+
     cvode_active (1)
-    cvode.use_daspk(1)
-    //cvode.dae_init_dteps(1e-9, 2)
+    cvode.use_daspk(0)
+    
     finitialize(v_init)
+    
     tstop = prelength+mainlength
+    
     fadvance()
+    continuerun(tstop)
     
 }
 
-proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
+proc write_voltage_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon, Vlog_dends, Vlog_dend
     
     logfile=$o1
     tlog=$o2
@@ -36,9 +37,6 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
     Vlog_dends=$o5
     
     logsize = tlog.size()
-    
-    print "Vlog_soma.size() = ", Vlog_soma.size() 
-    print "Vlog_axon.size() = ", Vlog_axon.size() 
     
     for i=0,tlog.size()-1 {
 	logfile.printf("%g %g %g", tlog.x[i], Vlog_soma.x[i], Vlog_axon.x[i])
@@ -52,6 +50,26 @@ proc write_trace() { local logsize  localobj logfile, tlog, Vlog_soma, Vlog_axon
     }
     
 }
+
+proc write_current_trace() { local logsize  localobj logfile, tlog, isk_log, ibk_log, ika_log, ifkdr_log, ina_log
+    
+    logfile=$o1
+    tlog=$o2
+    isk_log = $o3
+    ibk_log = $o4
+    ifkdr_log  = $o5
+    ika_log  = $o6
+    ina_log = $o7
+    
+    logsize = tlog.size()
+    
+    for i=0,tlog.size()-1 {
+	logfile.printf("%g %g %g %g %g %g", tlog.x[i], isk_log.x[i], ibk_log.x[i], ifkdr_log.x[i], ika_log.x[i], ina_log.x[i])
+        logfile.printf("\n")
+    }
+    
+}
+
 
 proc write_dvdt() { local logsize  localobj logfile, tlog, dvdt
     
@@ -86,7 +104,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     stimdur = 500.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 1)
+    gc = new DGC(0, gid, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -109,17 +127,11 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.wopen ( log_fn )
     
     simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
-    
-    // compute total surface area of dendritic compartments
-    dendritearea = 0
-    forsec gc.alldendrites {
-        dendritearea = dendritearea + area(0.5)
-    }
-    
+
     // attempt to compute membrane time constant
-    vrest  = -75.0
+    vrest  = Vlog_soma.x[tlog.indwhere(">=",prelength-1)]
     vmin   = Vlog_soma.min()
     vmax   = vrest
     // the time it takes the system's step response to reach 1-1/e (or
@@ -127,6 +139,12 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     amp23  = 0.632 * abs (vmax - vmin)
     vtau0  = vrest - amp23
     tau0   = tlog.x[Vlog_soma.indwhere ("<=", vtau0)] - prelength
+    
+    // compute total surface area of dendritic compartments
+    dendritearea = 0
+    forsec gc.alldendrites {
+        dendritearea = dendritearea + area(0.5)
+    }
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_passive_results_%06d.dat", results_path, gid )
@@ -137,14 +155,18 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     logfile.printf ("vtau0: %g mV\n", vtau0)
     logfile.printf ("tau0: %g ms\n", tau0)
     logfile.printf ("total dendritic surface area: %g\n", dendritearea)
-
+    
+    printf ("DC input resistance: %g MOhm\n", rn(gc))
+    printf ("vmin: %g mV\n", vmin)
+    printf ("vtau0: %g mV\n", vtau0)
+    printf ("tau0: %g ms\n", tau0)
+    printf ("total dendritic surface area: %g\n", dendritearea)
+    
     logfile.close()
 }
 
 
-
-
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, isk_log, ibk_log, ifkdr_log, ika_log, ina_log, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
@@ -161,7 +183,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     stimdur = 1.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(0, gid, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -173,6 +195,17 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     nc.threshold = 0.0
     nc.record(spikelog)
     
+    isk_log = new Vector(vec_sizes)
+    isk_log.record (&gc.soma.isk_CadepK(0.5))
+    ibk_log = new Vector(vec_sizes)
+    ibk_log.record (&gc.soma.ibk_CadepK(0.5))
+    ifkdr_log = new Vector(vec_sizes)
+    ifkdr_log.record (&gc.soma.i_fKDR(0.5))
+    ika_log = new Vector(vec_sizes)
+    ika_log.record (&gc.soma.i_KA(0.5))
+    ina_log = new Vector(vec_sizes)
+    ina_log.record (&gc.soma.ina_na8st(0.5))
+    
     Vlog_soma = new Vector(vec_sizes)
     Vlog_soma.record (&gc.soma.v(0.5))
     
@@ -183,13 +216,12 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     // approximately dendlog_interval apart
     Vlog_dends = new List()
     dendlog_interval = 50 //um
-    dendlog_distance = dendlog_interval //um
-    previous_dendlog_distance = 0
-    
+    dendlog_distance = 0 //um
+
     for i=0,4 {
         
         dendlog_found = 0
-        
+
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
         
@@ -198,9 +230,8 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
         for j=0, gc.nDends-1 gc.dendrites[j] { 
 	    for (x,0) {
                 dist = distance(x)
-                if ((dist >= dendlog_distance) && (dist > previous_dendlog_distance)) {
-                    printf ("Vlog_dend: previous_dendlog_distance = %g dendlog_distance = %g dist = %g\n", previous_dendlog_distance, dendlog_distance, dist)
-                    previous_dendlog_distance = dist
+                if (dist >= dendlog_distance) {
+                    printf ("Vlog_dend: dist = %g\n", dist)
                     Vlog_dend.record (&gc.dendrites[j].v(0.5))
                     dendlog_found = 1
                     pop_section()
@@ -214,7 +245,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
         if (!dendlog_found) {
             Vlog_dend.record (&gc.dendrites[gc.nDends-1].v(0.5))
         }
-        
         dendlog_distance = dendlog_distance + dendlog_interval
     }
     
@@ -239,17 +269,15 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
             }
         }
     }
-
-    printf("gid = %d Vlog_soma.size = %d Vlog_axon.size = %d\n", gid, Vlog_soma.size(), Vlog_axon.size())
-    for i=0,Vlog_dends.count()-1 {
-        Vlog_dend = Vlog_dends.object(i)
-        printf("Vlog_dend[%d].size = %d\n", i, Vlog_dend.size())
-    }
-
-
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
+    logfile = new File()
+    sprint (log_fn, "%s/DGC_single_ap_currents_%06d.dat", results_path, gid )
+    logfile.wopen ( log_fn )
+    write_current_trace(logfile,tlog,isk_log,ibk_log,ifkdr_log,ika_log,ina_log)
+    logfile.close()
+
     vmax = Vlog_soma.max()
     vmin = Vlog_soma.min()
     
@@ -269,7 +297,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     logfile.printf ("maximum Vsoma: %g mV\n", vmax)
     logfile.printf ("minimum Vsoma: %g mV\n", vmin)
-    logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
     
     vsoma_amp = vmax-vmin
     for i=0,vdend_max.size()-1 { 
@@ -281,11 +308,14 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
 }
 
+
 proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_axon, tlog, icaplog, logfile, dvdt strdef forest_path, results_path
     
     forest_path = $s1
     results_path = $s2
     gid = $3
+    
+    print "threshold_test: gid = ", gid
     
     strdef log_fn
     
@@ -296,12 +326,12 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     
     stimdur = 250.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(0, gid, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.05
+    stim1.amp = 0.0
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -332,13 +362,11 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
         }
     }
     
-    vmax = Vlog_soma.max()
-    vmin = Vlog_soma.min()
     
     logfile = new File()
     sprint (log_fn, "%s/DGC_threshold_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,new List())
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,new List())
     logfile.close()
     
     //
@@ -359,8 +387,19 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     write_dvdt(logfile, tlog, dvdt)
     logfile.close()
     
+    
+    dvdt.remove(0,tlog.indwhere(">",prelength+1))
+    Vlog_soma.remove(0,tlog.indwhere(">",prelength+1))
+    tlog.remove(0,tlog.indwhere(">",prelength+1))
+    
+    vmax = Vlog_soma.max()
+    vmin = Vlog_soma.min()
+    vmax_index = Vlog_soma.max_ind()
+
     dvdtmax = dvdt.max()
-    dvdt10_index = dvdt.indwhere (">", 10.0)
+    dvdtmax_index = dvdt.max_ind()
+    
+    dvdt10_index = dvdt.indwhere (">=", 10.0)
     
     // Set the spike threshold to the index where dvdt[x] ~= 10.0 
     vthresh = Vlog_soma.x[dvdt10_index]
@@ -375,14 +414,27 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     logfile.printf ("threshold: %g mV at %g ms\n", vthresh, tlog.x[dvdt10_index])
     
     logfile.printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
-    logfile.printf ("AHP relative to Vrest: %g mV\n", vmin-v_init)
+    
+    printf ("threshold: %g mV at %g ms\n", vthresh, tlog.x[dvdt10_index])
+    printf ("AP amplitude relative to threshold: %g mV\n", vmax-vthresh)
+    
+    vmax_index = Vlog_soma.max_ind()
+    t_vmax = tlog.x[vmax_index]
+    t_ahp_index = tlog.indwhere(">", t_vmax+5)
+    if (t_ahp_index < 0) {
+        t_ahp_index = tlog.x[tlog.size()-1]
+    }
+    vahp = Vlog_soma.min(vmax_index, t_ahp_index)
+    logfile.printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
+    printf ("AHP relative to threshold: %g mV\n", vahp-vthresh)
     
     logfile.close()
     
 }
 
 
-proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path
+
+proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev, it localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path, errmsg
     
     forest_path = $s1
     results_path = $s2
@@ -399,16 +451,15 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     stimdur = 1000
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
-    
+    gc = new DGC(0, gid, 1, forest_path, 1)
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.2
+    stim1.amp = 0.3
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
-    nc.threshold = -49
+    nc.threshold = -40.0
     nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
@@ -422,13 +473,30 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
+    it = 1
+    // Increase the injected current until at least 30 spikes occur
+    // or up to 3 steps
+    while (spikelog.size() < 30) {
+
+        simulate(prelength,mainlength)
+        
+        if ((spikelog.size() < 30) && (it < 5)) {
+            printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
+            stim1.amp = stim1.amp + 0.1
+            spikelog.clear()
+            tlog.clear()
+            Vlog_soma.clear()
+            Vlog_axon.clear()
+            it = it + 1
+        } else {
+            break
+        }
+    }
+    
     logfile = new File()
     sprint (log_fn, "%s/DGC_ap_rate_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    
-    simulate(prelength,mainlength)
-    write_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
-
+    write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
     
     spikefile = new File()
@@ -438,15 +506,14 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
         spikefile.printf("%g\n", spikelog.x[i])
     }
     
-    
     isivect = new Vector(spikelog.size()-1, 0.0)
     tspike = spikelog.x[0]
     for i=1,spikelog.size()-1 {
         isivect.x[i-1] = spikelog.x[i]-tspike
         tspike = spikelog.x[i]
     }
-    isivect.printf()
     
+    printf ("ap_rate_test: isivect.size = %d\n", isivect.size())
     isimean = isivect.mean()
     isivar = isivect.var()
     isistdev = isivect.stdev()
@@ -462,15 +529,14 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     // This is necessary because some variants of the model generate spike doublets,
     // (i.e. spike with very short distance between them, which confuse the ISI statistics.
     isilastgt = isivect.size()-1
-    while (isivect.x[isilastgt] < isivect.x[0]) {
+    while (isivect.x[isilastgt] < isivect.x[1]) {
         isilastgt = isilastgt-1
     }
     
     if (!(isilastgt > 0)) {
-        print "ap_rate_test: gid = ", gid
-        print "ap_rate_test: isivect.size() = ", isivect.size()
-        
-        execerror("Unable to find ISI greater than first ISI")
+        sprint(errmsg,"Unable to find ISI greater than first ISI: forest_path = %s gid = %d", forest_path, gid)
+        isivect.printf()
+        execerror(errmsg)
     }
     
     spikefile.printf ("## number of spikes: %g\n", spikelog.size())
@@ -487,18 +553,4 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
 }
 
-
-proc synapse_test() { local gid localobj gc strdef forest_path, results_path
-    
-    forest_path = $s1
-    results_path = $s2
-    gid = $3
-    
-    
-    print "synapse test: gid = ", gid
-    
-    gc = new DGC(gid, 1, 1, forest_path, 0)
-    
-    gc.syntest(gc.syns_GC.o(0))
-}
 

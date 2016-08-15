@@ -3,15 +3,16 @@
 proc parameters() {
     
     celsius = 32
-    v_init = -68
+    v_init = -70
     
     //Passive properties
     Ra0 = 194       //Ohm.cm
     cm0 = 1         //uF/cm2
-    gpas = 4e-05    //S/cm2
+    gpas = 3.5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
-    Epas = -75      //mV
+    Epas = -70      //mV
     EK = -90         //mV
+    //EK = -77        //mV: Value used for epileptic slice unmasking
 
     // Parameters from Schmidt-Hieber 2010
     Ra_soma = Ra0
@@ -22,8 +23,8 @@ proc parameters() {
     // na8st conductance
     gnabar_prox_axon = 94.0
     gnabar_distal_axon = 38.6152
-    gna_soma = 18.8
-    gnabar_distal_dend = gna_soma * 0.3
+    gna_soma = 18.8  // original 18.8
+    gnabar_distal_dend = gna_soma * 0.2 // original 0.2
     gENa = 55.0
     
     lambda2 = 10.0
@@ -47,13 +48,13 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.001 // increased to 0.001 from 0.0002 to reduce excitability
+    gsksoma = 0.0005 // increased to 0.001 from 0.0002 to reduce excitability
     gskprox = 0.0001 // increase by a factor of 4 to achieve
     gskGCLs = 0.0001 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 1.5
+    BKmult = 15.0  // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20
@@ -77,11 +78,11 @@ proc parameters() {
     kcaUK = 0.01
     
     //The delayed rectifier and A conductances
-    KDRmult = 1.5
+    KDRmult = 1.5 // original 0.8
     V0KDR = 23
     taumultKDR = 1
-    gKAs = 0.001
-    gKAa = 0.05
+    gKAs = 0.01
+    gKAa = 0.04
     
     //Calcium channels
     CaTmult = 1.75
