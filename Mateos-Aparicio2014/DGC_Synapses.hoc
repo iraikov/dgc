@@ -159,7 +159,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         j = choose_index(MDDidxs,MDDweights,rs) // randomly select middle/distal dendrite
         dendrites[j] { 
             syn = new Exp2Syn(rx.repick()) 
-            syn.tau1 = 0.05  	syn.tau2 = 1.25	syn.e = -70.0 // syn.e = -85.7 
+            syn.tau1 = 0.5  	syn.tau2 = 6.25	syn.e = -70.0
         }
         syns_HC.append(syn)
     }
@@ -253,13 +253,13 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     v_init = $5
     
     soma { 
-        se.dur1 = 3010
+        se.dur1 = 1010
         se.amp1 = v_holding 
     }
     
     mainDT = 0.001
     dt = mainDT
-    tstop = 3000
+    tstop = 1000
     
     vec_size = tstop/mainDT + 1
     
@@ -270,9 +270,9 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     tlog.record(&t)
     
     ns = new NetStim()
-    ns.interval = 3000
+    ns.interval = 1000
     ns.number = 1
-    ns.start  = 2200
+    ns.start  = 200
     ns.noise  = 0
     
     nclist = new List()
