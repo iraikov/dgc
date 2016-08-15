@@ -156,7 +156,7 @@ proc synapse_test() { local gid localobj gc, syn, logfile strdef log_fn, forest_
     }
     synapse_group_test(gid, gc, gc.syns_BC,  0.0001, 5, -60, -70, "BC-GC", logfile)
     synapse_group_test(gid, gc, gc.syns_HC,  0.0006, 5, -60, -70, "HC-GC", logfile)
-    synapse_group_test(gid, gc, gc.syns_AA,  0.0004, 5, -60, -70, "AA-GC", logfile)
+    synapse_group_test(gid, gc, gc.syns_AA,  0.0002, 5, -60, -70, "AA-GC", logfile)
     
     // HCC/GC synapse test; data used from Savanthrapadian et al., J Neurosci 2014
     gc = new DGC(gid, 1, 1, forest_path, 1)
