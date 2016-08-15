@@ -189,7 +189,7 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
             if (x < 1/naxons_AA) {
                 axon[j] { 
                     syn = new Exp2Syn(rx.repick()) 
-                    syn.tau1 = 0.3	syn.tau2 = 2.9 syn.e = -71.0
+                    syn.tau1 = 0.3	syn.tau2 = 12.9 syn.e = -71.0
                 }
                 syns_AA.append(syn)
                 break
