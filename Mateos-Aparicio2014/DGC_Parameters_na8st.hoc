@@ -49,8 +49,8 @@ proc parameters() {
     
     //The SK and BK conductances
     gsksoma = 0.0005 // increased to 0.001 from 0.0002 to reduce excitability
-    gskprox = 0.0001 // increase by a factor of 4 to achieve
-    gskGCLs = 0.0001 // adaptation closer to Santhakumar 2005
+    gskprox = 0.00015 // increase by a factor of 4 to achieve
+    gskGCLs = 0.00015 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
@@ -86,8 +86,8 @@ proc parameters() {
     
     //Calcium channels
     CaTmult = 1.75
-    CaNmult = 1
-    CaLmult = 1
+    CaNmult = 4
+    CaLmult = 4
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1
@@ -100,7 +100,7 @@ proc parameters() {
     ENa = 42
     
     // Synaptic reversal potentials
-    E_GABAA = -71
+    E_GABAA = -75
     E_GABAB = -90
     E_AMPA  = 0
     

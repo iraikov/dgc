@@ -7,7 +7,7 @@ proc parameters() {
     
     //Passive properties
     Ra0 = 194       //Ohm.cm
-    cm0 = 1         //uF/cm2
+    cm0 = 1.0         //uF/cm2
     gpas = 4.5e-05    //S/cm2
     Rm0 = 1e-3/gpas //kOhm.cm2
     Epas = -68      //mV
@@ -47,9 +47,9 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.001 // original 0.0001
-    gskprox = 0.0001 // increase by a factor of 4 to achieve
-    gskGCLs = 0.0001 // adaptation closer to Santhakumar 2005
+    gsksoma = 0.0015 // original 0.0001
+    gskprox = 0.00015 // increase by a factor of 4 to achieve
+    gskGCLs = 0.00015 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
@@ -85,8 +85,8 @@ proc parameters() {
     
     //Calcium channels
     CaTmult = 1.75
-    CaNmult = 1
-    CaLmult = 1
+    CaNmult = 4 // original 1
+    CaLmult = 4 // original 1
     ca0 = .00007
     tauctdiv = 1
     taucadiv = 1
@@ -99,7 +99,7 @@ proc parameters() {
     ENa = 42
     
     // Synaptic reversal potentials
-    E_GABAA = -71
+    E_GABAA = -75
     E_GABAB = -90
     E_AMPA  = 0
     
