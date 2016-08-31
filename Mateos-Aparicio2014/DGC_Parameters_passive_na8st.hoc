@@ -47,13 +47,13 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.0015 // original 0.0001
+    gsksoma = 0.002 // original 0.0001
     gskprox = 0.00015 // increase by a factor of 4 to achieve
     gskGCLs = 0.00015 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 15.0 // original 0.3
+    BKmult = 20.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20
@@ -79,24 +79,18 @@ proc parameters() {
     //The delayed rectifier and A conductances
     KDRmult = 1.35 // increased from 0.8
     V0KDR = 23
-    taumultKDR = 1
+    taumultKDR = 1.5
     gKAs = 0.01
-    gKAa = 0.04
+    gKAa = 0.02
     
     //Calcium channels
-    CaTmult = 1.75
+    CaTmult = 2.75
     CaNmult = 4 // original 1
     CaLmult = 4 // original 1
     ca0 = .00007
-    tauctdiv = 1
-    taucadiv = 1
+    tauctdiv = 1.5
+    taucadiv = 1.5
     Vshift = 0
-    
-    //The transient Na conductance
-    gNaT_mult = 1.5
-    taumultNa = 1
-    htaumultNa = 1
-    ENa = 42
     
     // Synaptic reversal potentials
     E_GABAA = -75 // Mean value reported in controls by Pathak et al., J Neurosci. 2007
