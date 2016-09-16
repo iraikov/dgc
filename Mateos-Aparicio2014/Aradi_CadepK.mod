@@ -68,14 +68,14 @@ DERIVATIVE state {	: exact when v held constant; integrates over dt step
 	ca_i' = -B*ica - taucadiv*(ca_i-ca0)/tau
 	q' = tauskdiv*(ask*alphaq(ca_i)*(1-q)-bsk*betaq(ca_i)*q)
 	r' = alphar*(1-r)-betar(v)*r
-	s' = (sinf(ca_i)-s)/stau
+	s' = (mysinf(ca_i)-s)/stau
 }
 
 INITIAL {
 	ca_i = ca0
 	q = alphaq(ca_i)/(alphaq(ca_i)+betaq(ca_i))
 	r = alphar/(alphar+betar(v))
-        s = sinf(ca_i)
+        s = mysinf(ca_i)
         gbar = gbkbar + gskbar
 }
 
@@ -99,15 +99,15 @@ FUNCTION betar(v (mV)) (/ms) {
 	UNITSON
 }
 
-FUNCTION sinf(x (mM)) {
+FUNCTION mysinf(x (mM)) {
 	UNITSOFF
-	sinf = 1/(1+4/(1000*x))
+	mysinf = 1/(1+4/(1000*x))
 	UNITSON
 }
 
 FUNCTION exptrap(loc,x) {
   if (x>=700.0) {
-    printf("exptrap Aradi_CadepK [%d]: x = %g\n", loc, x)
+    :printf("exptrap Aradi_CadepK [%d]: x = %g\n", loc, x)
     exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
