@@ -98,7 +98,7 @@ FUNCTION vtrap(x,y) {            :Traps for 0 in denominator of rate eqns., base
  
 FUNCTION exptrap(loc,x) {
   if (x>=700.0) {
-    printf("exptrap SH_KIn [%d]: x = %g\n", loc, x)
+    :printf("exptrap SH_KIn [%d]: x = %g\n", loc, x)
     exptrap = exp(700.0)
   } else {
     exptrap = exp(x)

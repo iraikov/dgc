@@ -15,8 +15,6 @@ PARAMETER {
 	gbar = 0   		(S/cm2)
  	taumult = 1
  	htaumult = 1
-	vmin = -100		(mV)		: for look-up table
-	vmax = 100		(mV)
 } 
 
 
@@ -60,9 +58,6 @@ DERIVATIVE states {
 }
 
 PROCEDURE rates(v (mV)) {
-:TABLE minf, mtau, hinf, htau
-:DEPEND taumult, htaumult
-:FROM vmin TO vmax WITH 199
   malpha = 0.3*(v+45)/(1-exp(-0.2*(v+45)))
   mbeta = -0.3*(v+17)/(1-exp(0.2*(v+17)))
   mtau = taumult/(malpha + mbeta)

@@ -17,8 +17,6 @@ PARAMETER {
 	v0 = 23       (mV)
 	taumult = 1
 	gbar = 0   		(S/cm2)
- 	vmin = -100		(mV)		: for look-up table
-	vmax = 100		(mV)
 } 
 
 
@@ -53,9 +51,6 @@ DERIVATIVE states {
 }
 
 PROCEDURE rates(v (mV)) {
-:TABLE minf, mtau
-:DEPEND taumult, v0
-:FROM vmin TO vmax WITH 199
   malpha = 0.07*(v+v0)/(1-exptrap(1, -0.166*(v+v0)))
   mbeta = 0.264*exptrap(2, -0.025*(v+48))
   mtau = taumult/(malpha + mbeta)
@@ -66,7 +61,7 @@ PROCEDURE rates(v (mV)) {
 
 FUNCTION exptrap(loc,x) {
   if (x>=700.0) {
-    printf("exptrap Aradi_KDRf [%d]: x = %g\n", loc, x)
+    :printf("exptrap Aradi_KDRf [%d]: x = %g\n", loc, x)
     exptrap = exp(700.0)
   } else {
     exptrap = exp(x)

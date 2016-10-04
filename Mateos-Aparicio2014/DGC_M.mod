@@ -88,9 +88,9 @@ DERIVATIVE states {
 }
 
 PROCEDURE rates(v (mV)) {
-  TABLE minf, tau1, tau2, ginf
-	DEPEND celsius, gamma, k, Vhalf, Vshift, taudiv, Dtaumult1, Dtaumult2, tau0mult
-	FROM vmin TO vmax WITH 199
+:  TABLE minf, tau1, tau2, ginf
+:	DEPEND celsius, gamma, k, Vhalf, Vshift, taudiv, Dtaumult1, Dtaumult2, tau0mult
+:	FROM vmin TO vmax WITH 199
 	
   IF (gamma == 0.5) {
   	z1 = 2.8
@@ -138,7 +138,7 @@ FUNCTION gsat (v (mV)) {
 
 FUNCTION exptrap(loc,x) {
   if (x>=700.0) {
-    printf("exptrap DGC_M [%d]: x = %g\n", loc, x)
+    :printf("exptrap DGC_M [%d]: x = %g\n", loc, x)
     exptrap = exp(700.0)
   } else {
     exptrap = exp(x)
