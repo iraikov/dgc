@@ -53,7 +53,7 @@ INITIAL {
 }
 
 BREAKPOINT {
-	SOLVE state METHOD cnexp
+	SOLVE state METHOD derivimplicit
 	g = gbar*q^p
 	i = g*(v - erev)*(1e-4)
 }
