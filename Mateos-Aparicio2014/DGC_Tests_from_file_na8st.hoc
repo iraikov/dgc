@@ -439,6 +439,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     forest_path = $s1
     results_path = $s2
     gid = $3
+    stimamp = $4
     
     print "ap_rate_test: gid = ", gid
     
@@ -455,7 +456,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.3
+    stim1.amp = stimamp
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -479,9 +480,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     while (spikelog.size() < 30) {
 
         simulate(prelength,mainlength)
+        printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
         
         if ((spikelog.size() < 30) && (it < 5)) {
-            printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
             stim1.amp = stim1.amp + 0.1
             spikelog.clear()
             tlog.clear()
