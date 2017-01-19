@@ -104,7 +104,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     stimdur = 500.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -326,7 +326,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     
     stimdur = 250.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -439,6 +439,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     forest_path = $s1
     results_path = $s2
     gid = $3
+    stimamp = $4
     
     print "ap_rate_test: gid = ", gid
     
@@ -451,12 +452,12 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     stimdur = 1000
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
+    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
-    stim1.amp = 0.3
+    stim1.amp = stimamp
     
     spikelog = new Vector()
     gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
@@ -480,9 +481,9 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     while (spikelog.size() < 30) {
 
         simulate(prelength,mainlength)
+        printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
         
         if ((spikelog.size() < 30) && (it < 5)) {
-            printf ("ap_rate_test: stim1.amp = %g spikelog.size = %d\n", stim1.amp, spikelog.size())
             stim1.amp = stim1.amp + 0.1
             spikelog.clear()
             tlog.clear()

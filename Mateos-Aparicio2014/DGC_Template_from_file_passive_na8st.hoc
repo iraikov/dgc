@@ -29,7 +29,7 @@ public addSyn, syntest, syntest_up, synpulsetest
 public syn_stim
 public is_art, connect2target
 
-verbose = 0
+verbose = 1
 filemode = 1
 id  = -1
 gid = -1
@@ -137,10 +137,13 @@ proc init() {
     if (filemode > 0) {
         celldef()
     } else {
-        if (numarg() > 11) {
+        if (numarg() > 14) {
+            verbose = $15
+            celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13,$o14)
+        } else if (numarg() > 11) {
             verbose = $12
+            celldef($o6,$o7,$o8,$o9,$o10,$o11)
         }
-        celldef($o6,$o7,$o8,$o9,$o10,$o11)
     }
     
 }
@@ -175,29 +178,36 @@ proc celldef() {
     syns.append(syns_NGFC_GABAB)
     syns.append(syns_LPP)
     syns.append(syns_MPP)
-
+    
     if (numarg() > 1) {
         topol($o1,$o2,$o3,$o4)
     } else {
         topol()
     }
-
-    if (numarg() > 1) {
+    
+    if (numarg() > 6) {
+        shape($o5,$o6,$o7,$o8,$o9)
+    } else if (numarg() > 1) {
         shape($o5)
     } else {
         shape()
     }
     subsets()
     geom()
-    if (numarg() > 1) {
+    if (numarg() > 6) {
+        geom_spines_from_python()
+    } else if (numarg() > 1) {
         geom_spines($o6)
     } else {
         geom_spines()
     }
+    print "after spines"
     biophys()
+    print "after biophys"
     synapses()
-    
+    print "after synapses"
     finitialize(v_init)
+    print "after finitialize"
 }
 
 func is_art()  { return 0 }
