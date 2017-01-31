@@ -22,7 +22,7 @@ public soma, axon, dendrites
 public all, allaxons, alldendrites, alldendritesList
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
-public syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
+public allsyns, syns_E, syns_I, syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 public ndendpts
 public verbose, filemode
 public addSyn, syntest, syntest_up, synpulsetest
@@ -42,7 +42,7 @@ objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
-objref syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
+objref allsyns, syns_E, syns_I, syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 objref syn_stim
 objref nodesecmap
 
@@ -137,9 +137,9 @@ proc init() {
     if (filemode > 0) {
         celldef()
     } else {
-        if (numarg() > 14) {
-            verbose = $15
-            celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13,$o14)
+        if (numarg() > 13) {
+            verbose = $14
+            celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13)
         } else if (numarg() > 11) {
             verbose = $12
             celldef($o6,$o7,$o8,$o9,$o10,$o11)
@@ -167,7 +167,12 @@ proc celldef() {
     syns_LPP  = new List()
     syns_MPP  = new List()
     syns = new List() 
-
+    syns_E = new List() 
+    syns_I = new List() 
+    allsyns = new List() 
+    allsyns.append(syns_E)
+    allsyns.append(syns_I)
+    
     syns.append(syns_GC)
     syns.append(syns_MC)
     syns.append(syns_HC)
@@ -186,7 +191,7 @@ proc celldef() {
     }
     
     if (numarg() > 6) {
-        shape($o5,$o6,$o7,$o8,$o9)
+        shape($o4,$o5,$o6,$o7,$o8)
     } else if (numarg() > 1) {
         shape($o5)
     } else {
