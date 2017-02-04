@@ -131,7 +131,7 @@ proc init() {
         printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("spine density filename = %s\n", spine_density_fn)
     }
-    
+
     parameters()
     read_Na_rates()
     if (filemode > 0) {
@@ -206,13 +206,9 @@ proc celldef() {
     } else {
         geom_spines()
     }
-    print "after spines"
     biophys()
-    print "after biophys"
     synapses()
-    print "after synapses"
     finitialize(v_init)
-    print "after finitialize"
 }
 
 func is_art()  { return 0 }
