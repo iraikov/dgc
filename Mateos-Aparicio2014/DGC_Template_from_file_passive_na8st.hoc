@@ -131,7 +131,7 @@ proc init() {
         printf ("dendrite points filename = %s\n", dendrite_points_fn)
         printf ("spine density filename = %s\n", spine_density_fn)
     }
-    
+
     parameters()
     read_Na_rates()
     if (filemode > 0) {
