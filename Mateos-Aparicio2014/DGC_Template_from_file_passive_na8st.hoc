@@ -25,7 +25,7 @@ public GCLDidxs, PDidxs, MDidxs, DDidxs
 public allsyns, syns_E, syns_I, syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
 public ndendpts
 public verbose, filemode
-public addSyn, syntest, syntest_up, synpulsetest
+public addSyn, correct_for_spines, syntest, syntest_up, synpulsetest
 public syn_stim
 public is_art, connect2target
 
@@ -35,7 +35,7 @@ id  = -1
 gid = -1
 random_stream_offset = 0
 
-create soma[1], axon[4], dendrites[1]
+create soma[2], axon[4], dendrites[1]
 
 objref GCLDs, PDs, MDs, DDs, all, allaxons, alldendrites, alldendritesList
 objref rates_soma, rates_axon, rates_seg
@@ -206,19 +206,15 @@ proc celldef() {
     } else {
         geom_spines()
     }
-    print "after spines"
     biophys()
-    print "after biophys"
     synapses()
-    print "after synapses"
     finitialize(v_init)
-    print "after finitialize"
 }
 
 func is_art()  { return 0 }
 
 obfunc connect2target() { localobj nc // $o1 target point process, optional $o2 returned NetCon
-  soma nc = new NetCon(&v(1), $o1)
+  soma[0] nc = new NetCon(&v(1), $o1)
   nc.threshold = 10
   if (numarg() == 2) { $o2 = nc } // for backward compatibility
   return nc

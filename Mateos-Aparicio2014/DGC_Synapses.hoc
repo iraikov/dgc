@@ -239,8 +239,33 @@ proc synapses() { local i, j, k, x, Lsum localobj syn, lst, rs, rx, lengths
         syn_stim = new ExpSyn(0.5)
         syn_stim.tau = 1
     }
-
+    
 }
+
+// If not explicitly modeling spine compartments for excitatory synapses, 
+// this method scales cm and g_pas in each dendritic section proportional 
+// to the number of excitatory synapses contained in the section.
+proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj syn
+    
+    soma { soma_g_pas = g_pas }
+    
+    forsec alldendrites { 
+        
+	for (x,0) {
+            
+            SA_seg = area(x) 
+            cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
+            gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
+            g_pas *= gpas_factor
+            cm *= cm_factor
+        }
+    }
+
+    
+}
+
+
+
 
 external continuerun, cvode_active, cvode
 obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
