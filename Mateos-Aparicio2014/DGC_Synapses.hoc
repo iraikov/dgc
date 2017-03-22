@@ -260,8 +260,9 @@ proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj
             cm *= cm_factor
         }
     }
-
     
+    geom_nseg()
+    finitialize(v_init)
 }
 
 
