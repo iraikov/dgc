@@ -69,12 +69,6 @@ proc biophys() {
         e_pas = Epas
     }
     
-    forsec alldendrites {
-        cm = cm0*scale_spines
-        g_pas = g_pas*scale_spines
-        e_pas = Epas
-    }
-    
     forsec allaxons {
         insert na8st
         insert fKDR

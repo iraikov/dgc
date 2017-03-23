@@ -251,14 +251,11 @@ proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj
     
     forsec alldendrites { 
         
-	for (x,0) {
-            
-            SA_seg = area(x) 
-            cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
-            gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
-            g_pas *= gpas_factor
-            cm *= cm_factor
-        }
+        SA_seg = area(0.5) 
+        cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
+        gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
+        g_pas *= gpas_factor
+        cm *= cm_factor
     }
     
     geom_nseg()
