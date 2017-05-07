@@ -10,7 +10,7 @@ public soma, axon, dendrites
 public all, allaxons, alldendrites, alldendritesList
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
-public allsyns
+public allsyns, syntypes
 public ndendpts
 public verbose, filemode
 public addSyn, correct_for_spines, syntest, syntest_up, synpulsetest
@@ -30,7 +30,7 @@ objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
-objref allsyns
+objref allsyns, syntypes
 objref syn_stim
 objref nodesecmap
 
@@ -145,6 +145,9 @@ proc celldef() {
     DDidxs  = new Vector()
 
     allsyns = new List() 
+    syntypes = new List() 
+    syntypes.append(new List())
+    syntypes.append(new List())
     
     if (numarg() > 1) {
         topol($o1,$o2,$o3,$o4)
