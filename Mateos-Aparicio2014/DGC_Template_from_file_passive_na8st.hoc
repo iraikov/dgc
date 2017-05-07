@@ -6,23 +6,11 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-//
-// Synaptic connections are organized by type of pre-synaptic cell:
-//
-// syns_GC - connections from other granule cells
-// syns_MC - connections from mossy cells
-// syns_HC - connections from HIPP cells
-// syns_BC - connections from PV+ basket cells
-// syns_AA - connections from axo-axonic cells
-// syns_HCC - connections from HICAP cells
-// syns_NGFC - connections from neurogliaform cells
-//
-
 public soma, axon, dendrites
 public all, allaxons, alldendrites, alldendritesList
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
-public allsyns, syns_E, syns_I, syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
+public allsyns
 public ndendpts
 public verbose, filemode
 public addSyn, correct_for_spines, syntest, syntest_up, synpulsetest
@@ -42,7 +30,7 @@ objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
-objref allsyns, syns_E, syns_I, syns, syns_GC, syns_MC, syns_HC, syns_BC, syns_AA, syns_HCC, syns_NGFC_GABAA, syns_NGFC_GABAB, syns_LPP, syns_MPP
+objref allsyns
 objref syn_stim
 objref nodesecmap
 
@@ -156,33 +144,7 @@ proc celldef() {
     MDidxs  = new Vector()
     DDidxs  = new Vector()
 
-    syns_GC   = new List()
-    syns_MC   = new List()
-    syns_HC   = new List()
-    syns_BC   = new List()
-    syns_AA   = new List()
-    syns_HCC  = new List()
-    syns_NGFC_GABAA = new List()
-    syns_NGFC_GABAB = new List()
-    syns_LPP  = new List()
-    syns_MPP  = new List()
-    syns = new List() 
-    syns_E = new List() 
-    syns_I = new List() 
     allsyns = new List() 
-    allsyns.append(syns_E)
-    allsyns.append(syns_I)
-    
-    syns.append(syns_GC)
-    syns.append(syns_MC)
-    syns.append(syns_HC)
-    syns.append(syns_BC)
-    syns.append(syns_AA)
-    syns.append(syns_HCC)
-    syns.append(syns_NGFC_GABAA)
-    syns.append(syns_NGFC_GABAB)
-    syns.append(syns_LPP)
-    syns.append(syns_MPP)
     
     if (numarg() > 1) {
         topol($o1,$o2,$o3,$o4)
@@ -207,7 +169,6 @@ proc celldef() {
         geom_spines()
     }
     biophys()
-    synapses()
     finitialize(v_init)
 }
 
