@@ -121,7 +121,7 @@ proc topol_from_vectors() { local i,j,p,dimsize localobj m, vindex, vlayers, vde
         i = m.getval(p,1)
         j = m.getval(p,0)
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
-        connect dendrites[j](0),soma(1)
+        connect dendrites[j](0),soma[1](1)
     }
     
 }
@@ -195,7 +195,7 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vlayers, vsrc, 
         connect dendrites[j](0),dendrites[i](1)
         
     }
-    connect dendrites[0](0),soma(1)
+    connect dendrites[0](0),soma[1](1)
     
     vlayers.resize(0)
     vsrc.resize(0)
@@ -320,6 +320,7 @@ proc topol_from_text_file() { local i,j,p,dimsize localobj f, m
 }
 
 proc topol() { local i
+    connect soma[0](1), soma[1](0)
     connect axon[0](0), soma[0](0)
     for i = 1, 3 connect axon[i](0), axon[i-1](1)
     if (numarg() > 0) {
