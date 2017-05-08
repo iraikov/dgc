@@ -7,7 +7,7 @@ begintemplate DGC
 // DD - distal dendrite
 
 public soma, axon, dendrites
-public all, allaxons, alldendrites, alldendritesList
+public all, allsomaList, allaxons, allaxonsList, alldendrites, alldendritesList
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public allsyns, syntypes

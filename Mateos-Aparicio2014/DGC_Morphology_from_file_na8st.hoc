@@ -1,5 +1,4 @@
 /*////////////// Topology and geometry //////////////// */
-
 func lambda_f() { local i, x, y, z, x1, x2, d1, d2, lam
     
     /*
@@ -315,13 +314,13 @@ proc topol_from_text_file() { local i,j,p,dimsize localobj f, m
             printf ("connecting dendrites[%d] and soma\n", j)
         }
         assert (i < nDends,  "compartment index in topology matrix is greater than the number of dendritic compartments")
-        connect dendrites[j](0),soma(1)
+        connect dendrites[j](0),soma[1](1)
     }
     m.resize(1,1)    
 }
 
 proc topol() { local i
-    connect axon[0](0), soma(1)
+    connect axon[0](0), soma[0](0)
     for i = 1, 3 connect axon[i](0), axon[i-1](1)
     if (numarg() > 0) {
         topol_from_python($o1,$o2,$o3,$o4)
@@ -333,7 +332,6 @@ proc topol() { local i
 proc shape() {
     
 
-    soma {pt3dclear() pt3dadd(0, 0, 0, 1) pt3dadd(15, 0, 0, 1)}
     axon {pt3dclear() pt3dadd(-15, 0, 0, 1) pt3dadd(-30, 0, 0, 1)}
     axon[1] {pt3dclear() pt3dadd(-30, 0, 0, 1) pt3dadd(-45, 0, 0, 1)}
     axon[2] {pt3dclear() pt3dadd(-45, 0, 0, 1) pt3dadd(-60, 0, 0, 1)}
@@ -490,7 +488,7 @@ proc shape_from_text_file() { local i,j,k,nsecpts localobj f, m
 proc subsets() { local i localobj sref
 
   all = new SectionList()
-  soma all.append()
+  for i=0, 1 soma[i] all.append()
   for i=0, 3 axon[i] all.append()
   for i=0, nDends-1 dendrites[i] all.append()
   
@@ -513,7 +511,20 @@ proc subsets() { local i localobj sref
   for i=0, nDD-1 dendrites[DDidxs.x[i]] DDs.append()
 
   allaxons = new SectionList()
+  allaxonsList = new List()
   for i=0, 3 axon[i] allaxons.append()
+  for i=0, 3 axon[i] {
+    sref = new SectionRef()
+    allaxonsList.append(sref)
+  }
+
+  allsomaList = new List()
+  for i=0, 1 soma[i] {
+    sref = new SectionRef()
+    allsomaList.append(sref)
+  }
+
+  
 }
 
 
@@ -537,7 +548,8 @@ proc geom() {
     // Soma width (um): 10.3  +/- 0.3 SEM (6 - 15 um range)
     // Soma length (um): 18.6  +/- 0.5 SEM (15 - 30 um range)
 
-    soma {  L = 18.6  diam = 10.3 }
+    soma[0] {  L = 9.3  diam = 10.3 }
+    soma[1] {  L = 9.3  diam = 10.3 }
 
     geom_nseg()
 }
