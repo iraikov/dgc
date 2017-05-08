@@ -88,7 +88,7 @@ proc biophys() {
 	gbar_KM = gMaxon
     }
     
-    soma {
+    forsec allsoma {
         insert na8st
         gbar_na8st = gna_soma
         insert Ca
@@ -171,7 +171,7 @@ proc biophys() {
     }
     
     // na8st and KIn conductances from Schmidt-Hieber 2010
-    soma {
+    forsec allsoma {
         distance()
         
 	for (x,0) {
