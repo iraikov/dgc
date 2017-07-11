@@ -88,8 +88,7 @@ proc write_dvdt() { local logsize  localobj logfile, tlog, dvdt
 
 proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile strdef forest_path, results_path
     
-    
-    forest_path = $s1
+    gc = $o1
     results_path = $s2
     gid = $3
     
@@ -104,7 +103,6 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     stimdur = 500.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -166,9 +164,9 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
 }
 
 
-proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, isk_log, ibk_log, ifkdr_log, ika_log, ina_log, tlog, logfile, vdend_max, vdend_min strdef forest_path, results_path
+proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_dend, Vlog_dends, Vlog_axon, isk_log, ibk_log, ifkdr_log, ika_log, ina_log, tlog, logfile, vdend_max, vdend_min strdef results_path
     
-    forest_path = $s1
+    gc = $o1
     results_path = $s2
     gid = $3
     
@@ -183,8 +181,6 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     
     stimdur = 1.0
     
-    gc = new DGC(gid, 1, 1, forest_path, 0)
-
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
     stim1.dur = stimdur
@@ -311,7 +307,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
 
 proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stimdur, dendlog_interval, dendlog_distance, dendlog_found, vsoma_amp, vdend_amp localobj gc, stim1, spikelog, nc, nil,  Vlog_soma, Vlog_axon, tlog, icaplog, logfile, dvdt strdef forest_path, results_path
     
-    forest_path = $s1
+    gc = $o1
     results_path = $s2
     gid = $3
     
@@ -325,8 +321,6 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
     
     stimdur = 250.0
-    
-    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength
@@ -434,9 +428,9 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
 
 
 
-proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev, it localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef forest_path, results_path, errmsg
+proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspike, isimean, isivar, isistdev, it localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, logfile, nil, nc, spikelog, spikefile, isivect strdef results_path, errmsg
     
-    forest_path = $s1
+    gc = $o1
     results_path = $s2
     gid = $3
     stimamp = $4
@@ -451,8 +445,6 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     vec_sizes = (prelength+mainlength)/dt + 1	// recorded traces are all this size
     
     stimdur = 1000
-    
-    gc = new DGC(gid, 1, 1, forest_path, 1)
     
     gc.soma stim1 = new IClamp(0.5)
     stim1.del = prelength

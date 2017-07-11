@@ -80,14 +80,9 @@ proc init() {
     
     id  = $1
     gid = $2
-    random_stream_offset = $3
-    forest_path = $s4
+    forest_path = $s3
     
-    if (numarg() > 4) {
-        filemode = $5
-    } else {
-        filemode = 1
-    }
+    filemode = 0
     
     if (filemode) {
         
@@ -128,9 +123,8 @@ proc init() {
         if (numarg() > 13) {
             verbose = $14
             celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13)
-        } else if (numarg() > 11) {
-            verbose = $12
-            celldef($o6,$o7,$o8,$o9,$o10,$o11)
+        } else if (numarg() > 10) {
+            celldef($o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11)
         }
     }
     

@@ -411,7 +411,7 @@ proc shape_from_python() { local i,j,k,s localobj secnodes, vx, vy, vz, vradius,
         dendrites[s] {
             pt3dconst(0)
             for i=0, vidxs.size()-1 {
-                k = vidxs.x[i]
+                k = vidxs.x[i]-1
                 pt3dadd(vx.x[k], vy.x[k], vz.x[k], vradius.x[k]) 
             }
         }
