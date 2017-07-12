@@ -10,6 +10,7 @@ from neuroh5.io import read_tree_selection
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
+size = comm.Get_size()
 
 def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict={}):
     h('objref cell, vx, vy, vz, vradius, vlayer, vsection, secnodes, vsrc, vdst')
@@ -30,14 +31,27 @@ def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict=
 @click.option("--template-path", required=True, type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.option("--forest-path", required=True, type=click.Path(exists=True, file_okay=True, dir_okay=False))
 @click.option("--results-path", required=True, type=click.Path(exists=True, file_okay=False, dir_okay=True))
-@click.option('--selection', callback=lambda _,__,x: map(int, x.split(',')) if x else [])
-def main(template_path, forest_path, results_path, selection):
+@click.option('--selection', default=[], callback=lambda _,__,x: map(int, x.split(',')) if x else [])
+@click.option("--selection-file", default=None, type=click.Path(exists=True, file_okay=True, dir_okay=False))
+def main(template_path, forest_path, results_path, selection, selection_file):
 
     h.load_file(template_path+"/"+"DGC_Tests_from_file_passive_na8st.hoc")
 
-    pop_name = "GC"
-    (trees, _) = read_tree_selection (MPI._addressof(comm), forest_path, pop_name, selection)
+    if selection_file is not None:
+        f = open(selection_file)
+        lines = f.readlines()
 
+        while lines:
+            for l in lines:
+                selection.append(int(l))
+            lines = f.readlines()
+
+        f.close()
+
+    myselection = [selection[i] for i in xrange(rank,len(selection),size)]
+    
+    pop_name = "GC"
+    (trees, _) = read_tree_selection (MPI._addressof(comm), forest_path, pop_name, myselection)
     
     for (gid, tree) in trees.iteritems():
         cell = new_cell ("DGC", neurotree_dict=tree)
