@@ -86,7 +86,7 @@ proc write_dvdt() { local logsize  localobj logfile, tlog, dvdt
 }
 
 
-proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, results, result_vector
+proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stimdur, resistance localobj gc, stim1, Vlog_soma, Vlog_axon, Vlog_dends, tlog, results, result_vector
     
     gc = $o1
     results = $o2
@@ -120,13 +120,17 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
     
+    resistance = rn(gc)
+    printf ("gid %d: DC input resistance: %g MOhm\n", gid, resistance)
+    
+    simulate(prelength,mainlength)
+    /*
     logfile = new File()
     sprint (log_fn, "%s/DGC_passive_%06d.dat", results_path, gid )
     logfile.wopen ( log_fn )
-    
-    simulate(prelength,mainlength)
     write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
+    */
 
     // attempt to compute membrane time constant
     vrest  = Vlog_soma.x[tlog.indwhere(">=",prelength-1)]
@@ -144,7 +148,6 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
         dendritearea = dendritearea + area(0.5)
     }
     
-    // printf ("DC input resistance: %g MOhm\n", rn(gc))
     // printf ("vmin: %g mV\n", vmin)
     // printf ("vtau0: %g mV\n", vtau0)
     // printf ("tau0: %g ms\n", tau0)
@@ -153,7 +156,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     result_vector = new Vector()
     
     result_vector.append(gid)
-    result_vector.append(rn(gc))
+    result_vector.append(resistance)
     result_vector.append(vmin)
     result_vector.append(vtau0)
     result_vector.append(tau0)
@@ -569,6 +572,8 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     result_vector.append(isivect.x[0]/isivect.x[isi10th])
     result_vector.append(isivect.x[0]/isivect.x[isilastgt])
     
+    results.append(result_vector)
+
 }
 
 
