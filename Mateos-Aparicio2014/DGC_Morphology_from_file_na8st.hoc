@@ -495,17 +495,12 @@ proc subsets() { local i localobj sref
   for i=0, nDends-1 dendrites[i] all.append()
   
   alldendrites = new SectionList()
-  alldendritesList = new List()
   GCLDs = new SectionList()
   PDs = new SectionList()
   MDs = new SectionList()
   DDs = new SectionList()
   
   for i=0, nDends-1 dendrites[i] alldendrites.append()
-  for i=0, nDends-1 dendrites[i] {
-    sref = new SectionRef()
-    alldendritesList.append(sref)
-  }	
   
   for i=0, nGCLD-1 dendrites[GCLDidxs.x[i]] GCLDs.append()
   for i=0, nPD-1 dendrites[PDidxs.x[i]] PDs.append()
@@ -513,20 +508,13 @@ proc subsets() { local i localobj sref
   for i=0, nDD-1 dendrites[DDidxs.x[i]] DDs.append()
 
   allaxons = new SectionList()
-  allaxonsList = new List()
   for i=0, 3 axon[i] allaxons.append()
-  for i=0, 3 axon[i] {
-    sref = new SectionRef()
-    allaxonsList.append(sref)
-  }
 
   allsoma = new SectionList()
-  allsomaList = new List()
   for i=0, 1 soma[i] allsoma.append()
-  for i=0, 1 soma[i] {
-    sref = new SectionRef()
-    allsomaList.append(sref)
-  }
+
+  ais = new SectionList()
+  for i=0, 2 axon[i] ais.append()
 
   
 }

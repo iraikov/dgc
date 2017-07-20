@@ -8,6 +8,14 @@ from mpi4py import MPI # Must come before importing NEURON
 from neuron import h
 from neuroh5.io import read_tree_selection
 
+syn_Excitatory = 0
+syn_Inhibitory = 1
+
+swc_soma = 1
+swc_axon = 2
+swc_apical = 4
+
+
 def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict={}):
     h('objref cell, vx, vy, vz, vradius, vlayer, vsection, secnodes, vsrc, vdst')
     h.vx       = neurotree_dict['x']
@@ -59,90 +67,130 @@ def get_node_attribute (name, content, sec, x=None):
         return None
 
 
-## Compute per-segment relative counts of synapse placement
-def compute_synapse_relcounts(density_dict, neurotree_dict, seglist):
-    relcounts       = []
+def synapse_relcounts(layer_density_dicts, seglist, seed, neurotree_dict=None):
+    """Computes per-segment relative counts of synapse placement"""
+    relcounts_dict  = {}
     relcount_total  = 0
-    layers          = []
-    for seg in seglist:
-        L    = seg.sec.L
-        l    = 0.0
-        lsum = 0.0
-        relcount_dict = {}
-        relcount_total = 0
-        ## length of the current segment
-        l = 2 * (seg.x*L - lsum)
-        ## length from the beginning of the section to the end of the current segment
-        lsum = lsum + l
-        layer = get_node_attribute('layer', neurotree_dict, seg.sec, seg.x)
-        if layer not in density_dict:
-            break
-        layers.append(layer)
-        rp = density_dict[layer]*l
-        relcount_total += rp
-        relcounts.append(rp)
-    return (relcounts, relcount_total, layers)
+    layers_dict     = {}
+    relcount_total  = 0
+    for (syn_type, layer_density_dict) in layer_density_dicts.iteritems():
+        rans = {}
+        for (layer,density_dict) in layer_density_dict.iteritems():
+            ran = h.Random(seed)
+            ran.normal(density_dict['mean'], density_dict['variance'])
+            rans[layer] = ran
+        relcounts = []
+        layers    = []
+        for seg in seglist:
+            L    = seg.sec.L
+            nseg = seg.sec.nseg
+            if neurotree_dict is not None:
+                layer = get_node_attribute('layer', neurotree_dict, seg.sec, seg.x)
+            else:
+                layer = -1
+            layers.append(layer)
+            
+            ran=None
+            if layer > -1:
+                if layer in rans:
+                    ran = rans[layer]
+            else:
+                ran = rans['default']
+                
+            if ran is not None:
+                l         = L/nseg
+                rc        = ran.repick()*l
+                relcount_total += rc
+                relcounts.append(rc)
+            else:
+                relcounts.append(0)
+                
+        relcounts_dict[syn_type] = relcounts
+        layers_dict[syn_type]   = layers
+    return (relcounts_dict, relcount_total, layers_dict)
     
            
-def compute_synapse_locations(syn_type, seed, density_dict, neurotree_dict, sec_list):
-    """Populates a morphology with synapse locations"""
+def distribute_uniform_synapses(seed, sec_layer_density_dicts, sec_lists, sec_swc_types, neurotree_dicts):
+    """Computes uniformly-spaced synapse locations"""
 
-    seg_list = []
-    sec_dict = {}
-    sec_index = 0
-    for sec in sec_list:
-        sec_dict[sec] = sec_index
-        sec_index    += 1
-        for seg in sec:
-            if seg.x < 1.0 and seg.x > 0.0:
-                seg_list.append(seg)
-            
-    relcounts, total, layers = compute_synapse_relcounts(density_dict, neurotree_dict, seg_list)
-
-    ran = h.Random(seed)
-    ran.uniform(0, total)
-
-    sample_size = int(total)
-    sample = h.Vector(sample_size)
-    sample.setrand(ran)
-    sample.sort()
-
-    syn_ids  = []
-    syn_locs = []
-    syn_secs = []
+    syn_ids    = []
+    syn_locs   = []
+    syn_secs   = []
     syn_layers = []
     syn_types  = []
+    swc_types  = []
+    syn_index  = 0
 
-    syn_index   = 0
-    cumrelcount = 0
-    for i in xrange(0,len(seg_list)-1):
-        seg = seg_list[i]
-        seg_start = seg.x - (0.5/seg.sec.nseg)
-        seg_end   = seg.x + (0.5/seg.sec.nseg)
-        seg_range = seg_end - seg_start
-        rel_count = relcounts[i]
-        int_rel_count = int(rel_count)
-        cumrelcount += rel_count
-        layer = layers[i]
-        syn_count = 0
-        while sample[syn_index] < cumrelcount: 
-            syn_loc = seg_start + seg_range * ((syn_count + 1) / rel_count)
-            syn_locs.append(syn_loc)
-            syn_ids.append(syn_index)
-            syn_secs.append(sec_dict[seg.sec])
-            syn_layers.append(layer)
-            syn_types.append(syn_type)
-            syn_index += 1
-            syn_count += 1
-            if syn_count == int_rel_count:
-                break
-            if syn_index == sample_size:
-                break
-        if syn_index == sample_size:
-            break
-
-    return({'syn_ids': syn_ids,'syn_locs': syn_locs,'syn_secs': syn_secs,'syn_layers': syn_layers,'syn_types': syn_types})
+    for (layer_density_dicts, sec_list, swc_type, neurotree_dict) in itertools.izip(sec_layer_density_dicts,
+                                                                                    sec_lists,
+                                                                                    sec_swc_types,
+                                                                                    neurotree_dicts):
+        
+        seg_list = []
+        sec_dict = {}
+        sec_index = 0
+        L_total   = 0
+        for sec in sec_list:
+            L_total += sec.L
+            sec_dict[sec] = sec_index
+            sec_index    += 1
+            for seg in sec:
+                if seg.x < 1.0 and seg.x > 0.0:
+                    seg_list.append(seg)
+            
     
+        relcounts_dict, total, layers_dict = synapse_relcounts(layer_density_dicts, seg_list, seed, neurotree_dict=neurotree_dict)
+
+        print 'total = ', total, ' L_total = ', L_total
+        sample_size = total
+        cumcount  = 0
+        for (syn_type, _) in layer_density_dicts.iteritems():
+            relcounts = relcounts_dict[syn_type]
+            layers    = layers_dict[syn_type]
+            for i in xrange(0,len(seg_list)):
+                seg = seg_list[i]
+                seg_start = seg.x - (0.5/seg.sec.nseg)
+                seg_end   = seg.x + (0.5/seg.sec.nseg)
+                seg_range = seg_end - seg_start
+                rel_count = relcounts[i]
+                int_rel_count = round(rel_count)
+                layer = layers[i]
+                syn_count = 0
+                while syn_count < int_rel_count:
+                    syn_loc = seg_start + seg_range * ((syn_count + 1) / rel_count)
+                    syn_locs.append(syn_loc)
+                    syn_ids.append(syn_index)
+                    syn_secs.append(sec_dict[seg.sec])
+                    syn_layers.append(layer)
+                    syn_types.append(syn_type)
+                    swc_types.append(swc_type)
+                    syn_index += 1
+                    syn_count += 1
+                cumcount += syn_count
+
+    syn_dict = {'syn_ids': np.asarray(syn_ids, dtype='uint32'),
+                'syn_locs': np.asarray(syn_locs, dtype='float32'),
+                'syn_secs': np.asarray(syn_secs, dtype='uint32'),
+                'syn_layers': np.asarray(syn_layers, dtype='int8'),
+                'syn_types': np.asarray(syn_types, dtype='uint8'),
+                'swc_types': np.asarray(swc_types, dtype='uint8')}
+
+    return syn_dict
+
+def print_syn_summary (gid,syn_dict):
+    print 'gid %d: ' % gid
+    print '\t total %d synapses' % len(syn_dict['syn_ids'])
+    print '\t %d excitatory synapses' % np.size(np.where(syn_dict['syn_types'] == syn_Excitatory))
+    print '\t %d inhibitory synapses' % np.size(np.where(syn_dict['syn_types'] == syn_Inhibitory))
+    print '\t %d apical excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Excitatory) & (syn_dict['swc_types'] == swc_apical)))
+    print '\t %d apical inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Inhibitory) & (syn_dict['swc_types'] == swc_apical)))
+    print '\t %d soma excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Excitatory) & (syn_dict['swc_types'] == swc_soma)))
+    print '\t %d soma inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Inhibitory) & (syn_dict['swc_types'] == swc_soma)))
+    print '\t %d ais excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Excitatory) & (syn_dict['swc_types'] == swc_axon)))
+    print '\t %d ais inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_Inhibitory) & (syn_dict['swc_types'] == swc_axon)))
+
+
+
 @click.command()
 @click.option("--template-path", required=True, type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.option("--forest-path", required=True, type=click.Path(exists=True, file_okay=True, dir_okay=False))
@@ -174,15 +222,30 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     
     pop_name = "GC"
     (trees, _) = read_tree_selection (MPI._addressof(comm), forest_path, pop_name, myselection)
+    
+    dend_exc_density_dict = {n: {'mean': 1.77, 'variance': 0.13} for n in [2,3,4]} # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1360197/
+    dend_exc_density_dict = {n: {'mean': 2.26, 'variance': 0.07} for n in [2,3,4]} # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2538941/
+    
+    dend_inh_density_dict = { 2: {'mean': 1.0, 'variance': 0.01}, # https://www.ncbi.nlm.nih.gov/pubmed/20034063
+                              4: {'mean': 3.5, 'variance': 0.01} }
 
-    density_dict = {'apical': {'layer': {1: 3.36, 2: 2.28, 3: 2.02}, 'default': 2.55} }  # units: synapses / um length
+    soma_inh_density_dict = { 'default': {'mean': 8.0, 'variance': 0.2} } # https://www.ncbi.nlm.nih.gov/pubmed/20034063
+                            
+    ais_inh_density_dict = { 'default': {'mean': 8.0, 'variance': 0.2} } # https://www.ncbi.nlm.nih.gov/pubmed/20034063
+                            
 
-    syn_Exc = 0
+    dend_layer_density_dict = {syn_Excitatory: dend_exc_density_dict, syn_Inhibitory: dend_inh_density_dict}
+    soma_layer_density_dict = {syn_Inhibitory: soma_inh_density_dict}
+    ais_layer_density_dict  = {syn_Inhibitory: ais_inh_density_dict}
+    sec_layer_density_dicts = [dend_layer_density_dict, soma_layer_density_dict, ais_layer_density_dict]
+
+    sec_swc_types = [swc_apical, swc_soma, swc_axon]
     
     for (gid, tree) in trees.iteritems():
         cell = new_cell ("DGC", neurotree_dict=tree)
-        syn_dict = compute_synapse_locations(syn_Exc, 13, density_dict['apical']['layer'], tree, cell.alldendrites)
-        
+        sec_lists = [cell.alldendrites, cell.soma, cell.ais]
+        syn_dict = distribute_uniform_synapses(gid, sec_layer_density_dicts, sec_lists, sec_swc_types, neurotree_dicts=[tree, None, None])
+        print_syn_summary(gid,syn_dict)
      
 
 if __name__ == '__main__':

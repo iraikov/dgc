@@ -7,7 +7,7 @@ begintemplate DGC
 // DD - distal dendrite
 
 public soma, axon, dendrites
-public all, allsoma, allsomaList, allaxons, allaxonsList, alldendrites, alldendritesList
+public all, allsoma, allaxons, alldendrites, ais
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public allsyns, syntypes
@@ -25,7 +25,7 @@ random_stream_offset = 0
 
 create soma[2], axon[4], dendrites[1]
 
-objref GCLDs, PDs, MDs, DDs, all, allsoma, allsomaList, allaxons, allaxonsList, alldendrites, alldendritesList
+objref GCLDs, PDs, MDs, DDs, all, allsoma, allaxons, alldendrites, ais
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
