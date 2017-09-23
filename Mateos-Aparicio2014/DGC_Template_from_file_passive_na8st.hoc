@@ -6,11 +6,10 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-public soma, axon, dendrites
-public all, allsoma, allaxons, alldendrites, ais
+public soma, axon, ais, apical, basal
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
-public allsyns, syntypes
+public syns, syntypes
 public ndendpts
 public verbose, filemode
 public addSyn, correct_for_spines, syntest, syntest_up, synpulsetest
@@ -23,14 +22,15 @@ id  = -1
 gid = -1
 random_stream_offset = 0
 
-create soma[2], axon[4], dendrites[1]
+create sections[1]
 
-objref GCLDs, PDs, MDs, DDs, all, allsoma, allaxons, alldendrites, ais
+objref GCLDs, PDs, MDs, DDs, soma, axon, ais, apical, basal
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
-objref allsyns, syntypes
+objref apicalidx, basaidx, somaidx, aisidx
+objref syns, syntypes
 objref syn_stim
 objref nodesecmap
 
@@ -124,7 +124,7 @@ proc init() {
             verbose = $14
             celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13)
         } else if (numarg() > 10) {
-            celldef($o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11)
+            celldef($o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
         }
     }
     
@@ -137,14 +137,19 @@ proc celldef() {
     PDidxs  = new Vector()
     MDidxs  = new Vector()
     DDidxs  = new Vector()
-
-    allsyns = new List() 
+    
+    apicalidx = new Vector()
+    basalidx  = new Vector()
+    somaidx   = new Vector()
+    aisidx    = new Vector()
+    
+    syns = new List() 
     syntypes = new List() 
     syntypes.append(new List())
     syntypes.append(new List())
     
     if (numarg() > 1) {
-        topol($o1,$o2,$o3,$o4)
+        topol($o1,$o2,$o3,$o4,$o9)
     } else {
         topol()
     }
