@@ -69,7 +69,7 @@ proc biophys() {
         e_pas = Epas
     }
     
-    forsec allaxons {
+    forsec axon {
         insert na8st
         insert fKDR
         gbar_fKDR = 0.028
@@ -88,7 +88,7 @@ proc biophys() {
 	gbar_KM = gMaxon
     }
     
-    forsec allsoma {
+    forsec soma {
         insert na8st
         gbar_na8st = gna_soma
         insert Ca
@@ -171,7 +171,7 @@ proc biophys() {
     }
     
     // na8st and KIn conductances from Schmidt-Hieber 2010
-    forsec allsoma {
+    forsec soma {
         distance()
         
 	for (x,0) {
@@ -183,11 +183,9 @@ proc biophys() {
 	    }
             
             if (verbose) {
-                if (verbose) {
-                    printf ("soma distance = %g\n", dist)
-                    printf ("soma rates_seg = ")
-                    rates_seg.printf()
-                }
+                printf ("soma distance = %g\n", dist)
+                printf ("soma rates_seg = ")
+                rates_seg.printf()
             }
             
 	    if (ismembrane("na8st")) {
@@ -225,7 +223,7 @@ proc biophys() {
         
     }
     
-    forsec allaxons {
+    forsec axon {
         
 	dist = distance(0.5)
 	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50))

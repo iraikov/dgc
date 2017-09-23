@@ -46,7 +46,6 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
 }
 
     
-
 // If not explicitly modeling spine compartments for excitatory synapses, 
 // this method scales cm and g_pas in each dendritic section proportional 
 // to the number of excitatory synapses contained in the section.
