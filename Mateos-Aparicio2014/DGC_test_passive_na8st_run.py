@@ -9,7 +9,7 @@ from neuron import h
 from neuroh5.io import read_tree_selection
 
 def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict={}):
-    h('objref cell, vx, vy, vz, vradius, vlayer, vsection, secnodes, vsrc, vdst')
+    h('objref cell, vx, vy, vz, vradius, vlayer, vsection, secnodes, vsrc, vdst, swc_types')
     h.vx       = neurotree_dict['x']
     h.vy       = neurotree_dict['y']
     h.vz       = neurotree_dict['z']
@@ -19,7 +19,8 @@ def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict=
     h.secnodes = neurotree_dict['section_topology']['nodes']
     h.vsrc     = neurotree_dict['section_topology']['src']
     h.vdst     = neurotree_dict['section_topology']['dst']
-    hstmt      = 'cell = new %s(%d, %d, "%s", vlayer, vsrc, vdst, secnodes, vx, vy, vz, vradius)' % (template_name, local_id, gid, dataset_path)
+    h.swc_types  = neurotree_dict['swc_type']
+    hstmt      = 'cell = new %s(%d, %d, "%s", vlayer, vsrc, vdst, secnodes, vx, vy, vz, vradius, swc_types)' % (template_name, local_id, gid, dataset_path)
     h(hstmt)
     return h.cell
 
@@ -54,6 +55,8 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     rank = comm.Get_rank()
     size = comm.Get_size()
 
+    print "rank = ", rank
+    print "size = ", size
     h.load_file(template_path+"/"+"DGC_Tests_from_file_passive_na8st.hoc")
 
     if selection_file is not None:
@@ -72,7 +75,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     print 'rank %d: myselection = ' % rank, myselection
     
     pop_name = "GC"
-    (trees, _) = read_tree_selection (MPI._addressof(comm), forest_path, pop_name, myselection)
+    (trees, _) = read_tree_selection (comm, forest_path, pop_name, myselection)
 
     h('objref results_passive, results_single_ap, results_threshold, results_ap_rate')
     h.results_passive   = h.List()

@@ -53,7 +53,7 @@ proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj
     
     soma { soma_g_pas = g_pas }
     
-    forsec alldendrites { 
+    forsec apical { 
         
         SA_seg = area(0.5) 
         cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg

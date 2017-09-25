@@ -6,7 +6,7 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-public soma, axon, ais, apical, basal
+public soma, axon, apical, basal
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syntypes
@@ -24,12 +24,12 @@ random_stream_offset = 0
 
 create sections[1]
 
-objref GCLDs, PDs, MDs, DDs, soma, axon, ais, apical, basal
+objref GCLDs, PDs, MDs, DDs, soma, axon, apical, basal
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
 objref GCLDweights, PDweights, MDweights, DDweights, GCLPDweights, MDDweights, GCLPDidxs, MDDidxs
-objref apicalidx, basaidx, somaidx, aisidx
+objref apicalidx, basalidx, somaidx, axonidx
 objref syns, syntypes
 objref syn_stim
 objref nodesecmap
@@ -141,7 +141,7 @@ proc celldef() {
     apicalidx = new Vector()
     basalidx  = new Vector()
     somaidx   = new Vector()
-    aisidx    = new Vector()
+    axonidx   = new Vector()
     
     syns = new List() 
     syntypes = new List() 
@@ -161,8 +161,8 @@ proc celldef() {
     } else {
         shape()
     }
-    subsets()
     geom()
+    subsets()
     if (numarg() > 6) {
         geom_spines_from_python()
     } else if (numarg() > 1) {
@@ -177,7 +177,7 @@ proc celldef() {
 func is_art()  { return 0 }
 
 obfunc connect2target() { localobj nc // $o1 target point process, optional $o2 returned NetCon
-  soma[0] nc = new NetCon(&v(1), $o1)
+  forsec soma { nc = new NetCon(&v(1), $o1) }
   nc.threshold = 10
   if (numarg() == 2) { $o2 = nc } // for backward compatibility
   return nc

@@ -110,10 +110,14 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     stim1.amp = -0.1
     
     Vlog_soma = new Vector(vec_sizes)
-    Vlog_soma.record (&gc.soma.v(0.5))
+    forsec gc.soma {
+        Vlog_soma.record (&v(0.5))
+    }
     
     Vlog_axon = new Vector(vec_sizes)
-    Vlog_axon.record (&gc.axon[2].v(0.8))
+    forsec gc.axon {
+        Vlog_axon.record (&v(0.05))
+    }
     
     Vlog_dends = new List()
 
@@ -144,7 +148,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     
     // compute total surface area of dendritic compartments
     dendritearea = 0
-    forsec gc.alldendrites {
+    forsec gc.apical {
         dendritearea = dendritearea + area(0.5)
     }
     
@@ -191,26 +195,32 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
     stim1.amp = 0.3
     
     spikelog = new Vector()
-    gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
+    forsec gc.soma {
+        nc = new NetCon(&v(.5), nil)
+    }
     nc.threshold = 0.0
     nc.record(spikelog)
     
     isk_log = new Vector(vec_sizes)
-    isk_log.record (&gc.soma.isk_CadepK(0.5))
     ibk_log = new Vector(vec_sizes)
-    ibk_log.record (&gc.soma.ibk_CadepK(0.5))
     ifkdr_log = new Vector(vec_sizes)
-    ifkdr_log.record (&gc.soma.i_fKDR(0.5))
     ika_log = new Vector(vec_sizes)
-    ika_log.record (&gc.soma.i_KA(0.5))
     ina_log = new Vector(vec_sizes)
-    ina_log.record (&gc.soma.ina_na8st(0.5))
-    
     Vlog_soma = new Vector(vec_sizes)
-    Vlog_soma.record (&gc.soma.v(0.5))
-    
     Vlog_axon = new Vector(vec_sizes)
-    Vlog_axon.record (&gc.axon[2].v(0.8))
+    forsec gc.soma {
+        isk_log.record (&isk_CadepK(0.5))
+        ibk_log.record (&ibk_CadepK(0.5))
+        ifkdr_log.record (&i_fKDR(0.5))
+        ika_log.record (&i_KA(0.5))
+        ina_log.record (&ina_na8st(0.5))
+        Vlog_soma.record (&v(0.5))
+    }
+    
+    forsec gc.axon {
+        Vlog_axon.record (&v(0.05))
+    }
+    
     
     // Record from several dendritic locations, 
     // approximately dendlog_interval apart
@@ -225,14 +235,12 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
         Vlog_dend = new Vector(vec_sizes)
         Vlog_dends.append(Vlog_dend)
         
-        gc.soma { distance() }
-        
-        for j=0, gc.nDends-1 gc.dendrites[j] { 
+        forsec gc.apical { 
 	    for (x,0) {
                 dist = distance(x)
                 if (dist >= dendlog_distance) {
                     printf ("Vlog_dend: dist = %g\n", dist)
-                    Vlog_dend.record (&gc.dendrites[j].v(0.5))
+                    Vlog_dend.record (&v(0.5))
                     dendlog_found = 1
                     pop_section()
                     break
@@ -334,24 +342,31 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     
     stimdur = 250.0
     
-    gc.soma stim1 = new IClamp(0.5)
-    stim1.del = prelength
-    stim1.dur = stimdur
-    stim1.amp = 0.0
+    forsec gc.soma {
+        stim1 = new IClamp(0.5)
+        stim1.del = prelength
+        stim1.dur = stimdur
+        stim1.amp = 0.0
+    }
     
     spikelog = new Vector()
-    gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
+    forsec gc.soma {
+        nc = new NetCon(&v(.5), nil)
+    }
     nc.threshold = 0.0
     nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
-    Vlog_soma.record (&gc.soma.v(0.5))
-    
     Vlog_axon = new Vector(vec_sizes)
-    Vlog_axon.record (&gc.axon[2].v(0.8))
-    
     icaplog = new Vector(vec_sizes)
-    icaplog.record (&gc.soma.i_cap(0.5))
+    
+    forsec gc.soma {
+        Vlog_soma.record (&v(0.5))
+        icaplog.record (&i_cap(0.5))
+    }
+    forsec gc.axon {
+        Vlog_axon.record (&v(0.05))
+    }
     
     tlog = new Vector(vec_sizes,0)
     tlog.record (&t)
@@ -387,7 +402,9 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
     dvdt = new Vector()
     // dV/dt in mV/ms = i_cap/cm/1000 
     dvdt.copy(icaplog)
-    dvdt.div(gc.soma.cm/1000)
+    forsec gc.soma {
+        dvdt.div(cm/1000)
+    }
     
     /*
     logfile = new File()
@@ -466,15 +483,21 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     stim1.amp = stimamp
     
     spikelog = new Vector()
-    gc.soma nc = new NetCon(&gc.soma.v(.5), nil)
+    forsec gc.soma {
+        gc.soma nc = new NetCon(&v(.5), nil)
+    }
     nc.threshold = -40.0
     nc.record(spikelog)
     
     Vlog_soma = new Vector(vec_sizes)
-    Vlog_soma.record (&gc.soma.v(0.5))
+    forsec gc.soma {
+        Vlog_soma.record (&v(0.5))
+    }
     
     Vlog_axon = new Vector(vec_sizes)
-    Vlog_axon.record (&gc.axon[2].v(0.8))
+    forsec gc.axon {
+        Vlog_axon.record (&v(0.05))
+    }
     
     Vlog_dends = new List()
 

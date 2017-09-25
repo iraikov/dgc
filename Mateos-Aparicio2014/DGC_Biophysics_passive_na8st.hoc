@@ -61,9 +61,6 @@ proc biophys() {
     forall {
         Ra = Ra0  
         cm = cm0
-    }
-    
-    forsec all {
         insert pas
         g_pas = gpas
         e_pas = Epas
@@ -111,7 +108,7 @@ proc biophys() {
     }
     
     
-    forsec all {
+    forall {
 	if (ismembrane("na8st")) {
 	    ena = gENa
 	}
