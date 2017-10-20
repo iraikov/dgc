@@ -51,15 +51,18 @@ obfunc Lweights () { local i, Lsum localobj sects, lengths, weights
 // to the number of excitatory synapses contained in the section.
 proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj syn
     
-    soma { soma_g_pas = g_pas }
+    soma { 
+        soma_g_pas = g_pas 
+        soma_cm = cm
+    }
     
     forsec apical { 
         
         SA_seg = area(0.5) 
         cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
         gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
-        g_pas *= gpas_factor
-        cm *= cm_factor
+        g_pas = gpas * gpas_factor
+        cm = cm0 * cm_factor
     }
     
     geom_nseg()
