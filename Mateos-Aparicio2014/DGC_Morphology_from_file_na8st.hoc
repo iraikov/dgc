@@ -506,9 +506,13 @@ proc subsets() { local i localobj sref
   basal  = new SectionList()
   soma   = new SectionList()
   axon   = new SectionList()
+  all    = new SectionList()
   
   for i=0, apicalidx.size()-1 {
-      sections[apicalidx.x[i]] apical.append()
+      sections[apicalidx.x[i]] {
+          apical.append()
+          all.append()
+      }
   }
   
   for i=0, nGCLD-1 sections[GCLDidxs.x[i]] GCLDs.append()
@@ -520,12 +524,16 @@ proc subsets() { local i localobj sref
   for i=0, axonidx.size()-1 {
       sections[axonidx.x[i]] {
           axon.append()
+          all.append()
       }
   }
   
   soma = new SectionList() 
   for i=0, somaidx.size()-1 {
-      sections[somaidx.x[i]] soma.append()
+      sections[somaidx.x[i]] {
+          soma.append()
+          all.append()
+      }
   }
   
 }
