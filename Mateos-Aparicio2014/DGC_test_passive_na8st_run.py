@@ -83,7 +83,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     h.results_threshold = h.List()
     h.results_ap_rate   = h.List()
     
-    for (gid, tree) in trees.iteritems():
+    for (gid, tree) in trees:
         cell = new_cell ("DGC", neurotree_dict=tree)
         h.passive_test(h.cell, h.results_passive, gid)
         h.single_ap_test(h.cell, h.results_single_ap, gid)

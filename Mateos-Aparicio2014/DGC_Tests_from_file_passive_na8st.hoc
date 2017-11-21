@@ -526,13 +526,15 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     /*
     logfile = new File()
-    sprint (log_fn, "%s/DGC_ap_rate_%06d.dat", results_path, gid )
+    sprint (log_fn, "./DGC_ap_rate_%06d.dat", gid )
     logfile.wopen ( log_fn )
     write_voltage_trace(logfile,tlog,Vlog_soma,Vlog_axon,Vlog_dends)
     logfile.close()
+    */
     
+    /*
     spikefile = new File()
-    sprint (spikelog_fn, "%s/DGC_spikes_%06d.dat", results_path, gid )
+    sprint (spikelog_fn, "./DGC_spikes_%06d.dat", gid )
     spikefile.wopen ( spikelog_fn )
     for i=0,spikelog.size()-1 {
         spikefile.printf("%g\n", spikelog.x[i])
