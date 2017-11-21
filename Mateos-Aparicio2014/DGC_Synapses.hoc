@@ -74,7 +74,110 @@ proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj
 
 
 external continuerun, cvode_active, cvode
-obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
+
+obfunc syn_vclamp_exc() { local vec_size, i_holding, w, idx localobj se, ns, nc, nclist, vec, v_vec, synlst, results, tlog, nil
+    
+    synlst = $o1
+    se     = $o2
+    w      = $3
+    v_c    = $4
+    v_init    = $5
+    
+    se.rs = 175
+    se.dur1 = 1010
+    se.amp1 = v_c 
+    
+    mainDT = 0.001
+    dt = mainDT
+    tstop = 1000
+    
+    vec_size = tstop/mainDT + 1
+    
+    vec = new Vector(vec_size)
+    vec.record(&se.i)
+    
+    forsec soma {
+        v_vec = new Vector(vec_size)
+        v_vec.record(&v(0.5))
+    }
+    
+    tlog = new Vector(vec_size)
+    tlog.record(&t)
+    
+    ns = new NetStim()
+    ns.interval = 1000
+    ns.number = 1
+    ns.start  = 200
+    ns.noise  = 0
+    
+    nclist = new List()
+    for idx=0, synlst.count()-1 {
+        nc = new NetCon(ns,synlst.o(idx))
+        nc.weight = w
+        nc.delay = 0
+        nclist.append(nc)
+    }
+    
+    cvode_active(1)
+
+    finitialize(v_init)
+    fadvance()
+    continuerun(tstop)
+    
+    t_holding_index = tlog.indwhere(">=",ns.start)
+    t_holding  = tlog.x[t_holding_index]
+    i_holding  = vec.x[t_holding_index]
+    
+    idx = tlog.indwhere(">=",ns.start) - 1
+    vec.remove(0,idx)
+    tlog.remove(0,idx)
+    
+    i_peak = vec.min()
+    t_peak = tlog.x[vec.indwhere("==",i_peak)]
+    
+    print "celsius = ", celsius
+    
+    print "t_peak = ", t_peak
+    print "t_holding = ", t_holding
+    
+    print "i_peak = ", i_peak
+    print "i_holding = ", i_holding
+    print "i_peak - i_holding = ", i_peak - i_holding
+    
+    amp = abs(i_peak - i_holding) * 1000
+    
+    i_0001 = i_holding + (i_peak - i_holding) * 1/10000
+    i_10 = i_holding + (i_peak - i_holding) * 1/10
+    i_20 = i_holding + (i_peak - i_holding) * 2/10
+    i_50 = i_holding + (i_peak - i_holding) * 5/10
+    i_80 = i_holding + (i_peak - i_holding) * 8/10
+    i_90 = i_holding + (i_peak - i_holding) * 9/10
+    
+    t_10_90 = tlog.x[vec.indwhere("<",i_90)] - tlog.x[vec.indwhere("<",i_10)]
+    t_20_80 = tlog.x[vec.indwhere("<",i_80)] - tlog.x[vec.indwhere("<",i_20)]
+    
+    t_all = t_peak - tlog.x[(vec.indwhere("<",i_0001))]
+    t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
+    
+    idx = vec.indwhere("==",i_peak) - 1
+    if (idx >= 0) {
+        vec.remove(0,idx)
+        tlog.remove(0,idx)
+    }
+    
+    i_t	= i_holding - ((1/exp(1)) * abs(i_peak - i_holding))
+    t_decay = tlog.x[vec.indwhere(">",i_t)] - tlog.x[0]
+    
+    results = new Vector()
+    results.append(amp,t_10_90,t_20_80,t_all,t_50,t_decay)
+    
+    ns = nil
+    nc = nil
+    
+    return results
+}
+
+obfunc syn_vclamp_inh() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
     
     synlist = $o1
     se = $o2
@@ -114,8 +217,8 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     }
     
     cvode_active(1)
-    cvode.use_daspk(1)
-    cvode.dae_init_dteps(1e-9, 2)
+    //cvode.use_daspk(1)
+    //cvode.dae_init_dteps(1e-9, 2)
     finitialize(v_init)
     fadvance()
     continuerun(tstop)
@@ -127,9 +230,6 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
     idx = tlog.indwhere(">=",ns.start) - 1
     vec.remove(0,idx)
     tlog.remove(0,idx)
-    
-    vec.printf()
-    tlog.printf()
     
     i_peak = vec.max()
     t_peak = tlog.x[vec.indwhere("==",i_peak)]
@@ -175,19 +275,83 @@ obfunc syntest_up() { local vec_size, i_holding, t_holding, t_holding_index, w, 
 }
 
 
-obfunc syntest() { local vec_size, i_holding, t_holding, t_holding_index, w, idx localobj se, ns, nc, nclist, vec, synlist, results, tlog, nil
+obfunc syn_iclamp_exc() { local vec_size, w, idx localobj ns, nc, nclist, v_vec, synlst, results, tlog, nil, logfile strdef log_fn
     
+    synlst = $o1
+    w      = $2
+    v_init = $3
+    
+    mainDT = 0.001
+    dt = mainDT
+    tstop = 1000
+    
+    vec_size = tstop/mainDT + 1
+    
+    forsec soma {
+        v_vec = new Vector(vec_size)
+        v_vec.record(&v(0.5))
+    }
+    
+    tlog = new Vector(vec_size)
+    tlog.record(&t)
+    
+    ns = new NetStim()
+    ns.interval = 1000
+    ns.number = 1
+    ns.start  = 200
+    ns.noise  = 0
+    
+    nclist = new List()
+    for idx=0, synlst.count()-1 {
+        nc = new NetCon(ns,synlst.o(idx))
+        nc.weight = w
+        nc.delay = 0
+        nclist.append(nc)
+    }
+    
+    cvode_active(1)
+
+    finitialize(v_init)
+    fadvance()
+    continuerun(tstop)
+    
+    t_pre_index = tlog.indwhere(">=",ns.start)
+    t_pre  = tlog.x[t_pre_index]
+    v_pre  = v_vec.x[t_pre_index]
+    
+    idx = tlog.indwhere(">=",ns.start) - 1
+    v_vec.remove(0,idx)
+    tlog.remove(0,idx)
+    
+    v_peak = v_vec.max()
+    t_peak = tlog.x[v_vec.indwhere("==",v_peak)]
+    
+    print "celsius = ", celsius
+    
+    print "t_peak = ", t_peak
+    print "t_pre = ", t_pre
+    
+    print "v_peak = ", v_peak
+    print "v_pre = ", v_pre
+    print "v_peak - v_pre = ", v_peak - v_pre
+    
+    v_amp = abs(v_peak - v_pre)
+    
+    results = new Vector()
+    results.append(v_amp,v_peak,v_pre,t_peak,t_pre)
+    
+
+    
+    return results
+}
+
+
+obfunc syntest_rate() { local vec_size, w, rate, idx localobj ns, nc, nclist, vec, synlist, results, tlog, nil
     
     synlist = $o1
-    se = $o2
-    w = $3
-    v_holding = $4
-    v_init = $5
-    
-    soma { 
-        se.dur1 = 1010
-        se.amp1 = v_holding 
-    }
+    w = $2
+    rate = $3
+    v_init = $4
     
     mainDT = 0.001
     dt = mainDT
@@ -196,14 +360,14 @@ obfunc syntest() { local vec_size, i_holding, t_holding, t_holding_index, w, idx
     vec_size = tstop/mainDT + 1
     
     vec = new Vector(vec_size)
-    vec.record(&se.i)
+    vec.record(&sections[0].v(0.5))
     
     tlog = new Vector(vec_size)
     tlog.record(&t)
     
     ns = new NetStim()
-    ns.interval = 1000
-    ns.number = 1
+    ns.interval = 1000/rate
+    ns.number = rate
     ns.start  = 200
     ns.noise  = 0
     
@@ -216,123 +380,18 @@ obfunc syntest() { local vec_size, i_holding, t_holding, t_holding_index, w, idx
     }
     
     cvode_active(1)
-    cvode.use_daspk(1)
-    cvode.dae_init_dteps(1e-9, 2)
+    //cvode.use_daspk(1)
+    //cvode.dae_init_dteps(1e-9, 2)
     finitialize(v_init)
     fadvance()
     continuerun(tstop)
     
-    t_holding_index = tlog.indwhere(">=",ns.start)
-    t_holding = tlog.x[t_holding_index]
-    i_holding = vec.x[t_holding_index]
-    idx = tlog.indwhere(">=",ns.start) - 1
-    vec.remove(0,idx)
-    tlog.remove(0,idx)
-    
-    vec.printf()
-    tlog.printf()
-    
-    i_peak = vec.min()
-    t_peak = tlog.x[vec.indwhere("==",i_peak)]
-    
-    print "i_peak = ", i_peak
-    print "i_holding = ", i_holding
-    print "i_peak - i_holding = ", i_peak - i_holding
-    print "t_peak = ", t_peak
-    print "t_holding = ", t_holding
-    
-    amp = abs(i_peak - i_holding) * 1000
-    
-    i_0001 = i_holding + (i_peak - i_holding) * 1/10000
-    i_10 = i_holding + (i_peak - i_holding) * 1/10
-    i_20 = i_holding + (i_peak - i_holding) * 2/10
-    i_50 = i_holding + (i_peak - i_holding) * 5/10
-    i_80 = i_holding + (i_peak - i_holding) * 8/10
-    i_90 = i_holding + (i_peak - i_holding) * 9/10
-    
-    t_10_90 = tlog.x[vec.indwhere("<",i_90)] - tlog.x[vec.indwhere("<",i_10)]
-    t_20_80 = tlog.x[vec.indwhere("<",i_80)] - tlog.x[vec.indwhere("<",i_20)]
-    
-    t_all = t_peak - tlog.x[(vec.indwhere("<",i_0001))]
-    t_50  = t_peak - tlog.x[(vec.indwhere(">",i_50))]
-    
-    idx = vec.indwhere("==",i_peak) - 1
-    if (idx >= 0) {
-        vec.remove(0,idx)
-        tlog.remove(0,idx)
-    }
-    
-    i_t	= i_holding - ((1/exp(1)) * abs(i_peak - i_holding))
-    t_decay = tlog.x[vec.indwhere(">",i_t)] - tlog.x[0]
-    
-    results = new Vector()
-    results.append(amp,t_10_90,t_20_80,t_all,t_50,t_decay)
+    results = new List()
+    results.append(tlog)
+    results.append(vec)
     
     ns = nil
     nc = nil
     
     return results
 }
-
-
-obfunc synpulsetest() { local vec_size, w, wsum, idx localobj ns, nc, nclist, vec, synlist, weights, results, tlog, r, nil
-    
-    
-    synlist = $o1
-    weights = $o2
-    groupsize = $3
-    v_init = $4
-    
-    r = new Random()
-    r.discunif(0,synlist.count()-1)
-    
-    mainDT = 0.001
-    dt = mainDT
-    tstop = 1000
-    
-    vec_size = tstop/mainDT + 1
-    
-    vec = new Vector(vec_size)
-    soma { vec.record(&v(0.5)) }
-    
-    tlog = new Vector(vec_size)
-    tlog.record(&t)
-    
-    ns = new NetStim()
-    ns.interval = 1
-    ns.number = 1
-    ns.start  = 200
-    ns.noise  = 0
-    
-    nclist = new List()
-    wsum = 0
-    printf("synpulsetest: synlist.count = %d\n", synlist.count())
-    printf("synpulsetest: weights.size = %d\n", weights.size())
-    for idx=0, groupsize-1 {
-        sidx = r.repick()
-        nc = new NetCon(ns,synlist.o(sidx))
-        nc.weight = weights.x[sidx]
-        printf("synpulsetest: nc.weight = %g\n", nc.weight)
-        wsum = wsum + weights.x[sidx]
-        nc.delay = 0
-        nclist.append(nc)
-    }
-    printf("synpulsetest: nclist.count = %d\n", nclist.count())
-    printf("synpulsetest: wsum = %g\n", wsum)
-    
-    cvode_active(1)
-    cvode.use_daspk(1)
-    cvode.dae_init_dteps(1e-9, 2)
-    finitialize(v_init)
-    fadvance()
-    continuerun(tstop)
-    
-    vec.printf()
-    tlog.printf()
-    
-    ns = nil
-    nc = nil
-    
-    return vec
-}
-

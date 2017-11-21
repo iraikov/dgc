@@ -12,7 +12,7 @@ public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syntypes
 public ndendpts
 public verbose, filemode
-public addSyn, correct_for_spines, syntest, syntest_up, synpulsetest
+public addSyn, correct_for_spines, syn_vclamp_exc, syn_vclamp_inh, syn_iclamp_exc, syn_iclamp_inh
 public syn_stim
 public is_art, connect2target
 
