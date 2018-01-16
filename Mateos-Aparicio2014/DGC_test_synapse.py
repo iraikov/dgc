@@ -413,6 +413,20 @@ def synapse_iclamp_test (label, syntype, cell, w, v_init, indexes, section):
 
     return v_amp
 
+def syn_group_test(syn_label, cell, syn_selection, syn_ids, syn_sections, syn_connection_params, v_init):
+        
+    mean_v_amp = 0.
+    
+    for i in syn_selection:
+        print 'Synapse index: ', i
+        print 'Synapse id: ', syn_ids[i]
+        print 'Section: ', syn_sections[syn_ids[i]]
+        mean_v_amp += synapse_iclamp_test(syn_label, 0, cell, syn_connection_params['weight']/1000.0, 
+                                          v_init, [i], syn_sections[exc_syn_ids[i]])
+
+    mean_v_amp = mean_v_amp / syn_selection.size
+    
+    print("%s synapse: mean V amplitude is %f\n" % (label, mean_v_amp))
 
 
 @click.command()
@@ -470,6 +484,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
         template_class = eval('h.%s' % template_name)
         cell = make_neurotree_cell (template_class, neurotree_dict=tree, gid=gid)
         print cell
+
         cell_sec_dict = {'apical': (cell.apical, None), 'basal': (cell.basal, None), 'soma': (cell.soma, None), 'axon': (cell.axon, 50.0)}
         cell_secidx_dict = {'apical': cell.apicalidx, 'basal': cell.basalidx, 'soma': cell.somaidx, 'axon': cell.axonidx}
         syn_dict = distribute_uniform_synapses(gid, swc_type_dict, sec_layer_density_dict, tree, cell_sec_dict, cell_secidx_dict)
@@ -479,32 +494,43 @@ def main(template_path, forest_path, results_path, selection, selection_file):
         syn_types    = syn_dict['syn_types']
         swc_types    = syn_dict['swc_types']
         syn_locs     = syn_dict['syn_locs']
+        syn_layers   = syn_dict['syn_layers']
         syn_sections = syn_dict['syn_secs']
 
-        ampa_inds = np.where(syn_types == syn_type_excitatory)
-        ampa_syn_ids      = syn_ids[ampa_inds]
+        exc_inds     = np.where(syn_types == syn_type_excitatory)
+        exc_syn_ids  = syn_ids[ampa_inds]
 
-        ampa_syn_kinetic_params = { 'AMPA': { 't_rise': 3.0, 't_decay': 30.0, 'e_rev': 0. } } 
-        ampa_syn_connection_params = { 'weight': 0.15 }
-        
-        syn_obj_dict = mksyns(gid,cell,ampa_syn_ids,syn_types,swc_types,syn_locs,syn_sections,ampa_syn_kinetic_params,add_synapse=add_shared_synapse,spines=True)
-
+        exc_syn_kinetic_params = { 'AMPA': { 't_rise': 0.5, 't_decay': 5.5, 'e_rev': 0. } } 
+        exc_syn_obj_dict = mksyns(gid,cell,exc_syn_ids,syn_types,swc_types,syn_locs,syn_sections,exc_syn_kinetic_params,add_synapse=add_shared_synapse,spines=True)
         ampa_syn_obj_dict = { k : v for k, v in syn_obj_dict.iteritems() if 'AMPA' in v }
 
-        syn_sample_size = 100
-        ampa_syn_selection=np.random.randint(0, len(ampa_syn_ids), size=syn_sample_size)
         
-        mean_v_amp = 0.
-        for i in ampa_syn_selection:
-            print 'Synapse index: ', i
-            print 'Synapse id: ', ampa_syn_ids[i]
-            print 'Section: ', syn_sections[ampa_syn_ids[i]]
-            mean_v_amp += synapse_iclamp_test("Excitatory", 0, cell, ampa_syn_connection_params['weight']/1000.0, 
-                                              v_init, [i], syn_sections[ampa_syn_ids[i]])
+        syn_sample_size = 100
+        
+        MPP_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 3))
+        MPP_syn_ids  = syn_ids[MPP_inds]
 
-        mean_v_amp = mean_v_amp / syn_sample_size
+        MPP_syn_connection_params = { 'weight': 0.15 }
 
-        print("%s synapse: mean V amplitude is %f\n" % ("Excitatory", mean_v_amp))
+        MPP_syn_selection=MPP_syn_ids(np.random.randint(0, MPP_syn_ids.size, size=syn_sample_size))
+
+        LPP_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 4))
+        LPP_syn_ids  = syn_ids[LPP_inds]
+
+        LPP_syn_connection_params = { 'weight': 0.2 }
+
+        LPP_syn_selection=LPP_syn_ids(np.random.randint(0, LPP_syn_ids.size, size=syn_sample_size))
+
+        MC_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 2))
+        MC_syn_ids  = syn_ids[MC_inds]
+
+        MC_syn_connection_params = { 'weight': 0.1 }
+
+        MC_syn_selection=MC_syn_ids(np.random.randint(0, MC_syn_ids.size, size=syn_sample_size))
+
+        syn_group_test('MPP', cell, MPP_syn_selection, syn_ids, syn_sections, MPP_syn_connection_params, v_init):
+        syn_group_test('LPP', cell, LPP_syn_selection, syn_ids, syn_sections, LPP_syn_connection_params, v_init):
+        syn_group_test('MC', cell, MC_syn_selection, syn_ids, syn_sections, MC_syn_connection_params, v_init):
         
         
 if __name__ == '__main__':
