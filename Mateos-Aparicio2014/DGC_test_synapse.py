@@ -389,7 +389,7 @@ def synapse_vclamp_test (label, syntype, cell, w, v_holding, v_init, indexes, se
     print("  Decay Time Constant %f\n" % t_decay)
 
         
-def synapse_iclamp_test (label, syntype, cell, w, v_init, indexes, section):
+def synapse_iclamp_test (label, syntype, cell, w, v_init, indexes):
 
     h('objref synlst')
     h.synlst = h.List()
@@ -413,21 +413,19 @@ def synapse_iclamp_test (label, syntype, cell, w, v_init, indexes, section):
 
     return v_amp
 
-def syn_group_test(syn_label, cell, syn_selection, syn_ids, syn_sections, syn_connection_params, v_init):
+def syn_group_test(syn_label, gid, cell, syn_selection, syn_ids, syn_connection_params, v_init, id_base=0):
         
     mean_v_amp = 0.
     
     for i in syn_selection:
-        print 'Synapse index: ', i
-        print 'Synapse id: ', syn_ids[i]
-        print 'Section: ', syn_sections[syn_ids[i]]
+        print 'Synapse id: ', i
         mean_v_amp += synapse_iclamp_test(syn_label, 0, cell, syn_connection_params['weight']/1000.0, 
-                                          v_init, [i], syn_sections[exc_syn_ids[i]])
+                                          v_init, [i-id_base])
 
     mean_v_amp = mean_v_amp / syn_selection.size
     
-    print("%s synapse: mean V amplitude is %f\n" % (label, mean_v_amp))
-
+    print("gid %d: %s synapse: mean V amplitude is %f\n" % (gid, syn_label, mean_v_amp))
+    return mean_v_amp
 
 @click.command()
 @click.option("--template-path", required=True, type=click.Path(exists=True, file_okay=False, dir_okay=True))
@@ -478,8 +476,13 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     sec_layer_density_dict  = {'apical': dend_layer_density_dict, 'soma': soma_layer_density_dict, 'axon': ais_layer_density_dict}
 
     template_name="DGC"
-
     np.random.seed(int(17e6))
+
+    cell_count = 0
+    LPP_mean_v_amp = 0.
+    MPP_mean_v_amp = 0.
+    MC_mean_v_amp  = 0.
+
     for (gid, tree) in trees_iter:
         template_class = eval('h.%s' % template_name)
         cell = make_neurotree_cell (template_class, neurotree_dict=tree, gid=gid)
@@ -498,40 +501,52 @@ def main(template_path, forest_path, results_path, selection, selection_file):
         syn_sections = syn_dict['syn_secs']
 
         exc_inds     = np.where(syn_types == syn_type_excitatory)
-        exc_syn_ids  = syn_ids[ampa_inds]
+        exc_syn_ids  = syn_ids[exc_inds]
 
+        exc_syn_id_base = exc_syn_ids[0]
+        
+        print 'size exc_syn_ids = ', exc_syn_ids.size
+        
         exc_syn_kinetic_params = { 'AMPA': { 't_rise': 0.5, 't_decay': 5.5, 'e_rev': 0. } } 
         exc_syn_obj_dict = mksyns(gid,cell,exc_syn_ids,syn_types,swc_types,syn_locs,syn_sections,exc_syn_kinetic_params,add_synapse=add_shared_synapse,spines=True)
-        ampa_syn_obj_dict = { k : v for k, v in syn_obj_dict.iteritems() if 'AMPA' in v }
+        ampa_syn_obj_dict = { k : v for k, v in exc_syn_obj_dict.iteritems() if 'AMPA' in v }
 
         
         syn_sample_size = 100
         
-        MPP_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 3))
-        MPP_syn_ids  = syn_ids[MPP_inds]
-
-        MPP_syn_connection_params = { 'weight': 0.15 }
-
-        MPP_syn_selection=MPP_syn_ids(np.random.randint(0, MPP_syn_ids.size, size=syn_sample_size))
-
         LPP_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 4))
         LPP_syn_ids  = syn_ids[LPP_inds]
 
-        LPP_syn_connection_params = { 'weight': 0.2 }
+        LPP_syn_connection_params = { 'weight': 0.31 }
 
-        LPP_syn_selection=LPP_syn_ids(np.random.randint(0, LPP_syn_ids.size, size=syn_sample_size))
+        LPP_syn_selection=LPP_syn_ids[np.random.randint(0, LPP_syn_ids.size, size=syn_sample_size)]
+        
+        MPP_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 3))
+        MPP_syn_ids  = syn_ids[MPP_inds]
+
+        MPP_syn_connection_params = { 'weight': 0.25 }
+
+        MPP_syn_selection=MPP_syn_ids[np.random.randint(0, MPP_syn_ids.size, size=syn_sample_size)]
+
 
         MC_inds     = np.where((syn_types == syn_type_excitatory) & (syn_layers == 2))
         MC_syn_ids  = syn_ids[MC_inds]
 
-        MC_syn_connection_params = { 'weight': 0.1 }
+        MC_syn_connection_params = { 'weight': 0.19 }
 
-        MC_syn_selection=MC_syn_ids(np.random.randint(0, MC_syn_ids.size, size=syn_sample_size))
+        MC_syn_selection=MC_syn_ids[np.random.randint(0, MC_syn_ids.size, size=syn_sample_size)]
 
-        syn_group_test('MPP', cell, MPP_syn_selection, syn_ids, syn_sections, MPP_syn_connection_params, v_init):
-        syn_group_test('LPP', cell, LPP_syn_selection, syn_ids, syn_sections, LPP_syn_connection_params, v_init):
-        syn_group_test('MC', cell, MC_syn_selection, syn_ids, syn_sections, MC_syn_connection_params, v_init):
-        
+        LPP_mean_v_amp += syn_group_test('LPP', gid, cell, LPP_syn_selection, LPP_syn_ids, LPP_syn_connection_params, v_init, id_base=exc_syn_id_base)
+        MPP_mean_v_amp += syn_group_test('MPP', gid, cell, MPP_syn_selection, MPP_syn_ids, MPP_syn_connection_params, v_init, id_base=exc_syn_id_base)
+        MC_mean_v_amp += syn_group_test('MC', gid, cell, MC_syn_selection, MC_syn_ids, MC_syn_connection_params, v_init, id_base=exc_syn_id_base)
+        cell_count += 1
+
+    LPP_mean_v_amp /= cell_count
+    MPP_mean_v_amp /= cell_count
+    MC_mean_v_amp /= cell_count
+    print("%s synapse: mean V amplitude is %f\n" % ("LPP", LPP_mean_v_amp))
+    print("%s synapse: mean V amplitude is %f\n" % ("MPP", MPP_mean_v_amp))
+    print("%s synapse: mean V amplitude is %f\n" % ("MC", MC_mean_v_amp))
         
 if __name__ == '__main__':
     main(args=sys.argv[(sys.argv.index("DGC_test_synapse.py")+1):])
