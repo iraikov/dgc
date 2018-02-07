@@ -457,7 +457,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     print 'rank %d: myselection = ' % rank, myselection
     
     pop_name = "GC"
-    (trees_iter, _) = read_tree_selection (comm, forest_path, pop_name, myselection)
+    (trees_iter, _) = read_tree_selection (forest_path, pop_name, myselection, topology=True)
     
     dend_exc_density_dict = {n: {'mean': 1.77, 'variance': 0.13} for n in [2,3,4]} # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1360197/
     dend_exc_density_dict = {n: {'mean': 2.26, 'variance': 0.07} for n in [2,3,4]} # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2538941/
@@ -486,7 +486,8 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     for (gid, tree) in trees_iter:
         template_class = eval('h.%s' % template_name)
         cell = make_neurotree_cell (template_class, neurotree_dict=tree, gid=gid)
-        print cell
+        print 'soma: ', list(cell.soma)
+        print 'axon: ', list(cell.axon)
 
         cell_sec_dict = {'apical': (cell.apical, None), 'basal': (cell.basal, None), 'soma': (cell.soma, None), 'axon': (cell.axon, 50.0)}
         cell_secidx_dict = {'apical': cell.apicalidx, 'basal': cell.basalidx, 'soma': cell.somaidx, 'axon': cell.axonidx}

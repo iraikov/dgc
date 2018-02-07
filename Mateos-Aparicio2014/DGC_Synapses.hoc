@@ -59,11 +59,13 @@ proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj
     
     forsec apical { 
         
-        SA_seg = area(0.5) 
-        cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
-        gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
-        g_pas = gpas * gpas_factor
-        cm = cm0 * cm_factor
+	for (x,0) {
+            SA_seg = area(x) 
+            cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
+            gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * soma_g_pas) / (SA_seg * g_pas)
+            g_pas = gpas * gpas_factor
+            cm = cm0 * cm_factor
+        }
     }
     
     geom_nseg()
