@@ -14,13 +14,16 @@ syn_type_inhibitory = 1
 
 swc_type_soma = 1
 swc_type_axon = 2
+swc_type_ais = 7
+swc_type_hillock = 8
 swc_type_basal  = 3
 swc_type_apical = 4
 
 swc_type_dict = {
       'soma':   1,
       'axon':   2,
-      'ais':    2,
+      'ais':    7,
+      'hillock':  8,
       'basal':  3,
       'apical': 4,
       'trunk':  5,
@@ -270,7 +273,7 @@ def add_unique_synapse(mech_name, seg, syns_dict):
 def mksyns(gid,cell,syn_ids,syn_types,swc_types,syn_locs,syn_sections,syn_kinetic_params,add_synapse=add_shared_synapse,spines=False):
 
     syns_dict_dend = defaultdict(lambda: defaultdict(lambda: {}))
-    syns_dict_axon = defaultdict(lambda: defaultdict(lambda: {}))
+    syns_dict_ais  = defaultdict(lambda: defaultdict(lambda: {}))
     syns_dict_soma = defaultdict(lambda: defaultdict(lambda: {}))
     py_sections = [sec for sec in cell.sections]
     
@@ -300,8 +303,8 @@ def mksyns(gid,cell,syn_ids,syn_types,swc_types,syn_locs,syn_sections,syn_kineti
         if syn_type == syn_type_excitatory: 
             if spines and h.ismembrane('spines',sec=sec):
                 sec(syn_loc).count_spines += 1
-      elif swc_type == swc_type_axon:
-        syns_dict = syns_dict_axon
+      elif swc_type == swc_type_ais:
+        syns_dict = syns_dict_ais
       elif swc_type == swc_type_soma:
         syns_dict = syns_dict_soma
       else: 
@@ -352,8 +355,8 @@ def print_syn_summary (gid,syn_dict):
     print '\t %d apical inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_inhibitory) & (syn_dict['swc_types'] == swc_type_apical)))
     print '\t %d soma excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_excitatory) & (syn_dict['swc_types'] == swc_type_soma)))
     print '\t %d soma inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_inhibitory) & (syn_dict['swc_types'] == swc_type_soma)))
-    print '\t %d axon excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_excitatory) & (syn_dict['swc_types'] == swc_type_axon)))
-    print '\t %d axon inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_inhibitory) & (syn_dict['swc_types'] == swc_type_axon)))
+    print '\t %d AIS excitatory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_excitatory) & (syn_dict['swc_types'] == swc_type_ais)))
+    print '\t %d AIS inhibitory synapses' % np.size(np.where((syn_dict['syn_types'] == syn_type_inhibitory) & (syn_dict['swc_types'] == swc_type_ais)))
 
     
 def synapse_vclamp_test (label, syntype, cell, w, v_holding, v_init, indexes, section):
@@ -473,7 +476,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     dend_layer_density_dict = {syn_type_excitatory: dend_exc_density_dict, syn_type_inhibitory: dend_inh_density_dict}
     soma_layer_density_dict = {syn_type_inhibitory: soma_inh_density_dict}
     ais_layer_density_dict  = {syn_type_inhibitory: ais_inh_density_dict}
-    sec_layer_density_dict  = {'apical': dend_layer_density_dict, 'soma': soma_layer_density_dict, 'axon': ais_layer_density_dict}
+    sec_layer_density_dict  = {'apical': dend_layer_density_dict, 'soma': soma_layer_density_dict, 'ais': ais_layer_density_dict}
 
     template_name="DGC"
     np.random.seed(int(17e6))
@@ -488,9 +491,11 @@ def main(template_path, forest_path, results_path, selection, selection_file):
         cell = make_neurotree_cell (template_class, neurotree_dict=tree, gid=gid)
         print 'soma: ', list(cell.soma)
         print 'axon: ', list(cell.axon)
+        print 'ais: ', list(cell.ais)
+        print 'hillock: ', list(cell.hillock)
 
-        cell_sec_dict = {'apical': (cell.apical, None), 'basal': (cell.basal, None), 'soma': (cell.soma, None), 'axon': (cell.axon, 50.0)}
-        cell_secidx_dict = {'apical': cell.apicalidx, 'basal': cell.basalidx, 'soma': cell.somaidx, 'axon': cell.axonidx}
+        cell_sec_dict = {'apical': (cell.apical, None), 'basal': (cell.basal, None), 'soma': (cell.soma, None), 'ais': (cell.ais, 50.0)}
+        cell_secidx_dict = {'apical': cell.apicalidx, 'basal': cell.basalidx, 'soma': cell.somaidx, 'ais': cell.aisidx}
         syn_dict = distribute_uniform_synapses(gid, swc_type_dict, sec_layer_density_dict, tree, cell_sec_dict, cell_secidx_dict)
         print_syn_summary(gid,syn_dict)
 

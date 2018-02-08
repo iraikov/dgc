@@ -141,6 +141,9 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vlayers, vsrc, 
     nDends = 0
     nSoma  = 0
     nAxon  = 0
+    nAIS   = 0
+    nHill  = 0
+
     for s=0, secnodes.__len__()-1 {
         vidxs = new Vector(secnodes.__getitem__(s))
         ndendpts.x[s] = vidxs.size()
@@ -165,6 +168,16 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vlayers, vsrc, 
                     break
                 }
             }
+        }
+        if (swc_type == 8) {
+            hilidx.append(s)
+            nHill = nHill + 1
+            nAxon = nAxon + 1
+        }
+        if (swc_type == 7) {
+            aisidx.append(s)
+            nAIS = nAIS + 1
+            nAxon = nAxon + 1
         }
         if (swc_type == 2) {
             axonidx.append(s)
@@ -506,6 +519,8 @@ proc subsets() { local i localobj sref
   basal  = new SectionList()
   soma   = new SectionList()
   axon   = new SectionList()
+  ais    = new SectionList()
+  hillock = new SectionList()
   all    = new SectionList()
   
   for i=0, apicalidx.size()-1 {
@@ -521,6 +536,26 @@ proc subsets() { local i localobj sref
   for i=0, nDD-1 sections[DDidxs.x[i]] DDs.append()
   
   axon = new SectionList()
+  
+  if (hilidx.size() > 0) {
+      for i=0, hilidx.size()-1 {
+          sections[hilidx.x[i]] {
+              hillock.append()
+              axon.append()
+              all.append()
+          }
+      }
+  }
+  if (aisidx.size() > 0) {
+      for i=0, aisidx.size()-1 {
+          sections[aisidx.x[i]] {
+              ais.append()
+              axon.append()
+              all.append()
+          }
+      }
+  }
+  
   for i=0, axonidx.size()-1 {
       sections[axonidx.x[i]] {
           axon.append()
