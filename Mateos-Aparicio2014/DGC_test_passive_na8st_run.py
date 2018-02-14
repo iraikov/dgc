@@ -75,7 +75,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     print 'rank %d: myselection = ' % rank, myselection
     
     pop_name = "GC"
-    (trees, _) = read_tree_selection (comm, forest_path, pop_name, myselection)
+    (trees, _) = read_tree_selection (forest_path, pop_name, myselection)
 
     h('objref results_passive, results_single_ap, results_threshold, results_ap_rate')
     h.results_passive   = h.List()

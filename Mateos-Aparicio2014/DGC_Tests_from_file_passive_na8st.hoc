@@ -115,7 +115,7 @@ proc passive_test() { local gid, varSoma, prelength, mainlength, vec_sizes, stim
     }
     
     Vlog_axon = new Vector(vec_sizes)
-    forsec gc.axon {
+    forsec gc.allaxon {
         Vlog_axon.record (&v(0.05))
     }
     
@@ -217,7 +217,7 @@ proc single_ap_test() { local i, j, gid, prelength, mainlength, vec_sizes, stimd
         Vlog_soma.record (&v(0.5))
     }
     
-    forsec gc.axon {
+    forsec gc.allaxon {
         Vlog_axon.record (&v(0.05))
     }
     
@@ -364,7 +364,7 @@ proc threshold_test () { local i, j, gid, prelength, mainlength, vec_sizes, stim
         Vlog_soma.record (&v(0.5))
         icaplog.record (&i_cap(0.5))
     }
-    forsec gc.axon {
+    forsec gc.allaxon {
         Vlog_axon.record (&v(0.05))
     }
     
@@ -495,7 +495,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     }
     
     Vlog_axon = new Vector(vec_sizes)
-    forsec gc.axon {
+    forsec gc.allaxon {
         Vlog_axon.record (&v(0.05))
     }
     
@@ -585,7 +585,7 @@ proc ap_rate_test() { local gid, prelength, mainlength, vec_sizes, stimdur, tspi
     
     result_vector = new Vector()
     result_vector.append(gid)
-    result_vector.append(1/isimean)
+    result_vector.append(1000/isimean)
     result_vector.append(isimean)
     result_vector.append(isivar)
     result_vector.append(isistdev)

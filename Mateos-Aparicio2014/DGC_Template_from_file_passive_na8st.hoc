@@ -6,7 +6,7 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-public all, soma, axon, ais, hillock, apical, basal
+public all, soma, allaxon, axon, ais, hillock, apical, basal
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syntypes
@@ -24,7 +24,7 @@ random_stream_offset = 0
 
 create sections[1]
 
-objref GCLDs, PDs, MDs, DDs, all, soma, axon, ais, hillock, apical, basal
+objref GCLDs, PDs, MDs, DDs, all, soma, axon, allaxon, ais, hillock, apical, basal
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
