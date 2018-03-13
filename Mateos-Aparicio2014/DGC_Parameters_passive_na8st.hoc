@@ -47,13 +47,13 @@ proc parameters() {
     VshiftKM = 0
     
     //The SK and BK conductances
-    gsksoma = 0.002 // original 0.0001
+    gsksoma = 0.005 // original 0.0001
     gskprox = 0.00015 // increase by a factor of 4 to achieve
     gskGCLs = 0.00015 // adaptation closer to Santhakumar 2005
     erevSK = EK
     tauskdiv = 2
     erevBK = EK
-    BKmult = 20.0 // original 0.3
+    BKmult = 25.0 // original 0.3
     
     //The sAHP conductance
     gbarsAHP = 20 // original 20

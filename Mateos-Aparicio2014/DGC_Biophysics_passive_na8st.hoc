@@ -213,7 +213,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 10
+	        vShift_inact_local_na8st = 0
                 
             }
         }
@@ -270,7 +270,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 10
+	        vShift_inact_local_na8st = 0
                 
 	        gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	        gbar_na8st(x) = gnabar_gauss
