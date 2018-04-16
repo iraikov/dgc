@@ -134,7 +134,7 @@ proc biophys() { local verbose
 	depth_Cabuffer = Ca_depth
         
 	insert Kir21
-	gkbar_Kir21 = Kir_gbar
+	gkbar_Kir21 = Kir_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub
@@ -213,7 +213,7 @@ proc biophys() { local verbose
 	depth_Cabuffer = Ca_depth
         
 	insert Kir21
-	gkbar_Kir21 = Kir_gbar
+	gkbar_Kir21 = Kir_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub
@@ -292,7 +292,7 @@ proc biophys() { local verbose
 	depth_Cabuffer = Ca_depth
         
 	insert Kir21
-	gkbar_Kir21 = Kir_gbar
+	gkbar_Kir21 = Kir_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub
@@ -396,7 +396,7 @@ proc biophys() { local verbose
 	gbar_na8st = 0.088128
         
 	insert Kir21
-	gkbar_Kir21 = Kir_axon_gbar
+	gkbar_Kir21 = Kir_axon_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub
@@ -471,7 +471,7 @@ proc biophys() { local verbose
 	e_pas = Epas
         
 	insert Kir21
-	gkbar_Kir21 = Kir_axon_gbar
+	gkbar_Kir21 = Kir_axon_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub
@@ -592,7 +592,7 @@ proc biophys() { local verbose
 	gbar_na8st = 0.088128
 
 	insert Kir21
-	gkbar_Kir21 = Kir_gbar
+	gkbar_Kir21 = Kir_gkbar
 	mg_i_Kir21 = Kir_mg_i
 	spm_i_Kir21 = Kir_spm_i
 	gsub_Kir21 = Kir_gsub

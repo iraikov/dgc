@@ -17,7 +17,8 @@ proc parameters() {
     cm_PD = 1.305
     cm_MD = 1.71
     cm_DD = 1.71
-    
+
+    gpas_soma = gpas    
     gpas_PD = 2.00769e-05
     gpas_MD = 2.63076e-05
     gpas_DD = 2.63076e-05
@@ -39,7 +40,7 @@ proc parameters() {
     cai0 = 4.8e-05
     
     // Kir21 conductance
-    Kir_gbar = 0.000353903
+    Kir_gkbar = 0.000353903
     Kir_mg_i = 4
     Kir_spm_i = 1
     Kir_gsub = 0.25
@@ -51,7 +52,7 @@ proc parameters() {
     Kir_cas = 0.142857
     Kir_As = 0.2
     
-    Kir_axon_gbar = 0.000168525
+    Kir_axon_gkbar = 0.000168525
     
     // Kv42 conductance
     Kv42_gkbar = 0.002175
@@ -156,6 +157,12 @@ proc parameters() {
     HCN_vhalft = 30.4
     HCN_at = 0.00052
     HCN_bt = 0.2151
+
+    // Spine scaling factor
+    // arrived at via optimization. spine neck appears to shield dendrite from spine head
+    cm_fraction = 0.4
+    // contribution to membrane capacitance and time constant
+    SA_spine = PI * (1.58 * 0.077 + 0.5 * 0.5)
     
 }
 

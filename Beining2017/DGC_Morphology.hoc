@@ -299,3 +299,24 @@ proc geom_nseg() { local freq, d_lambda
     forall { nseg = int((L/(d_lambda*lambda_f(freq))+0.9)/2)*2 + 1  }
 
 }
+
+// If not explicitly modeling spine compartments for excitatory synapses, 
+// this method scales cm and g_pas in each dendritic section proportional 
+// to the number of excitatory synapses contained in the section.
+proc correct_for_spines() { local i, soma_g_pas, cm_factor, gpas_factor localobj syn
+    
+    
+    forsec apical { 
+        
+	for (x,0) {
+            SA_seg = area(x) 
+            cm_factor = (SA_seg + cm_fraction * count_spines * SA_spine) / SA_seg
+            gpas_factor = (SA_seg * g_pas + count_spines * SA_spine * g_pas) / (SA_seg * g_pas)
+            g_pas = g_pas * gpas_factor
+            cm = cm * cm_factor
+        }
+    }
+    
+    geom_nseg()
+//    finitialize(v_init)
+}
