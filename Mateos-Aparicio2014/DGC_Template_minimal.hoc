@@ -6,7 +6,7 @@ begintemplate DGC
 // MD - middle dendrite
 // DD - distal dendrite
 
-public all, soma, axon, ais, hillock, apical, basal
+public all, soma, axon, allaxon, ais, hillock, apical, basal
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public syns, syntypes
@@ -15,7 +15,7 @@ public verbose, filemode
 public addSyn, correct_for_spines, syn_vclamp_exc, syn_vclamp_inh, syn_iclamp_exc, syn_iclamp_inh
 public syn_stim
 public is_art, connect2target
-
+public xx, yy, zz
 verbose = 1
 filemode = 1
 id  = -1
@@ -24,7 +24,7 @@ random_stream_offset = 0
 
 create sections[1]
 
-objref GCLDs, PDs, MDs, DDs, all, soma, axon, ais, hillock, apical, basal
+objref GCLDs, PDs, MDs, DDs, all, soma, axon, allaxon, ais, hillock, apical, basal
 objref rates_soma, rates_axon, rates_seg
 objref gna_y_axon, gna_y_dend, dist_x_dend, dist_x_axon
 objref GCLDidxs, PDidxs, MDidxs, DDidxs, ndendpts
@@ -81,6 +81,10 @@ proc init() {
     id  = $1
     gid = $2
     forest_path = $s3
+    
+    xx = 0
+    yy = 0
+    zz = 0
     
     filemode = 0
     
@@ -184,6 +188,17 @@ obfunc connect2target() { localobj nc // $o1 target point process, optional $o2 
   nc.threshold = 10
   if (numarg() == 2) { $o2 = nc } // for backward compatibility
   return nc
+}
+
+
+proc position() { local i
+    
+    forsec soma {
+        for i = 0, n3d()-1 {
+            pt3dchange(i, $1-xx+x3d(i), $2-yy+y3d(i), $3-zz+z3d(i), diam3d(i))
+        }
+    }
+    xx = $1  yy = $2  zz = $3
 }
 
 
