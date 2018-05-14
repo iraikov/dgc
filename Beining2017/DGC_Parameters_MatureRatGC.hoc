@@ -1,0 +1,169 @@
+///////////////////// Parameters /////////////////////
+
+proc parameters() {
+    
+    celsius = 24
+    v_init = -75
+
+    //Passive properties
+    Ra0 = 200         //Ohm.cm
+    cm0 = 0.9         //uF/cm2
+    gpas = 1.38462e-05 //S/cm2
+    Rm0 = 1e-3/gpas   //kOhm.cm2
+    Epas = -80        //mV
+    EK = -93         //mV 
+    ENa  = 87.76
+    
+    cm_PD = 1.305
+    cm_MD = 1.71
+    cm_DD = 1.71
+
+    gpas_soma = gpas    
+    gpas_PD = 2.00769e-05
+    gpas_MD = 2.63076e-05
+    gpas_DD = 2.63076e-05
+    gpas_axon = 6.59341e-06
+    
+    Ra_axon = 100
+    
+    // Ca buffer
+    Ca_tau = 240
+    Ca_axon_tau = 43
+    
+    Ca_soma_brat = 200
+    Ca_dend_brat = 50
+    Ca_axon_brat = 10
+    
+    Ca_depth = 0.05
+    
+    cao0 = 2
+    cai0 = 4.8e-05
+    
+    // Kir21 conductance
+    Kir_gkbar = 0.000353903
+    Kir_mg_i = 4
+    Kir_spm_i = 1
+    Kir_gsub = 0.25
+    Kir_fac = 0.005
+    Kir_vshiftbs = 0
+    Kir_vshiftbb = 0
+    Kir_b = 0.105
+    Kir_shiftmg = 0.5
+    Kir_cas = 0.142857
+    Kir_As = 0.2
+    
+    Kir_axon_gkbar = 0.000168525
+    
+    // Kv42 conductance
+    Kv42_gkbar = 0.002175
+    Kv42_a0 = 0.416
+    Kv42_za = 1.1
+    Kv42_b0 = 0.0486
+    Kv42_zb = -1.556
+    Kv42_kco0 = 0.347
+    Kv42_zco = 0
+    Kv42_koc0 = 1.67
+    Kv42_zoc = 0
+    Kv42_kci = 0.04873
+    Kv42_kic = 0.000537
+    Kv42_koi = 0.0669
+    Kv42_kio = 0.04246
+    Kv42_vshift = -20
+    
+    Kv42_PD_gkbar = 0.00435
+    Kv42_MD_gkbar = 0.00435
+    Kv42_DD_gkbar = 0.00435
+    
+    // Kv11 conductance
+    Kv11_gkbar = 0.00025
+    Kv11_vshift = 0
+    
+    // Kv14 conductance
+    Kv14_gkbar = 0.001
+    Kv14_vshift = 0
+    
+    // Kv21 conductance
+    Kv21_gkbar = 0.00709091
+    
+    // Kv34 conductance
+    Kv34_gkbar = 0.00765625
+    Kv34_scale_a = 4
+    Kv34_ksl = 0.5
+    
+    // Kv723 conductance
+    Kv723_gkbar = 0.00134
+    Kv723_Dtaumult1 = 6
+    Kv723_Dtaumult2 = 6
+    Kv723_tau0mult = 0.2
+    
+    // Cav12 conductance
+    Cav12_gbar = 1e-05
+    Cav12_kf = 0.0005
+    Cav12_PD_gbar = 4e-05
+    Cav12_MD_gbar = 4e-05
+    Cav12_DD_gbar = 4e-05
+    
+    // Cav13 conductance
+    Cav13_gbar = 4e-06
+    Cav13_PD_gbar = 8e-06
+    Cav13_MD_gbar = 8e-06
+    Cav13_DD_gbar = 8e-06
+    
+    Cav13_soma_gbar = 1.6e-05
+
+    // Cav22 conductance
+    Cav22_gbar = 5e-05
+    Cav22_hTau = 80
+    Cav22_soma_gbar = 0.0003
+    
+    // Cav32 conductance
+    Cav32_gbar = 2.2e-05
+    Cav32_axon_gbar = 8e-06
+    
+    // BK conductance
+    BK_gabkbar = 0.0156
+    BK_gakbar = 0.0624
+    BK_diff = 100000
+    BK_base = 4
+    
+    BK_soma_gabkbar = 0.002 //0.0039
+    BK_soma_gakbar = 0.008 // 0.0156
+    BK_soma_diff = 1.5
+
+    // SK2 conductance
+    SK2_gkbar = 1.66667e-06
+    SK2_diff = 3
+    SK2_Q10 = 5
+    SK2_fac = 2.5
+    SK2_diro2 = 0.1
+    SK2_invc3 = 0.09
+    SK2_invc1 = 0.32
+    SK2_invc2 = 0.32
+    SK2_dirc4 = 320
+    
+    SK2_PD_gkbar = 4.375e-06
+    SK2_MD_gkbar = 4.375e-06
+    SK2_DD_gkbar = 4.375e-06
+    SK2_axon_gkbar = 1.25e-05
+    SK2_soma_gkbar = 8.33333e-07
+    
+    
+    // HCN conductance
+    HCN_cAMP = 0
+    HCN_e = -41.9
+    HCN_gbar = 4e-06
+    HCN_vhalfl = -100
+    HCN_kl = 8
+    HCN_vhalft = 30.4
+    HCN_at = 0.00052
+    HCN_bt = 0.2151
+
+    // Spine scaling factor
+    // arrived at via optimization. spine neck appears to shield dendrite from spine head
+    cm_fraction = 0.4
+    // contribution to membrane capacitance and time constant
+    SA_spine = PI * (1.58 * 0.077 + 0.5 * 0.5)
+    
+}
+
+

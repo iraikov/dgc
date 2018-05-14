@@ -66,7 +66,7 @@ proc biophys() {
         e_pas = Epas
     }
     
-    forsec axon {
+    forsec allaxon {
         insert na8st
         insert fKDR
         gbar_fKDR = 0.028
@@ -213,14 +213,14 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 10
+	        vShift_inact_local_na8st = 0
                 
             }
         }
         
     }
     
-    forsec axon {
+    forsec allaxon {
         
 	dist = distance(0.5)
 	Ra = (Ra_soma - fsigm(dist, Ra_soma-Ra_axon, 100, 50))
@@ -270,7 +270,7 @@ proc biophys() {
 	        ah_1_na8st(x)= rates_seg.x[16]
 	        ah_2_na8st(x)= rates_seg.x[17]
 	        
-	        vShift_inact_local_na8st = 10
+	        vShift_inact_local_na8st = 0
                 
 	        gnabar_gauss = dens_func(dist, gna_soma, gnabar_distal_axon, amp_gauss, lambda2)
 	        gbar_na8st(x) = gnabar_gauss
