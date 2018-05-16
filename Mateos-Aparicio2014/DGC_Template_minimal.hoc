@@ -171,7 +171,7 @@ proc celldef() {
     geom()
     subsets()
     if (numarg() > 6) {
-        geom_spines_from_python()
+        //geom_spines_from_python()
     } else if (numarg() > 1) {
         geom_spines($o6)
     } else {
