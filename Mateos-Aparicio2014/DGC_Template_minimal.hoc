@@ -40,9 +40,10 @@ strdef dendrite_topology_index_fn, dendrite_points_index_fn, spine_density_index
 
 
 xopen("DGC_Parameters_passive_na8st.hoc")
-xopen("DGC_Morphology_from_file_na8st.hoc")
+//xopen("DGC_Morphology_from_file_na8st.hoc")
+xopen("DGC_Morphology_minimal.hoc")
 //xopen("DGC_Biophysics_passive_na8st.hoc")
-xopen("DGC_Synapses.hoc")
+//xopen("DGC_Synapses.hoc")
 
 
 proc assert() { local test strdef errmsg
@@ -170,15 +171,6 @@ proc celldef() {
     }
     geom()
     subsets()
-    if (numarg() > 6) {
-        //geom_spines_from_python()
-    } else if (numarg() > 1) {
-        geom_spines($o6)
-    } else {
-        geom_spines()
-    }
-    //biophys()
-    //finitialize(v_init)
 }
 
 func is_art()  { return 0 }
