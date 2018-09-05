@@ -20,7 +20,7 @@ def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict=
     h.vsrc     = neurotree_dict['section_topology']['src']
     h.vdst     = neurotree_dict['section_topology']['dst']
     h.swc_types  = neurotree_dict['swc_type']
-    hstmt      = 'cell = new %s(%d, %d, "%s", vlayer, vsrc, vdst, secnodes, vx, vy, vz, vradius, swc_types)' % (template_name, local_id, gid, dataset_path)
+    hstmt      = 'cell = new %s(%d, %d, "%s", secnodes, vlayer, vsrc, vdst, vx, vy, vz, vradius, swc_types)' % (template_name, local_id, gid, dataset_path)
     h(hstmt)
     return h.cell
 
@@ -76,7 +76,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     
     pop_name = "GC"
     (trees, _) = read_tree_selection (forest_path, pop_name, myselection)
-
+     
     h('objref results_passive, results_single_ap, results_threshold, results_ap_rate')
     h.results_passive   = h.List()
     h.results_single_ap = h.List()
@@ -84,6 +84,7 @@ def main(template_path, forest_path, results_path, selection, selection_file):
     h.results_ap_rate   = h.List()
     
     for (gid, tree) in trees:
+
         cell = new_cell ("DGC", neurotree_dict=tree)
         h.passive_test(h.cell, h.results_passive, gid)
         h.single_ap_test(h.cell, h.results_single_ap, gid)
