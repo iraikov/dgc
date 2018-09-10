@@ -8,7 +8,7 @@ from mpi4py import MPI # Must come before importing NEURON
 from neuron import h
 from neuroh5.io import read_tree_selection
 
-def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict={}):
+def new_cell (template_name, gid=0, dataset_path="", neurotree_dict={}):
     h('objref cell, vx, vy, vz, vradius, vlayer, vsection, secnodes, vsrc, vdst, swc_types')
     h.vx       = neurotree_dict['x']
     h.vy       = neurotree_dict['y']
@@ -20,7 +20,7 @@ def new_cell (template_name, local_id=0, gid=0, dataset_path="", neurotree_dict=
     h.vsrc     = neurotree_dict['section_topology']['src']
     h.vdst     = neurotree_dict['section_topology']['dst']
     h.swc_types  = neurotree_dict['swc_type']
-    hstmt      = 'cell = new %s(%d, %d, "%s", secnodes, vlayer, vsrc, vdst, vx, vy, vz, vradius, swc_types)' % (template_name, local_id, gid, dataset_path)
+    hstmt      = 'cell = new %s(%d, "%s", secnodes, vlayer, vsrc, vdst, vx, vy, vz, vradius, swc_types)' % (template_name, gid, dataset_path)
     h(hstmt)
     return h.cell
 

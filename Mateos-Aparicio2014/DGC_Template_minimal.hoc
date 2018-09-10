@@ -79,9 +79,8 @@ proc read_Na_rates() { localobj fileS, fileA
 
 proc init() {
     
-    id  = $1
-    gid = $2
-    forest_path = $s3
+    gid = $1
+    forest_path = $s2
     
     xx = 0
     yy = 0
@@ -89,47 +88,16 @@ proc init() {
     
     filemode = 0
     
-    if (filemode) {
-        
-        if (numarg() > 5) { 
-            verbose = $6
-        }
-        
-        if (filemode == 2) {
-            
-            sprint(dendrite_topology_fn, "%s/topology.bin", forest_path)
-            sprint(dendrite_points_fn, "%s/points.bin", forest_path)
-            sprint(spine_density_fn, "%s/spines.bin", forest_path)
-            
-            sprint(dendrite_topology_index_fn, "%s/topology.index.bin", forest_path)
-            sprint(dendrite_points_index_fn, "%s/points.index.bin", forest_path)
-            sprint(spine_density_index_fn, "%s/spines.index.bin", forest_path)
-            
-        } else {
-            
-            sprint(dendrite_topology_fn, "%s/DGC_dendrite_topology_%06d.dat", forest_path, id)
-            sprint(dendrite_points_fn, "%s/DGC_dendrite_points_%06d.dat", forest_path, id)
-            sprint(spine_density_fn, "%s/DGC_spine_density_%06d.dat", forest_path, id)
-        }
-        
-    } 
-    
-    if (verbose) {
-        printf ("dendrite topology filename = %s\n", dendrite_topology_fn)
-        printf ("dendrite points filename = %s\n", dendrite_points_fn)
-        printf ("spine density filename = %s\n", spine_density_fn)
-    }
-
     parameters()
     //read_Na_rates()
     if (filemode > 0) {
         celldef()
     } else {
-        if (numarg() > 13) {
-            verbose = $14
-            celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13)
+        if (numarg() > 12) {
+            verbose = $13
+            celldef($o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
         } else if (numarg() > 10) {
-            celldef($o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
+            celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11)
         }
     }
     

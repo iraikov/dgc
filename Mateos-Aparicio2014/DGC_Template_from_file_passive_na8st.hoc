@@ -74,9 +74,8 @@ proc read_Na_rates() { localobj fileS, fileA
 
 proc init() {
     
-    id  = $1
-    gid = $2
-    forest_path = $s3
+    gid = $1
+    forest_path = $s2
     
     xx = 0
     yy = 0
@@ -122,9 +121,9 @@ proc init() {
     } else {
         if (numarg() > 13) {
             verbose = $14
-            celldef($o6,$o7,$o8,$o9,$o10,$o11,$o12,$o13)
+            celldef($o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
         } else if (numarg() > 10) {
-            celldef($o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
+            celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11)
         }
     }
     
