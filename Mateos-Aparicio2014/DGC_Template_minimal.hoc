@@ -119,6 +119,7 @@ proc celldef() {
     aisidx    = new Vector()
     hilidx    = new Vector()
     
+    layers = new List() 
     syns = new List() 
     syntypes = new List() 
     syntypes.append(new List())
