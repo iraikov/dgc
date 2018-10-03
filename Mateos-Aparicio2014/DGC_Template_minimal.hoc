@@ -132,7 +132,7 @@ proc celldef() {
     }
     
     if (numarg() > 6) {
-        shape($o4,$o5,$o6,$o7,$o8)
+        shape($o1,$o5,$o6,$o7,$o8)
     } else if (numarg() > 1) {
         shape($o5)
     } else {
