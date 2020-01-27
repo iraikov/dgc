@@ -93,11 +93,8 @@ proc init() {
     if (filemode > 0) {
         celldef()
     } else {
-        if (numarg() > 12) {
-            verbose = $13
-            celldef($o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
-        } else if (numarg() > 10) {
-            celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11)
+        if (numarg() > 11) {
+            celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
         }
     }
     
@@ -125,18 +122,17 @@ proc celldef() {
     syntypes.append(new List())
     syntypes.append(new List())
     
-    if (numarg() > 1) {
-        topol($o1,$o2,$o3,$o4,$o9)
-    } else {
-        topol()
-    }
-    
     if (numarg() > 6) {
-        shape($o1,$o5,$o6,$o7,$o8)
+        shape($o1,$o6,$o7,$o8,$o9)
     } else if (numarg() > 1) {
         shape($o5)
     } else {
         shape()
+    }
+    if (numarg() > 1) {
+        topol($o1,$o2,$o3,$o4,$o5,$o10)
+    } else {
+        topol()
     }
     geom()
     subsets()
