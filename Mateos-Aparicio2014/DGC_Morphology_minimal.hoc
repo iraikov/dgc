@@ -340,7 +340,6 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vsrc, vdst, vlo
         connect sections[j](0),sections[i](loc)
         
     }
-    connect sections[apicalidx.x[0]](0),sections[somaidx.x[0]](1)
     
     vloc.resize(0)
     vsrc.resize(0)
