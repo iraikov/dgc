@@ -5,6 +5,8 @@ tstart = 0
 tstop = 200
 dt = 0.025
 
+cvode_active(1)
+
 load_file("channels.ses")
 objref p
 p = new PWManager()
