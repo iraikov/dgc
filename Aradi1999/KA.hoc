@@ -1,0 +1,48 @@
+{ ion_register("k", 1) }
+objref ks, ksvec, ksgate, ksstates, kstransitions, tobj
+{
+  ksvec = new Vector()
+  ksstates = new List()
+  kstransitions = new List()
+  ks = new KSChan(0)
+}
+// KA Density Mechanism
+// k ohmic ion current
+//     ik (mA/cm2) = g_KA * (v - ek)
+{
+  ks.name("KA")
+  ks.ion("k")
+  ks.iv_type(0)
+  ks.gmax(0)
+  ks.erev(0)
+}
+// g = gmax * k * l
+// k' = ak*(1 - k) - bk*k
+{
+  ksstates.append(ks.add_hhstate("k"))
+  ksgate = ksstates.object(0).gate
+  ksgate.power(1)
+  kstransitions.append(ks.trans(ksstates.object(0), ksstates.object(0)))
+}
+{
+  tobj = kstransitions.object(0)
+  tobj.type(0)
+  tobj.set_f(0, 3, ksvec.c.append(0.75, 0.066667, -25))
+  tobj.set_f(1, 3, ksvec.c.append(0.8, -0.125, -15))
+}
+{ ksstates.remove_all  kstransitions.remove_all }
+// l' = al*(1 - l) - bl*l
+{
+  ksstates.append(ks.add_hhstate("l"))
+  ksgate = ksstates.object(0).gate
+  ksgate.power(1)
+  kstransitions.append(ks.trans(ksstates.object(0), ksstates.object(0)))
+}
+{
+  tobj = kstransitions.object(0)
+  tobj.type(0)
+  tobj.set_f(0, 2, ksvec.c.append(0.00015, -0.066667, -13))
+  tobj.set_f(1, 4, ksvec.c.append(0.06, -0.083333, -68))
+}
+{ ksstates.remove_all  kstransitions.remove_all }
+{objref ks, ksvec, ksgate, ksstates, kstransitions, tobj}
