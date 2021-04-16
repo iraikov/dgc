@@ -32,9 +32,8 @@ ASSIGNED {
 	ek		(mV)
 	ik		(mA/cm2)
 	ica		(mA/cm2)
-	area		(microm2)
-      gbk		(S/cm2)
-      gsk		(S/cm2)
+        gbk		(S/cm2)
+        gsk		(S/cm2)
 }
 
 STATE { ca_i (mM) q r s }
@@ -51,13 +50,16 @@ DERIVATIVE state {	: exact when v held constant; integrates over dt step
 	q' = alphaq(ca_i)*(1-q)-betaq(ca_i)*q
 	r' = alphar*(1-r)-betar(v)*r
 	s' = (sinf(ca_i)-s)/stau
-}
-
+    }
+    
+    
 INITIAL {
-	ca_i = ca0
-	q = alphaq(ca_i)/(alphaq(ca_i)+betaq(ca_i))
-	r = alphar/(alphar+betar(v))
-      s = sinf(ca_i)
+    
+    ca_i = ca0
+    q = alphaq(ca_i)/(alphaq(ca_i)+betaq(ca_i))
+    r = alphar/(alphar+betar(v))
+    s = sinf(ca_i)
+    
 }
 
 FUNCTION exp1(A (/ms), d, k, x (mM)) (/ms) {

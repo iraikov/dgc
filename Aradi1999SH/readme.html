@@ -1,0 +1,72 @@
+<html><pre>
+These files reproduce the model associated with the following paper:
+
+Aradi I, Holmes WR. Role of multiple calcium and calcium-dependent
+conductances in regulation of hippocampal dentate granule cell
+excitability. J Comput Neurosci. 1999 May-Jun;6(3):215-35.
+
+We have constructed a detailed model of a hippocampal dentate granule
+(DG) cell that includes nine different channel types. Channel
+densities and distributions were chosen to reproduce reported
+physiological responses observed in normal solution and when blockers
+were applied. The model was used to explore the contribution of each
+channel type to spiking behavior with particular emphasis on the
+mechanisms underlying postspike events. T-type calcium current in more
+distal dendrites contributed prominently to the appearance of the
+depolarizing after-potential, and its effect was controlled by
+activation of BK-type calcium-dependent potassium
+channels. Coactivation and interaction of N-, and/or L-type calcium
+and AHP currents present in somatic and proximal dendritic regions
+contributed to the adaptive properties of the model DG cell in
+response to long-lasting current injection. The model was used to
+predict changes in channel densities that could lead to epileptogenic
+burst discharges and to predict the effect of altered buffering
+capacity on firing behavior. We conclude that the clustered spatial
+distributions of calcium related channels, the presence of slow
+delayed rectifier potassium currents in dendrites, and calcium
+buffering properties, together, might explain the resistance of DG
+cells to the development of epileptogenic burst discharges.
+
+Usage:
+
+-fig4a.hoc reproduces Figure 4A of the paper:
+
+<img src="./screenshot.jpg" alt="screenshot">
+
+-schematic.ses implements the schematic model described in the paper
+ in Cell Builder.
+---
+To start the NEURON simulation:
+
+Under unix systems:
+to compile the mod files use the command 
+nrnivmodl 
+and run the simulation hoc file with the command 
+nrngui mosinit.hoc
+
+Under Windows systems:
+to compile the mod files use the "mknrndll" command.
+A double click on the simulation file
+mosinit.hoc 
+will open the simulation window.
+
+Under MAC OS X:
+
+Drag and drop the plast folder onto the mknrndll icon in the NEURON
+application folder.  When the mod files are finished compiling drag
+and drop the mosinit.hoc file onto the nrngui icon.
+---
+Some typographical errors have been corrected in this implementation:
+
+-The Na and KDR parameters in the paper were chosen relative to a
+ resting potential of 0 mV; we have adjusted them to correspond to a
+ resting potential of -70 mV.
+
+-In the equation for alpha_c (N-type calcium current), 19.98 has been
+ replaced by 19.88.
+
+-The intracellular calcium concentration in the equations for the SK
+ current is given not in uM but in mM.
+
+These model files were supplied by Hani Nakhoul.
+</pre></html>
