@@ -1,8 +1,8 @@
 
-load_file("Na.hoc")
-load_file("KA.hoc")
-load_file("fKDR.hoc")
-load_file("sKDR.hoc")
+{load_file("Na.hoc")}
+{load_file("KA.hoc")}
+{load_file("fKDR.hoc")}
+{load_file("sKDR.hoc")}
 
 begintemplate DGC
 
@@ -76,39 +76,58 @@ proc celldef() {
 }
 
 
+
 proc biophys() {
   forsec all {
     Ra = 210
     cm = 1
     insert pas
-    g_pas = 2.5e-05
-    e_pas = -70
+      g_pas = 2.5e-05
+      e_pas = -70
   }
   forsec apical {
     cm = 1.6
     insert pas
-    g_pas = 4e-05
-    e_pas = -70
+      g_pas = 4e-05
+      e_pas = -70
   }
   forsec GCLDs {
     cm = 1
     insert pas
-    g_pas = 2.5e-05
-    e_pas = -70
+      g_pas = 2.5e-05
+      e_pas = -70
     insert Na
-    gmax_Na = 0.018
+      gmax_Na = 0.018
     insert fKDR
-    gmax_fKDR = 0.004
+      gmax_fKDR = 0.004
     insert sKDR
     gmax_sKDR = 0.003
-  }
+    insert Caconc
+    insert Ca
+    gtcabar_Ca = 0.0003
+    gncabar_Ca = 0.003
+    glcabar_Ca = 0.015
+    insert CadepK
+    gbkbar_CadepK = 0.0003
+    gskbar_CadepK = 0.0002
+    
+}
   forsec PDs {
-      insert Na
+    insert Na
       gmax_Na = 0.013
-      insert fKDR
+    insert fKDR
       gmax_fKDR = 0.004
-      insert sKDR
-      gmax_sKDR = 0.003
+    insert sKDR
+    gmax_sKDR = 0.003
+    insert Caconc
+    insert Ca
+    gtcabar_Ca = 0.001
+    gncabar_Ca = 0.001
+    glcabar_Ca = 0.015
+    insert CadepK
+    gbkbar_CadepK = 0.0005
+    gskbar_CadepK = 0.0001
+
   }
   forsec MDs {
     insert Na
@@ -117,23 +136,39 @@ proc biophys() {
     gmax_fKDR = 0.001
     insert sKDR
     gmax_sKDR = 0.003
+    insert Caconc
+    insert Ca
+    gtcabar_Ca = 0.002
+    gncabar_Ca = 0.001
+    glcabar_Ca = 0.001
+    insert CadepK
+    gbkbar_CadepK = 0.0012
+    gskbar_CadepK = 0.0
   }
   forsec DDs {
-      insert fKDR
-      gmax_fKDR = 0.001
-      insert sKDR
-      gmax_sKDR = 0.004
+    insert fKDR
+    gmax_fKDR = 0.001
+    insert sKDR
+    gmax_sKDR = 0.004
+    insert Caconc
+    insert Ca
+    gtcabar_Ca = 0.002
+    gncabar_Ca = 0.001
+    glcabar_Ca = 0.0
+    insert CadepK
+    gbkbar_CadepK = 0.0012
+    gskbar_CadepK = 0.0
+
   }
   forsec allaxon {
     insert Na
-    gmax_Na = 0.21
+      gmax_Na = 0.21
     insert fKDR
-    gmax_fKDR = 0.028
+      gmax_fKDR = 0.028
     insert KA
-    gmax_KA = 0.004
-}
-
-  forsec soma {
+      gmax_KA = 0.004
+  }
+  soma {
     insert Na
     gmax_Na = 0.12
     insert fKDR
@@ -141,7 +176,8 @@ proc biophys() {
     insert sKDR
     gmax_sKDR = 0.003
     insert KA
-    gmax_KA = 0.012 
+    gmax_KA = 0.012
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.00015
     gncabar_Ca = 0.002
@@ -151,9 +187,10 @@ proc biophys() {
     gskbar_CadepK = 0.0005
 }
 
+
 forsec all {
 	if (ismembrane("Na")) {ena = 45}
-	ek = -85
+	if (ismembrane("fKDR")) {ek = -85}
 }
 
 }
@@ -174,6 +211,7 @@ proc position() { local i
 
 proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vsrc, vdst, vloc, secnodes, swc_types, smembers
     
+    verbose = 1
     secnodes = $o1
     vsrc     = new Vector($o2)
     vdst     = new Vector($o3)
@@ -244,15 +282,17 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vsrc, vdst, vlo
     
     if (verbose) {
 
-        printf ("GCLD compartment indices = ")
+        print "soma compartment indices = "
+        somaidx.printf()
+        print "GCLD compartment indices = "
         GCLDidxs.printf()
-        printf ("PD compartment indices = ")
+        print "PD compartment indices = "
         PDidxs.printf()
-        printf ("MD compartment indices = ")
+        print "MD compartment indices = "
         MDidxs.printf()
-        printf ("DD compartment indices = ")
+        print "DD compartment indices = "
         DDidxs.printf()
-        printf ("Total number of compartments = %d\n", nDends)
+        printf ("Total number of dendritic compartments = %d\n", nDends)
     }
     
     for p = 0, vsrc.size-1 {

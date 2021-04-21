@@ -147,6 +147,7 @@ proc biophys() {
       gmax_fKDR = 0.004
     insert sKDR
     gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.0003
     gncabar_Ca = 0.003
@@ -163,6 +164,7 @@ proc biophys() {
       gmax_fKDR = 0.004
     insert sKDR
     gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.001
     gncabar_Ca = 0.001
@@ -179,6 +181,7 @@ proc biophys() {
     gmax_fKDR = 0.001
     insert sKDR
     gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.002
     gncabar_Ca = 0.001
@@ -193,6 +196,7 @@ proc biophys() {
     gmax_fKDR = 0.001
     insert sKDR
     gmax_sKDR = 0.004 * sKDR_scale
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.002
     gncabar_Ca = 0.001
@@ -219,6 +223,7 @@ proc biophys() {
     gmax_sKDR = 0.003
     insert KA
     gmax_KA = 0.012
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.00015
     gncabar_Ca = 0.002

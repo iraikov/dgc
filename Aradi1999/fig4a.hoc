@@ -185,6 +185,7 @@ proc biophys() {
     gmax_sKDR = 0.003
     insert KA
     gmax_KA = 0.012 
+    insert Caconc
     insert Ca
     gtcabar_Ca = 0.00015
     gncabar_Ca = 0.002
