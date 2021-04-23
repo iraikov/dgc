@@ -168,7 +168,7 @@ proc biophys() {
     insert KA
       gmax_KA = 0.004
   }
-  soma {
+  forsec soma {
     insert Na
     gmax_Na = 0.12
     insert fKDR
@@ -240,13 +240,13 @@ proc topol_from_python() { local i,j,p,s,dimsize localobj vidxs, vsrc, vdst, vlo
                 p = vidxs.x[i]
                 if (!smembers.contains(p)) {
                     p_layer = layers.o(s).x[i]
-                    if (p_layer == 0) {
+                    if (p_layer == 1) {
                         GCLDidxs.append(s)
-                    } else if (p_layer == 1) {
-                        PDidxs.append(s)
                     } else if (p_layer == 2) {
+                        PDidxs.append(s)
+                    } else if (p_layer == 3) {
                         MDidxs.append(s)
-                    } else if (p_layer >= 3) {
+                    } else if (p_layer >= 4) {
                         DDidxs.append(s)
                     }
                     smembers.append(p)
