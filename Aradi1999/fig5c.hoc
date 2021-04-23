@@ -42,6 +42,10 @@ proc celldef() {
   geom_nseg()
 }
 
+objref layers
+layers = new List()
+
+
 create soma, axon[4], GCL[2], prox[2], middle[2], distal[2]
 
 proc topol() { local i
