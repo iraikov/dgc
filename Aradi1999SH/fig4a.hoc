@@ -5,29 +5,12 @@ tstart = 0
 tstop = 200
 dt = 0.025
 
+cvode_active(1)
+
 load_file("channels.ses")
 objref p
 p = new PWManager()
 for i = 2,5 {p.hide(i)}
-
-func lambda_f() { local i, x1, x2, d1, d2, lam
-    if (n3d() < 2) {
-        return 1e5*sqrt(diam/(4*PI*$1*Ra*cm))
-    }
-    x1 = arc3d(0)
-    d1 = diam3d(0)
-    lam = 0
-    for i=1, n3d()-1 {
-        x2 = arc3d(i)
-        d2 = diam3d(i)
-        lam += (x2 - x1)/sqrt(d1 + d2)
-        x1 = x2   d1 = d2
-    }
-    //  length of the section in units of lambda
-    lam *= sqrt(2) * 1e-5*sqrt(4*PI*$1*Ra*cm)
-    
-    return L/lam
-}
 
 proc celldef() {
   topol()
@@ -95,9 +78,8 @@ proc subsets() { local i
 
   allaxon = new SectionList()
     for i=0, 3 axon[i] allaxon.append()
-    
-}
 
+}
 proc geom() {
   forsec dendrites {  L = 150  diam = 3  }
   forsec GCLs {  L = 50  }
@@ -109,17 +91,13 @@ proc geom() {
   soma {  L = 16.8  diam = 16.8  }
   axon[3] {  L = 1400  }
 }
-   
-proc geom_nseg() { local freq, d_lambda
-    
-    freq = 100 // Hz, frequency at which AC length constant will be computed
-    d_lambda = 0.1
-    
-    soma area(0.5)
-    forall { nseg = int((L/(d_lambda*lambda_f(freq))+0.999)/2)*2 + 1  }
-
+proc geom_nseg() {
+   forsec dendrites { nseg = 4  }
+   forsec GCLs { nseg = 2  }
+   forsec allaxon { nseg = 1  }
+   soma { nseg = 2  }
+   axon[3] { nseg = 28  }
 }
-
 proc biophys() {
   forsec all {
     Ra = 210
@@ -172,26 +150,22 @@ proc biophys() {
     insert Na
       gmax_Na = 0.21
     insert fKDR
-    gmax_fKDR = 0.028
-    insert KA
-    gmax_KA = 0.004
+      gmax_fKDR = 0.028
   }
   soma {
+    insert Ca
+      gtcabar_Ca = 0.0018
+      gncabar_Ca = 0
+      glcabar_Ca = 0
+    insert CadepK
+      gbkbar_CadepK = 0
+      gskbar_CadepK = 0
     insert Na
       gmax_Na = 0.12
     insert fKDR
       gmax_fKDR = 0.016
     insert sKDR
-    gmax_sKDR = 0.003
-    insert KA
-    gmax_KA = 0.012 
-    insert Ca
-    gtcabar_Ca = 0.00015
-    gncabar_Ca = 0.002
-    glcabar_Ca = 0.010
-    insert CadepK
-    gbkbar_CadepK = 0.0003
-    gskbar_CadepK = 0.0005
+      gmax_sKDR = 0.003
   }
 }
 access soma

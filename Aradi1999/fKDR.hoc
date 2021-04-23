@@ -1,0 +1,34 @@
+{ ion_register("k", 1) }
+objref ks, ksvec, ksgate, ksstates, kstransitions, tobj
+{
+  ksvec = new Vector()
+  ksstates = new List()
+  kstransitions = new List()
+  ks = new KSChan(0)
+}
+// fKDR Density Mechanism
+// k ohmic ion current
+//     ik (mA/cm2) = g_fKDR * (v - ek)
+{
+  ks.name("fKDR")
+  ks.ion("k")
+  ks.iv_type(0)
+  ks.gmax(0)
+  ks.erev(0)
+}
+// g = gmax * n^4
+// n' = an*(1 - n) - bn*n
+{
+  ksstates.append(ks.add_hhstate("n"))
+  ksgate = ksstates.object(0).gate
+  ksgate.power(4)
+  kstransitions.append(ks.trans(ksstates.object(0), ksstates.object(0)))
+}
+{
+  tobj = kstransitions.object(0)
+  tobj.type(0)
+  tobj.set_f(0, 3, ksvec.c.append(0.42, 0.16667, -23))
+  tobj.set_f(1, 2, ksvec.c.append(0.264, -0.025, -48))
+}
+{ ksstates.remove_all  kstransitions.remove_all }
+{objref ks, ksvec, ksgate, ksstates, kstransitions, tobj}
