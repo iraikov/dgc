@@ -3,10 +3,9 @@
 
 NEURON {
 	SUFFIX CadepK
-	USEION ca READ ica
+	USEION ca READ cai
 	USEION k READ ek WRITE ik
-	RANGE gbkbar, gskbar
-	GLOBAL ca0, tau, stau
+	RANGE gbkbar, gskbar, ik, gbk, gsk
 }
 
 UNITS {
@@ -21,8 +20,6 @@ UNITS {
 PARAMETER {
 	gbkbar = .01	(S/cm2)	: maximum permeability
 	gskbar = .01	(S/cm2)	: maximum permeability
-	ca0 = .00007	(mM)
-	tau = 9		(ms)
 	alphar = 7.5	(/ms)
 	stau = 10		(ms)
 }
@@ -31,13 +28,13 @@ ASSIGNED {
 	v		(mV)
 	ek		(mV)
 	ik		(mA/cm2)
-	ica		(mA/cm2)
+	cai		(mM)
 	area		(microm2)
       gbk		(S/cm2)
       gsk		(S/cm2)
 }
 
-STATE { ca_i (mM) q r s }
+STATE { q r s }
 
 BREAKPOINT {
 	SOLVE state METHOD cnexp
@@ -47,17 +44,15 @@ BREAKPOINT {
 }
 
 DERIVATIVE state {	: exact when v held constant; integrates over dt step
-	ca_i' = -B*ica-(ca_i-ca0)/tau
-	q' = alphaq(ca_i)*(1-q)-betaq(ca_i)*q
+	q' = alphaq(cai)*(1-q)-betaq(cai)*q
 	r' = alphar*(1-r)-betar(v)*r
-	s' = (sinf(ca_i)-s)/stau
+	s' = (sinf(cai)-s)/stau
 }
 
 INITIAL {
-	ca_i = ca0
-	q = alphaq(ca_i)/(alphaq(ca_i)+betaq(ca_i))
+	q = alphaq(cai)/(alphaq(cai)+betaq(cai))
 	r = alphar/(alphar+betar(v))
-      s = sinf(ca_i)
+      s = sinf(cai)
 }
 
 FUNCTION exp1(A (/ms), d, k, x (mM)) (/ms) {
