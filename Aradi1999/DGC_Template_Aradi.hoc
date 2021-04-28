@@ -1,9 +1,4 @@
 
-{load_file("Na.hoc")}
-{load_file("KA.hoc")}
-{load_file("fKDR.hoc")}
-{load_file("sKDR.hoc")}
-
 begintemplate DGC
 
 // GCL - granular layer dendrite
