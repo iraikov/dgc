@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX fKDR
+	SUFFIX fKDR_Aradi
 	USEION k READ ek WRITE ik
 	RANGE gmax, g
 }

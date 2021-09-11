@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX Na
+	SUFFIX Na_Aradi
 	USEION na READ ena WRITE ina
 	RANGE gmax, g
 }

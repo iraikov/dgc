@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX Ca
+	SUFFIX Ca_Aradi
 	USEION ca READ eca WRITE ica
 	RANGE gtcabar, gncabar, glcabar, gtca, gnca, glca, ica
 }

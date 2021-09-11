@@ -1,8 +1,6 @@
-: KA channel
-
 
 NEURON {
-	SUFFIX sKDR
+	SUFFIX sKDR_Aradi
 	USEION k READ ek WRITE ik
 	RANGE gmax, g
 }

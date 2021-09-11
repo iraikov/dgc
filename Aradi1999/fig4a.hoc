@@ -5,6 +5,7 @@ tstart = 0
 tstop = 200
 dt = 0.025
 
+sKDR_scale = 0.1
 load_file("channels.ses")
 objref p
 p = new PWManager()
@@ -144,7 +145,16 @@ proc biophys() {
     insert fKDR
       gmax_fKDR = 0.004
     insert sKDR
-      gmax_sKDR = 0.003
+    gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.0003
+    gncabar_Ca_Aradi = 0.003
+    glcabar_Ca_Aradi = 0.015
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0003
+    gskbar_CadepK_Aradi = 0.0002
+
   }
   forsec proxs {
     insert Na
@@ -152,47 +162,74 @@ proc biophys() {
     insert fKDR
       gmax_fKDR = 0.004
     insert sKDR
-      gmax_sKDR = 0.003
+    gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.001
+    gncabar_Ca_Aradi = 0.001
+    glcabar_Ca_Aradi = 0.015
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0005
+    gskbar_CadepK_Aradi = 0.0001
+
   }
   forsec middles {
     insert Na
-      gmax_Na = 0.008
+    gmax_Na = 0.008
     insert fKDR
-      gmax_fKDR = 0.001
+    gmax_fKDR = 0.001
     insert sKDR
-      gmax_sKDR = 0.003
+    gmax_sKDR = 0.003 * sKDR_scale
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.002
+    gncabar_Ca_Aradi = 0.001
+    glcabar_Ca_Aradi = 0.001
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0012
+    gskbar_CadepK_Aradi = 0.0
+
   }
   forsec distals {
     insert fKDR
-      gmax_fKDR = 0.001
+    gmax_fKDR = 0.001
     insert sKDR
-      gmax_sKDR = 0.004
+    gmax_sKDR = 0.004 * sKDR_scale
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.002
+    gncabar_Ca_Aradi = 0.001
+    glcabar_Ca_Aradi = 0.0
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0012
+    gskbar_CadepK_Aradi = 0.0
+
   }
   forsec allaxon {
     insert Na
       gmax_Na = 0.21
     insert fKDR
-    gmax_fKDR = 0.028
+      gmax_fKDR = 0.028
     insert KA
-    gmax_KA = 0.004
+      gmax_KA = 0.004
   }
   soma {
     insert Na
-      gmax_Na = 0.12
+    gmax_Na = 0.12
     insert fKDR
-      gmax_fKDR = 0.016
+    gmax_fKDR = 0.016
     insert sKDR
     gmax_sKDR = 0.003
     insert KA
-    gmax_KA = 0.012 
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.00015
-    gncabar_Ca = 0.002
-    glcabar_Ca = 0.010
-    insert CadepK
-    gbkbar_CadepK = 0.0003
-    gskbar_CadepK = 0.0005
+    gmax_KA = 0.012
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.00015
+    gncabar_Ca_Aradi = 0.002
+    glcabar_Ca_Aradi = 0.010
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0003
+    gskbar_CadepK_Aradi = 0.0005
   }
 }
 access soma
@@ -227,19 +264,19 @@ proc advance() {
 
 // declaration of simulation procedures
 proc control() {
-	soma.gbkbar_CadepK = 0
-	soma.gskbar_CadepK = 0
+	soma.gbkbar_CadepK_Aradi = 0
+	soma.gskbar_CadepK_Aradi = 0
 	run()
 }
 
 proc bk() {
-	soma.gbkbar_CadepK = 0.00226
-	soma.gskbar_CadepK = 0
+	soma.gbkbar_CadepK_Aradi = 0.00226
+	soma.gskbar_CadepK_Aradi = 0
 	run()
 }
 
 proc sk() {
-	soma.gbkbar_CadepK = 0
-	soma.gskbar_CadepK = 0.00135
+	soma.gbkbar_CadepK_Aradi = 0
+	soma.gskbar_CadepK_Aradi = 0.00135
 	run()
 }

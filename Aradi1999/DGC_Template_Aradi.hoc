@@ -73,119 +73,126 @@ proc celldef() {
 
 
 proc biophys() {
-  forsec all {
-    Ra = 210
-    cm = 1
-    insert pas
-      g_pas = 2.5e-05
-      e_pas = -70
-  }
-  forsec apical {
-    cm = 1.6
-    insert pas
-      g_pas = 4e-05
-      e_pas = -70
-  }
-  forsec GCLDs {
-    cm = 1
-    insert pas
-      g_pas = 2.5e-05
-      e_pas = -70
-    insert Na
-      gmax_Na = 0.018
-    insert fKDR
-      gmax_fKDR = 0.004
-    insert sKDR
-    gmax_sKDR = 0.003
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.0003
-    gncabar_Ca = 0.003
-    glcabar_Ca = 0.015
-    insert CadepK
-    gbkbar_CadepK = 0.0003
-    gskbar_CadepK = 0.0002
     
-}
+    forsec all {
+        Ra = 210
+        cm = 1
+        insert pas
+        g_pas = 2.5e-05
+        e_pas = -70
+    }
+    
+    forsec apical {
+        cm = 1.6
+        insert pas
+        g_pas = 4e-05
+        e_pas = -70
+    }
+    
+    forsec GCLDs {
+        cm = 1
+        insert pas
+        g_pas = 2.5e-05
+        e_pas = -70
+        insert Na_Aradi
+        gmax_Na_Aradi = 0.018
+        insert fKDR_Aradi
+        gmax_fKDR_Aradi = 0.004
+        insert sKDR_Aradi
+        gmax_sKDR_Aradi = 0.003
+        insert Caconc_Aradi
+        insert Ca_Aradi
+        gtcabar_Ca_Aradi = 0.0003
+        gncabar_Ca_Aradi = 0.003
+        glcabar_Ca_Aradi = 0.015
+        insert CadepK_Aradi
+        gbkbar_CadepK_Aradi = 0.0003
+        gskbar_CadepK_Aradi = 0.0002
+        
+    }
+
   forsec PDs {
-    insert Na
-      gmax_Na = 0.013
-    insert fKDR
-      gmax_fKDR = 0.004
-    insert sKDR
-    gmax_sKDR = 0.003
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.001
-    gncabar_Ca = 0.001
-    glcabar_Ca = 0.015
-    insert CadepK
-    gbkbar_CadepK = 0.0005
-    gskbar_CadepK = 0.0001
-
+      insert Na_Aradi
+      gmax_Na_Aradi = 0.013
+      insert fKDR_Aradi
+      gmax_fKDR_Aradi = 0.004
+      insert sKDR_Aradi
+      gmax_sKDR_Aradi = 0.003
+      insert Caconc_Aradi
+      insert Ca_Aradi
+      gtcabar_Ca_Aradi = 0.001
+      gncabar_Ca_Aradi = 0.001
+      glcabar_Ca_Aradi = 0.015
+      insert CadepK_Aradi
+      gbkbar_CadepK_Aradi = 0.0005
+      gskbar_CadepK_Aradi = 0.0001
   }
+  
   forsec MDs {
-    insert Na
-    gmax_Na = 0.008
-    insert fKDR
-    gmax_fKDR = 0.001
-    insert sKDR
-    gmax_sKDR = 0.003
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.002
-    gncabar_Ca = 0.001
-    glcabar_Ca = 0.001
-    insert CadepK
-    gbkbar_CadepK = 0.0012
-    gskbar_CadepK = 0.0
+      insert Na_Aradi
+      gmax_Na_Aradi = 0.008
+      insert fKDR_Aradi
+      gmax_fKDR_Aradi = 0.001
+      insert sKDR_Aradi
+      gmax_sKDR_Aradi = 0.003
+      insert Caconc_Aradi
+      insert Ca_Aradi
+      gtcabar_Ca_Aradi = 0.002
+      gncabar_Ca_Aradi = 0.001
+      glcabar_Ca_Aradi = 0.001
+      insert CadepK_Aradi
+      gbkbar_CadepK_Aradi = 0.0012
+      gskbar_CadepK_Aradi = 0.0
   }
+  
   forsec DDs {
-    insert fKDR
-    gmax_fKDR = 0.001
-    insert sKDR
-    gmax_sKDR = 0.004
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.002
-    gncabar_Ca = 0.001
-    glcabar_Ca = 0.0
-    insert CadepK
-    gbkbar_CadepK = 0.0012
-    gskbar_CadepK = 0.0
-
+      insert fKDR_Aradi
+      gmax_fKDR_Aradi = 0.001
+      insert sKDR_Aradi
+      gmax_sKDR_Aradi = 0.004
+      insert Caconc_Aradi
+      insert Ca_Aradi
+      gtcabar_Ca_Aradi = 0.002
+      gncabar_Ca_Aradi = 0.001
+      glcabar_Ca_Aradi = 0.0
+      insert CadepK_Aradi
+      gbkbar_CadepK_Aradi = 0.0012
+      gskbar_CadepK_Aradi = 0.0
+      
   }
+  
   forsec allaxon {
-    insert Na
-      gmax_Na = 0.21
-    insert fKDR
-      gmax_fKDR = 0.028
-    insert KA
-      gmax_KA = 0.004
+      insert Na_Aradi
+      gmax_Na_Aradi = 0.21
+      insert fKDR_Aradi
+      gmax_fKDR_Aradi = 0.028
+      insert KA_Aradi
+      gmax_KA_Aradi = 0.004
   }
+  
   forsec soma {
-    insert Na
-    gmax_Na = 0.12
-    insert fKDR
-    gmax_fKDR = 0.016
-    insert sKDR
-    gmax_sKDR = 0.003
-    insert KA
-    gmax_KA = 0.012
-    insert Caconc
-    insert Ca
-    gtcabar_Ca = 0.00015
-    gncabar_Ca = 0.002
-    glcabar_Ca = 0.010
-    insert CadepK
-    gbkbar_CadepK = 0.0003
-    gskbar_CadepK = 0.0005
+    insert Na_Aradi
+    gmax_Na_Aradi = 0.12
+    insert fKDR_Aradi
+    gmax_fKDR_Aradi = 0.016
+    insert sKDR_Aradi
+    gmax_sKDR_Aradi = 0.003
+    insert KA_Aradi
+    gmax_KA_Aradi = 0.012
+    insert Caconc_Aradi
+    insert Ca_Aradi
+    gtcabar_Ca_Aradi = 0.00015
+    gncabar_Ca_Aradi = 0.002
+    glcabar_Ca_Aradi = 0.010
+    insert CadepK_Aradi
+    gbkbar_CadepK_Aradi = 0.0003
+    gskbar_CadepK_Aradi = 0.0005
 }
 
 
 forsec all {
-	if (ismembrane("Na")) {ena = 45}
-	if (ismembrane("fKDR")) {ek = -85}
+	if (ismembrane("Na_Aradi")) {ena = 45}
+	if (ismembrane("fKDR_Aradi")) {ek = -85}
 }
 
 }

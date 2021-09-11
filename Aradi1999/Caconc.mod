@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX Caconc
+	SUFFIX Caconc_Aradi
 	USEION ca READ ica WRITE eca, cai
 	RANGE depth, tau, cai0, cao0, cai, eca
 }

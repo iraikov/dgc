@@ -2,7 +2,7 @@
 
 
 NEURON {
-	SUFFIX KA
+	SUFFIX KA_Aradi
 	USEION k READ ek WRITE ik
 	RANGE gmax, g
 }
