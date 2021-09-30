@@ -20,7 +20,7 @@ gid = -1
 create sections[1]
 
 objref GCLDs, PDs, MDs, DDs, all, soma, axon, allaxon, ais, hillock, apical, basal
-objref GCLDidxs, PDidxs, MDidxs, DDidxs, layers
+objref GCLDidxs, PDidxs, MDidxs, DDidxs
 objref apicalidx, basalidx, somaidx, axonidx, aisidx, hilidx
 objref pyenv
 
@@ -57,8 +57,8 @@ proc init() {
     yy = 0
     zz = 0
     
-    pyenv = new PythonObject()
     nrnpython("import numpy as np")
+    pyenv = new PythonObject()
     celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
 }
 
@@ -317,7 +317,6 @@ proc topol_from_python() { local i,j,p,s,p_layer localobj vsrc, vdst, vloc, secn
 
 proc topol() { local i
     
-    layers_from_python($o1,$o2)
     topol_from_python($o1,$o3,$o4,$o5,$o6)
     
 }
@@ -329,7 +328,7 @@ proc shape() {
 }
 
 
-proc shape_from_python() { local x,y,z,r,s localobj secnodes, vx, vy, vz, vradius, idxs
+proc shape_from_python() { local x,y,z,r,s localobj secnodes, vx, vy, vz, vradius
     
     secnodes = $o1
     vx = pyenv.np.nditer($o2)
