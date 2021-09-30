@@ -1,4 +1,3 @@
-
 begintemplate DGC
 
 // GCL - granular layer dendrite
@@ -10,10 +9,10 @@ public all, soma, axon, allaxon, ais, hillock, apical, basal
 public nDends, nGCLD, nPD, nMD, nDD
 public GCLDidxs, PDidxs, MDidxs, DDidxs
 public verbose
-public is_art, connect2target
+public is_art, position, connect2target
 public xx, yy, zz
 
-verbose = 1
+verbose = 0
 id  = -1
 gid = -1
 
@@ -24,15 +23,18 @@ objref GCLDidxs, PDidxs, MDidxs, DDidxs
 objref apicalidx, basalidx, somaidx, axonidx, aisidx, hilidx
 objref pyenv
 
-iterator pyitr() {local i, v, x, n localobj itr1, itrn
-    n = numarg() / 2
-    i = n+1
+iterator pyitr() {local i, k, x, n, sz localobj itr1, itrn
+    sz = $1
+    n = (numarg()-1) / 2
+    i = 1+n+1
     itr1 = $oi
-    for i = 0, itr1.itersize {
-        for x = 0, n {
-            v = n+x
-            itrn = $ov
-            $&x = itrn.__next__()
+    
+    for k = 0, sz-1 {
+        for x = 1, n {
+            i = 1+n+x
+            itrn = $oi
+            i = 1+x
+            $&i = itrn.__next__()
         }
         iterator_statement
     }
@@ -57,8 +59,8 @@ proc init() {
     yy = 0
     zz = 0
     
-    nrnpython("import numpy as np")
     pyenv = new PythonObject()
+    nrnpython("import numpy as np")
     celldef($o3,$o4,$o5,$o6,$o7,$o8,$o9,$o10,$o11,$o12)
 }
 
@@ -225,15 +227,16 @@ proc position() { local i
 
 
 
-proc topol_from_python() { local i,j,p,s,p_layer localobj vsrc, vdst, vloc, secnodes, layers, swc_types
+proc topol_from_python() { local i,j,l,p,s,p_layer,loc,vlen localobj vsrc, vdst, vloc, secnodes, layers, swc_types
     
-    verbose = 1
     secnodes = $o1
-    vsrc     = pyenv.np.nditer($o2)
-    vdst     = pyenv.np.nditer($o3)
-    vloc     = pyenv.np.nditer($o4)
-    swc_types = $o5
-    layers    = $o6
+    layers   = $o2
+    
+    vlen     = $o3.size
+    vsrc     = pyenv.iter($o3)
+    vdst     = pyenv.iter($o4)
+    vloc     = pyenv.iter($o5)
+    swc_types = $o6
     
     nDends = 0
     nSoma  = 0
@@ -302,12 +305,12 @@ proc topol_from_python() { local i,j,p,s,p_layer localobj vsrc, vdst, vloc, secn
         printf ("Total number of dendritic compartments = %d\n", nDends)
     }
     
-    pyitr(&i, &j, &l, vsrc, vdst, vloc) {
+    for pyitr (vlen, &i, &j, &l, vsrc, vdst, vloc) {
         assert (i >= 0,  "compartment index in topology matrix is less than zero")
         assert (j >= 0,  "compartment index in topology matrix is less than zero")
         assert (i < nDends+nSoma+nAxon+1,  "compartment index in topology matrix is greater than the number of compartments")
         assert (j < nDends+nSoma+nAxon+1,  "compartment index in topology matrix is greater than the number of compartments")
-        sections[i] loc = arc3d(l) / L
+        sections[i] loc = arc3d(l) / L 
         connect sections[j](0),sections[i](loc)
         
     }
@@ -317,7 +320,7 @@ proc topol_from_python() { local i,j,p,s,p_layer localobj vsrc, vdst, vloc, secn
 
 proc topol() { local i
     
-    topol_from_python($o1,$o3,$o4,$o5,$o6)
+    topol_from_python($o1,$o2,$o3,$o4,$o5,$o6)
     
 }
 
@@ -328,22 +331,26 @@ proc shape() {
 }
 
 
-proc shape_from_python() { local x,y,z,r,s localobj secnodes, vx, vy, vz, vradius
+proc shape_from_python() { local x,y,z,r,s,p localobj secnodes, pidxs, vx, vy, vz, vradius
     
     secnodes = $o1
-    vx = pyenv.np.nditer($o2)
-    vy = pyenv.np.nditer($o3)
-    vz = pyenv.np.nditer($o4)
-    vradius = pyenv.np.nditer($o5)
+    vx = $o2
+    vy = $o3
+    vz = $o4
+    vradius = $o5
     
     create sections[secnodes.__len__()]
     for s=0, secnodes.__len__()-1 {
-        idxs = secnodes.__getitem__(s)
-        vidxs = new Vector(idxs)
+        pidxs = secnodes.__getitem__(s)
         sections[s] {
             pt3dconst(0)
-            
-            pyitr(&x, &y, &z, &r, vx, vy, vz, vradius) {
+            for pyitr (pidxs.size, &p, pyenv.iter(pidxs)) {
+                
+                x = vx._[p]
+                y = vy._[p]
+                z = vz._[p]
+                r = vradius._[p]
+
                 pt3dadd(x, y, z, 2*r)
             }
         }
