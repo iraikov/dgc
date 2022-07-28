@@ -1,0 +1,112 @@
+# Default targets from Mateos-Aparicio .. Storm, 2014.
+Celltype: DG_GC
+Template:
+  default:
+    name: GC_nrn
+    file: GC_nrn.hoc
+Numerics:
+    adaptive: False
+    use_coreneuron: True
+    t0: 0
+    tstop: 1500
+    dt: 0.01
+    record_dt: 0.01
+    v_init: -60.0
+Record: 
+    soma: ['V']
+    dend: ['V']
+Targets:
+  Rin:    
+    I: [-0.1]
+    I_factor: 1.0
+    upper: [210.0]
+    lower: [190.0]
+    t: [250, 750]
+  tau0:    
+    I: [-0.1]
+    upper: [35.0]
+    lower: [25.0]
+    t: [250, 750]
+  threshold: -45.0
+  V_hold:
+    val: -77
+    I : 0 
+  V_rest:
+    val: -80
+    I : 0 
+  f_I:
+    I: [100.0, 150.0, 200.0, 250.0, 300.0, 350.0]
+    I_factor: 1.0e-3
+    mean: [1.28, 3.6, 7.0, 8.84, 10.81, 13.84]
+    t: [500, 1500]
+  spike_amp:
+    upper: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+    lower: [75.0, 75.0, 75.0, 75.0, 75.0, 75.0]
+  spike_adaptation:
+    I: [400.0]
+    I_factor: 1.0e-3
+    upper: [2.3]
+    lower: [2.1]
+    t: [500, 600]
+Target namespaces:
+  Degro2022:
+    Rin:    
+      V: [-60.0, -70.0, -60.0]
+      V_factor: 1.0
+      upper: [136.9]
+      lower: [79.6]
+      t: [250, 750, 1000]
+    tau0:    
+      I: [-0.01]
+      upper: [31.4]
+      lower: [19.4]
+      t: [250, 750]
+    threshold: -41.7
+    V_hold:
+      val: -60
+      I : 0 
+    V_rest:
+      val: -64.1
+      I : 0 
+    f_I:
+      I: [250.0]
+      I_factor: 1.0e-3
+      mean: [21.6]
+      upper: [30.9]
+      lower: [12.3]
+      t: [500, 1000]
+    spike_amp:
+      upper: [79.7]
+      lower: [70.9]
+    spike_adaptation:
+      I: [250.0]
+      I_factor: 1.0e-3
+      upper: [1.8868]
+      lower: [1.33]
+      t: [500, 1000]
+      
+best:
+
+Parameters:
+  global_diam:  10.0
+  global_cm:  3.0
+  e_pas: -62
+  Ra0: 210
+  Ltotal: 20.0
+Space:
+  soma_gmax_NaT:  [0.001, 0.9]
+  soma_gmax_fKDR:  [0.001, 1.0]
+  soma_gmax_sKDR:  [0.001, 1.0]
+  soma_g_pas:  [0.0, 0.001]
+  soma_gmax_CaT:  [0.0001, 0.4]
+  soma_gmax_CaN:  [0.0001, 0.4]
+  soma_gmax_CaL:  [0.0001, 0.4]
+  soma_gmax_BK:  [0.0001, 1.0]
+  soma_gmax_SK:  [0.0001, 1.0]
+  soma_gmax_KA:  [0.0001, 0.5]
+  soma_gmax_sAHP:  [0.0001, 0.5]
+  dend_g_pas:  [0.0, 0.001]
+
+
+  
+    
