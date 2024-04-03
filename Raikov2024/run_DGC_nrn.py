@@ -120,6 +120,7 @@ def run_iclamp(
 
 
 @click.command()
+@click.option("--apical-index", type=int, default=119, help="apical section number to record")
 @click.option(
     "--config-path",
     "-c",
@@ -164,6 +165,7 @@ def run_iclamp(
     help="initialize cell to holding potential",
 )
 def main(
+    apical_index,
     config_path,
     model_variant,
     dt,
@@ -240,7 +242,11 @@ def main(
     h.finitialize(h.v_init)
 
     h.psection(sec=list(cell.soma)[0])
-    h.psection(sec=list(cell.apical)[0])
+    soma_sec = list(cell.soma)[0]
+    apical_list = list(cell.apical)
+    apical_sec=apical_list[apical_index]
+    logger.info(f"distance to apical section {apical_index}: {h.distance(soma_sec(0.5), apical_sec(0.5))}")
+    h.psection(sec=list(cell.apical)[apical_index])
     h.psection(sec=list(cell.ais)[0])
     h.psection(sec=list(cell.axon)[0])
 
@@ -305,6 +311,7 @@ def main(
         stim_amp,
         stim_start,
         stim_stop,
+        apical_index=apical_index,
         t_stop=t_stop,
         v_init=v_init,
         dt=dt,
