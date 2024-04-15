@@ -178,33 +178,44 @@ def run_iclamp_steps(
 
 
 
-def run_vclamp(cell, amps, ts, mechanism_names=[], rs=0.01, dt=0.025, record_dt=0.01, t_stop=None, v_init=-65., celsius=36, use_coreneuron=False):
+def run_vclamp(cell, amps, ts, sec=None, ion_current_names=[], rs=0.01, dt=0.025, record_dt=0.01, t_stop=None, v_init=-65., celsius=36, use_coreneuron=False):
 
     # Create the recording vectors for time and voltage
     vec_t = h.Vector()
     vec_v = h.Vector()
     vec_i = h.Vector()
 
-    sec = cell.soma
+    if sec is None:
+        sec = cell.soma
     
     vec_t.record(h._ref_t, record_dt) # Time
     vec_v.record(sec(0.5)._ref_v, record_dt) # Voltage
     vec_i_dict = {}
-    for mechanism in mechanism_names:
-        if hasattr(sec(0.5), f'_ref_i{mechanism}'):
+    for ion in ion_current_names:
+        if hasattr(sec(0.5), f'_ref_i{ion}'):
             vec_i = h.Vector()
-            vec_i.record(getattr(sec(0.5), f'_ref_i{mechanism}'), record_dt)
-            vec_i_dict[mechanism] = vec_i
-        
-    c = h.SEClamp(sec(0.5))
-    c.dur1 = ts[0]
-    c.dur2 = ts[1]-ts[0]
-    c.dur3 = ts[2]-ts[1]
-    c.amp1 = amps[0]
-    c.amp2 = amps[1]
-    c.amp3 = amps[2]
-    c.rs = rs
-    vec_i.record(c._ref_i, record_dt) # Voltage clamp current
+            vec_i.record(getattr(sec(0.5), f'_ref_i{ion}'), record_dt)
+            vec_i_dict[ion] = vec_i
+
+    vclamps = []
+    for sec_i in list(cell.all):
+        #c = h.SEClamp(sec_i(0.5))
+        #c.dur1 = ts[0]
+        #c.dur2 = ts[1]-ts[0]
+        #c.dur3 = ts[2]-ts[1]
+        #c.amp1 = amps[0]
+        #c.amp2 = amps[1]
+        #c.amp3 = amps[2]
+        #c.rs = rs
+        vc = h.VClamp(sec_i(0.5))
+        vc.dur[0] = ts[0]
+        vc.dur[1] = ts[1]-ts[0]
+        vc.dur[2] = ts[2]-ts[1]
+        vc.amp[0] = amps[0]
+        vc.amp[1] = amps[1]
+        vc.amp[2] = amps[2]
+        vc.rstim = rs
+        vclamps.append(vc)
 
     # Run the Simulation
     h.dt = dt
@@ -216,6 +227,7 @@ def run_vclamp(cell, amps, ts, mechanism_names=[], rs=0.01, dt=0.025, record_dt=
     if t_stop is None:
         t_stop = ts[2]
     h.tstop = t_stop
+
     if use_coreneuron:
         from neuron import coreneuron
         coreneuron.enable = True
@@ -223,11 +235,10 @@ def run_vclamp(cell, amps, ts, mechanism_names=[], rs=0.01, dt=0.025, record_dt=
     h.run()
 
     results = { 't': np.array(vec_t),
-                'i': np.array(vec_i), 
                 'v': np.array(vec_v), }
 
-    for mechanism in mechanism_names:
-        results[f'i_{mechanism}'] = np.array(vec_i_dict[mechanism])
+    for ion in ion_current_names:
+        results[f'i{ion}'] = np.array(vec_i_dict[ion])
 
     return results
 

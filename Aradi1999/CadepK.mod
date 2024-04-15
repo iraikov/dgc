@@ -37,7 +37,7 @@ ASSIGNED {
 STATE { q r s }
 
 BREAKPOINT {
-	SOLVE state METHOD cnexp
+	SOLVE state METHOD derivimplicit
 	gbk = gbkbar*r*s*s
 	gsk = gskbar*q*q
 	ik = (gbk+gsk)*(v - ek)

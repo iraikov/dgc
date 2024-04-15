@@ -61,3 +61,6 @@ PROCEDURE rates(v (mV)) { LOCAL amx, bmx
     ah = 0.23*exp(-0.05*(v + 67) / 1(mV)) 
     bh = 3.33/(1 + exp(0.1*(-14.5 - v) / 1(mV)))
 }
+
+
+ 

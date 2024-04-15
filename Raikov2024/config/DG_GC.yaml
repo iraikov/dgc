@@ -95,10 +95,11 @@ best:
     cm0: 1
     v_init: -80.0
     
-    prox_gbar_Na:  0.02
+    prox_gbar_Na:  0.025
     prox_gbar_fKDR: 0.016
     prox_gbar_sKDR: 0.003
-    prox_gmax_KA: 0.012
+    prox_gmax_KA: 0.0017
+    prox_gmax_KA_scale: 0.05
 
     prox_gtcabar_Ca: 0.00015
     prox_gncabar_Ca: 0.002
@@ -107,15 +108,79 @@ best:
     prox_gskbar_CadepK: 0.0005
 
     ais_gbar_nax: 0.018
+    ais_gmax_KA: 0.008
+    ais_gbar_fKDR: 0.028
+    ais_sh_nax: 6
+    ais_sha_nax: -2
+
+    apical_gbar_Na: 0.001
+    apical_gmax_KA_scale: -0.03
+    apical_gmax_KA_shift: 75
+    axon_gbar_scale: 0.25
+    
+vclamp:
+  kchan:
+    g_pas0: 2.75e-5
+    celsius:  25.0
+    nao0: 150
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.0
+    prox_gbar_fKDR: 0.016
+    prox_gbar_sKDR: 0.003
+    prox_gmax_KA: 0.0017
+    prox_gmax_KA_scale: 0.1
+
+    prox_gtcabar_Ca: 0.0
+    prox_gncabar_Ca: 0.0
+    prox_glcabar_Ca: 0.0
+    prox_gbkbar_CadepK: 0.0
+    prox_gskbar_CadepK: 0.0
+
+    ais_gbar_nax: 0.0
     ais_gmax_KA: 0.004
     ais_gbar_fKDR: 0.028
     ais_sh_nax: 6
     ais_sha_nax: -2
 
-    apical_gbar_Na_scale: 0.03
-    apical_gbar_Na_shift: 200
-    apical_gbar_fKDR_scale: 0.03
-    apical_gbar_fKDR_shift: 200
+    apical_gbar_Na: 0.0
+    apical_gmax_KA_scale: -0.03
+    apical_gmax_KA_shift: 75
+    axon_gbar_scale: 0.25
+    
+  nachan:
+    g_pas0: 2.75e-5
+    celsius:  25.0
+    nao0: 150
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.02
+    prox_gbar_fKDR: 0.0
+    prox_gbar_sKDR: 0.0
+    prox_gmax_KA: 0.0
+    prox_gmax_KA_scale: 0.0
+
+    prox_gtcabar_Ca: 0.0
+    prox_gncabar_Ca: 0.0
+    prox_glcabar_Ca: 0.0
+    prox_gbkbar_CadepK: 0.0
+    prox_gskbar_CadepK: 0.0
+
+    ais_gbar_nax: 0.018
+    ais_gmax_KA: 0.0
+    ais_gbar_fKDR: 0.0
+    ais_sh_nax: 6
+    ais_sha_nax: -2
+
+    apical_gbar_Na: 0.001
+    apical_gmax_KA_scale: -0.03
+    apical_gmax_KA_shift: 200
     axon_gbar_scale: 0.25
     
 Parameters:
@@ -135,8 +200,7 @@ Space:
   ais_gmax_KA: [0.0, 0.1]
   ais_gmax_fKDR: [0.0, 0.1]
   g_pas0: [0.0, 1.0e-4]
-  apical_gbar_Na_scale: [0.001, 0.1]
-  apical_gbar_Na_shift: [0.0, 300.0]
+  apical_gbar_Na: [0.001, 0.1]
   axon_gbar_scale: [0.1, 1.0]
   ais_sh_nax: [0, 20]
   ais_sha_nax: [-10, 10]

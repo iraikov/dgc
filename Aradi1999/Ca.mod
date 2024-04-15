@@ -37,7 +37,7 @@ ASSIGNED {
 STATE { a b c d e}
 
 BREAKPOINT {
-	SOLVE state METHOD cnexp
+	SOLVE state METHOD derivimplicit
 	gtca = gtcabar*a*a*b
 	gnca = gncabar*c*c*d
 	glca = glcabar*e*e

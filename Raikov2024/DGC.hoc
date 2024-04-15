@@ -8,12 +8,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 begintemplate DGC
 
-public all, soma, axon, prox, ais, hillock, apical, sections
+public all, soma, allaxon, axon, prox, ais, hillock, apical, sections
 public is_art, position, connect2target
 
-objref soma, prox, apical, ais, axon // Create objects for subsections
-
-objref all, soma, axon, ais, hillock, apical
+objref all, soma, prox, apical, ais, axon, allaxon // Create objects for subsections
 
 create sections[1]
   
@@ -51,7 +49,8 @@ proc parameters() {
      prox_gbar_fKDR = .005
      prox_gbar_sKDR = .016
 
-     prox_gmax_KA = 0.012
+     prox_gmax_KA = 0.02
+     prox_gmax_KA_scale = 0.1
         
      prox_gtcabar_Ca = 0.00015
      prox_gncabar_Ca = 0.002
@@ -59,11 +58,10 @@ proc parameters() {
      prox_gbkbar_CadepK = 0.0003
      prox_gskbar_CadepK = 0.0005
 
-     apical_gbar_Na_scale = 0.02
-     apical_gbar_Na_shift = 300.0
+     apical_gbar_Na = 0.018
 
-     apical_gbar_fKDR_scale = 0.02
-     apical_gbar_fKDR_shift = 300.0
+     apical_gmax_KA_scale = 0.02
+     apical_gmax_KA_shift = 300.0
 
      ais_gbar_nax  = 0.04
      ais_gbar_fKDR = 0.03
@@ -92,6 +90,7 @@ proc parameters_from_python() { localobj param_dict
     prox_gbar_sKDR = param_dict.__getitem__("prox_gbar_sKDR")
 
     prox_gmax_KA = param_dict.__getitem__("prox_gmax_KA")
+    prox_gmax_KA_scale = param_dict.__getitem__("prox_gmax_KA_scale")
         
     prox_gtcabar_Ca = param_dict.__getitem__("prox_gtcabar_Ca")
     prox_gncabar_Ca = param_dict.__getitem__("prox_gncabar_Ca")
@@ -99,11 +98,10 @@ proc parameters_from_python() { localobj param_dict
     prox_gbkbar_CadepK = param_dict.__getitem__("prox_gbkbar_CadepK")
     prox_gskbar_CadepK = param_dict.__getitem__("prox_gskbar_CadepK")
 
-    apical_gbar_Na_scale = param_dict.__getitem__("apical_gbar_Na_scale")
-    apical_gbar_Na_shift = param_dict.__getitem__("apical_gbar_Na_shift")
+    apical_gbar_Na = param_dict.__getitem__("apical_gbar_Na")
     
-    apical_gbar_fKDR_scale = param_dict.__getitem__("apical_gbar_fKDR_scale")
-    apical_gbar_fKDR_shift = param_dict.__getitem__("apical_gbar_fKDR_shift")
+    apical_gmax_KA_scale = param_dict.__getitem__("apical_gmax_KA_scale")
+    apical_gmax_KA_shift = param_dict.__getitem__("apical_gmax_KA_shift")
     
     ais_sh_nax  = param_dict.__getitem__("ais_sh_nax")
     ais_sha_nax  = param_dict.__getitem__("ais_sha_nax")
@@ -208,11 +206,12 @@ proc subsets() { local i // procedure defines subsections
 
     proxlimit = 50 // maximum limit in microns of the proximal region
 
+    all = new SectionList()
     soma = new SectionList()
     prox = new SectionList()	
     apical = new SectionList()
 
-    sections[0] { soma.append() }
+    sections[0] { soma.append() all.append() }
     
     access sections[0]
 	distance()
@@ -222,14 +221,16 @@ proc subsets() { local i // procedure defines subsections
 		 howfar = distance(1)
 		 if (howfar <  proxlimit) sections[i]  prox.append()
 		 if (howfar >= proxlimit) sections[i]  apical.append()
+                 all.append()
 	}
 
     
     ais = new SectionList()
     axon = new SectionList()
+    allaxon = new SectionList()
 
-    sections[ncompartments] ais.append() // hillock is the AIS
-    sections[ncompartments+1] axon.append()
+      sections[ncompartments] { ais.append() allaxon.append() all.append() }// hillock is the AIS
+    sections[ncompartments+1] { axon.append() allaxon.append() all.append() }
 }
 
 //  Biophysics initialization
@@ -248,13 +249,13 @@ forsec prox {// Somatic and proximal dendrite conductances
 	gbar_sKDR = prox_gbar_sKDR // g_fKDR
 
         insert KA
-        gmax_KA = prox_gmax_KA
-        
+        gmax_KA = prox_gmax_KA * prox_gmax_KA_scale
+
         insert Ca_Aradi
         gtcabar_Ca_Aradi = prox_gtcabar_Ca
         gncabar_Ca_Aradi = prox_gncabar_Ca
         glcabar_Ca_Aradi = prox_glcabar_Ca
-          
+
         insert CadepK_Aradi
         gbkbar_CadepK_Aradi = prox_gbkbar_CadepK
         gskbar_CadepK_Aradi = prox_gskbar_CadepK
@@ -269,20 +270,22 @@ forsec prox {// Somatic and proximal dendrite conductances
 forsec apical {	// dendritic conductances
 
     insert Na_Aradi
-    gbar_Na_Aradi = 0.01
+    gbar_Na_Aradi = apical_gbar_Na
       
-    insert fKDR   				
-    gbar_fKDR = .01
+    insert KA   				
+    gmax_KA = .01
+    
+    // KA channel with density increasing towards distal dendrite (Kim 2018)
+    // Uniform density Na (Kim 2018)
+    // TODO: low uniform density Kdr (Kim 2018)
 
     insert K_conc
     insert Na_conc
 
 }
-
-distribute_distance(apical, "gbar_Na_Aradi", "(1.0/(1.0 + exp(apical_gbar_Na_scale*(%.17g - apical_gbar_Na_shift))))*prox_gbar_Na","apical_gbar_Na_scale", apical_gbar_Na_scale, "apical_gbar_Na_shift", apical_gbar_Na_shift, "prox_gbar_Na", prox_gbar_Na)
                      
 
-distribute_distance(apical, "gbar_fKDR", "(1.0/(1.0 + exp(apical_gbar_fKDR_scale*(%.17g - apical_gbar_fKDR_shift))))*prox_gbar_fKDR", "apical_gbar_fKDR_scale", apical_gbar_fKDR_scale, "apical_gbar_fKDR_shift", apical_gbar_fKDR_shift, "prox_gbar_fKDR", prox_gbar_fKDR)
+distribute_distance(apical, "gmax_KA", "(1.0/(1.0 + exp(apical_gmax_KA_scale*(%.17g - apical_gmax_KA_shift))))*prox_gmax_KA", "apical_gmax_KA_scale", apical_gmax_KA_scale, "apical_gmax_KA_shift", apical_gmax_KA_shift, "prox_gmax_KA", prox_gmax_KA)
 
 forsec ais { // AIS conductances
 

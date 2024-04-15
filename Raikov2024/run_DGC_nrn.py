@@ -48,6 +48,7 @@ def run_iclamp(
     vec_apical_v = h.Vector()
     vec_apical_ica = h.Vector()
     vec_apical_ik = h.Vector()
+    vec_apical_ina = h.Vector()
     vec_soma_ik = h.Vector()
     vec_soma_ina = h.Vector()
     vec_apical_cai = h.Vector()
@@ -67,6 +68,7 @@ def run_iclamp(
     vec_apical_v.record(apical[apical_index](0.5)._ref_v, record_dt)  # Voltage
     #vec_apical_ica.record(apical[apical_index](0.5)._ref_ica, record_dt)
     vec_apical_ik.record(apical[apical_index](0.5)._ref_ik, record_dt)
+    vec_apical_ina.record(apical[apical_index](0.5)._ref_ina, record_dt)
     vec_soma_ik.record(soma[0](0.5)._ref_ik, record_dt)
     vec_soma_ina.record(soma[0](0.5)._ref_ina, record_dt)
     #vec_apical_cai.record(apical[apical_index](0.5)._ref_cai, record_dt)
@@ -112,6 +114,7 @@ def run_iclamp(
         #"dend_cai": np.array(vec_apical_cai),
         "dend_ki": np.array(vec_apical_ki),
         "dend_ik": np.array(vec_apical_ik),
+        "dend_ina": np.array(vec_apical_ina),
         "soma_nai": np.array(vec_soma_nai),
         "soma_cai": np.array(vec_soma_cai),
     }
@@ -164,6 +167,17 @@ def run_iclamp(
     flag_value="hold",
     help="initialize cell to holding potential",
 )
+@click.option(
+    "--v-clamp-hold",
+    type=float,
+    help="voltage clamp holding potential",
+)
+@click.option(
+    "--v-clamp-rest",
+    type=float,
+    default=-120,
+    help="voltage clamp rest potential",
+)
 def main(
     apical_index,
     config_path,
@@ -180,6 +194,8 @@ def main(
     toplevel_param_key,
     param_key,
     v_init_config,
+    v_clamp_hold,
+    v_clamp_rest,
 ):
 
     # Load the NEURON libraries
@@ -212,6 +228,7 @@ def main(
             raise RuntimeError(f"Unknown model variant {model_variant}")
     template = load_template(template_name, template_file)
 
+    
     target_config = config_dict["Targets"]
     if target_namespace:
         target_config = config_dict["Target namespaces"][target_namespace]
@@ -226,6 +243,7 @@ def main(
     if param_dict is None:
         param_dict = toplevel_param_dict[int(param_key)]
     logger.info(f"{pprint.pformat(param_dict)}")
+    celsius = param_dict["celsius"]
 
     if v_init_config == "rest":
         v_init = config_dict["Targets"]["V_rest"]["val"]
@@ -244,7 +262,7 @@ def main(
     h.psection(sec=list(cell.soma)[0])
     soma_sec = list(cell.soma)[0]
     apical_list = list(cell.apical)
-    apical_sec=apical_list[apical_index]
+    apical_sec = apical_list[apical_index]
     logger.info(f"distance to apical section {apical_index}: {h.distance(soma_sec(0.5), apical_sec(0.5))}")
     h.psection(sec=list(cell.apical)[apical_index])
     h.psection(sec=list(cell.ais)[0])
@@ -261,6 +279,7 @@ def main(
                 t_stop=10000.0,
                 v_init=v_init,
                 dt=dt,
+                celsius=celsius,
                 use_coreneuron=coreneuron,
             )
             t = iclamp_results["t"]
@@ -279,6 +298,7 @@ def main(
                 v_init=v_init,
                 dt=dt,
                 use_coreneuron=coreneuron,
+                celsius=celsius,
             )
             vclamp_results["t0"] = Rin_ts[0]
             vclamp_results["t1"] = Rin_ts[1]
@@ -290,6 +310,7 @@ def main(
                 tau_amp,
                 stim_start,
                 stim_stop,
+                celsius=celsius,
                 t_stop=10000.0,
                 v_init=v_init,
                 dt=dt,
@@ -306,60 +327,108 @@ def main(
         logger.info(f"soma input resistance: {Rinp} time constant: {tau}")
         # logger.info(f'analytical input and transfer impedance per segment: {pprint.pformat(calcZ(cell))}')
 
-    iclamp_results = run_iclamp(
-        cell,
-        stim_amp,
-        stim_start,
-        stim_stop,
-        apical_index=apical_index,
-        t_stop=t_stop,
-        v_init=v_init,
-        dt=dt,
-        use_coreneuron=coreneuron,
-    )
-    vec_t = iclamp_results["t"]
-    vec_soma_v = iclamp_results["soma_v"]
-    vec_ais_v = iclamp_results["ais_v"]
-    vec_apical_v = iclamp_results["dend_v"]
-    vec_apical_ik = iclamp_results["dend_ik"]
-    vec_soma_ik = iclamp_results["soma_ik"]
-    vec_soma_ina = iclamp_results["soma_ina"]
-    vec_apical_ik = iclamp_results["dend_ik"]
-    #vec_apical_ica = iclamp_results["dend_ica"]
-    #vec_apical_cai = iclamp_results["dend_cai"]
-    vec_apical_ki = iclamp_results["dend_ki"]
-    vec_soma_ki = iclamp_results["soma_ki"]
-    vec_ais_ki = iclamp_results["ais_ki"]
-    vec_soma_nai = iclamp_results["soma_nai"]
-    vec_soma_cai = iclamp_results["soma_cai"]
-
-    logger.info(f"spikes: {detect_spikes(vec_t, vec_soma_v, stim_start, stim_stop+5.0)}")
-    logger.info(f"dend ki min/max: {np.min(vec_apical_ki)} / {np.max(vec_apical_ki)}")
     nrn_type = config_dict["Celltype"]
 
-    nrows = 5
-    ncols = 2
-    fig, axs = plt.subplots(nrows, ncols)
-    axs[0, 0].plot(vec_t, vec_soma_v, linewidth=3, color="r", label="soma_v")
-    axs[0, 0].plot(vec_t, vec_ais_v, linewidth=3, color="b", label="ais_v")
-    axs[1, 0].plot(vec_t, vec_apical_v, linewidth=3, color="r", label="dend_v")
-    axs[2, 0].plot(vec_t, vec_soma_ina, linewidth=3, color="b", label="soma_ina")
-    axs[3, 0].plot(vec_t, vec_apical_ik, linewidth=3, color="b", label="soma_ik")
-    axs[4, 0].plot(vec_t, vec_apical_ik, linewidth=3, color="b", label="dend_ik")
-    axs[-1, 0].set_xlabel("Time (ms)")
-    axs[0, 0].set_ylabel("V (mV)")
-        
-    axs[0, 1].plot(vec_t, vec_soma_ki, linewidth=3, color="g", label="soma_ki")
-    axs[1, 1].plot(vec_t, vec_ais_ki, linewidth=3, color="g", label="ais_ki")
-    axs[2, 1].plot(vec_t, vec_apical_ki, linewidth=3, color="g", label="dend_ki")
-    axs[3, 1].plot(vec_t, vec_soma_nai, linewidth=3, color="g", label="soma_nai")
-    axs[4, 1].plot(vec_t, vec_soma_cai, linewidth=3, color="g", label="soma_cai")
+    if v_clamp_hold is not None:
+        V_amp = np.asarray([v_clamp_rest, v_clamp_hold, v_clamp_rest])
+        V_ts  = np.asarray([250, 1000, 1250])
+        vclamp_results = run_vclamp(
+            cell,
+            V_amp,
+            V_ts,
+            sec=apical_sec,
+            ion_current_names=["k", "na"],
+            v_init=v_init,
+            dt=dt,
+            use_coreneuron=coreneuron,
+            celsius=celsius,
+        )
 
-    for i in range(nrows):
-        for j in range(ncols):
-            axs[i, j].legend()
-    plt.savefig(f"{nrn_type}_iclamp.svg")
-    plt.show()
+        vec_t = vclamp_results["t"]
+        vec_v = vclamp_results["v"]
+        vec_ik = vclamp_results["ik"]
+        vec_ina = vclamp_results["ina"]
+
+        index_range = np.argwhere(np.logical_and(vec_t >= V_ts[1] - 1,
+                                                 vec_t <= V_ts[1],))
+        
+        nrows = 3
+        ncols = 1
+        fig, axs = plt.subplots(nrows, ncols)
+#        axs[0].plot(vec_t[index_range], vec_v[index_range], linewidth=3, color="r", label="v")
+#        axs[1].plot(vec_t[index_range], vec_ik[index_range], linewidth=3, color="r", label="dend_ik")
+#        axs[2].plot(vec_t[index_range], vec_ina[index_range], linewidth=3, color="b", label="dend_ina")
+        axs[0].plot(vec_t, vec_v, linewidth=3, color="r", label="v")
+        axs[1].plot(vec_t, vec_ik, linewidth=3, color="r", label="dend_ik")
+        axs[2].plot(vec_t, vec_ina, linewidth=3, color="b", label="dend_ina")
+        axs[-1].set_xlabel("Time (ms)")
+        axs[0].set_ylabel("V (mV)")
+        axs[1].set_ylabel("I (nA)")
+        
+        for i in range(nrows):
+            for j in range(ncols):
+                axs[i].legend()
+        plt.savefig(f"{nrn_type}_vclamp.svg")
+        plt.show()
+        
+        
+    else:
+
+        iclamp_results = run_iclamp(
+            cell,
+            stim_amp,
+            stim_start,
+            stim_stop,
+            apical_index=apical_index,
+            t_stop=t_stop,
+            v_init=v_init,
+            celsius=celsius,
+            dt=dt,
+            use_coreneuron=coreneuron,
+        )
+        vec_t = iclamp_results["t"]
+        vec_soma_v = iclamp_results["soma_v"]
+        vec_ais_v = iclamp_results["ais_v"]
+        vec_apical_v = iclamp_results["dend_v"]
+        vec_apical_ik = iclamp_results["dend_ik"]
+        vec_soma_ik = iclamp_results["soma_ik"]
+        vec_soma_ina = iclamp_results["soma_ina"]
+        vec_apical_ina = iclamp_results["dend_ina"]
+        #vec_apical_ica = iclamp_results["dend_ica"]
+        #vec_apical_cai = iclamp_results["dend_cai"]
+        vec_apical_ki = iclamp_results["dend_ki"]
+        vec_soma_ki = iclamp_results["soma_ki"]
+        vec_ais_ki = iclamp_results["ais_ki"]
+        vec_soma_nai = iclamp_results["soma_nai"]
+        vec_soma_cai = iclamp_results["soma_cai"]
+
+        logger.info(f"spikes: {detect_spikes(vec_t, vec_soma_v, stim_start, stim_stop+5.0)}")
+        logger.info(f"dend ki min/max: {np.min(vec_apical_ki)} / {np.max(vec_apical_ki)}")
+        
+        nrows = 6
+        ncols = 2
+        fig, axs = plt.subplots(nrows, ncols)
+        axs[0, 0].plot(vec_t, vec_soma_v, linewidth=3, color="r", label="soma_v")
+        axs[0, 0].plot(vec_t, vec_ais_v, linewidth=3, color="b", label="ais_v")
+        axs[1, 0].plot(vec_t, vec_apical_v, linewidth=3, color="r", label="dend_v")
+        axs[2, 0].plot(vec_t, vec_soma_ina, linewidth=3, color="b", label="soma_ina")
+        axs[3, 0].plot(vec_t, vec_soma_ik, linewidth=3, color="b", label="soma_ik")
+        axs[4, 0].plot(vec_t, vec_apical_ik, linewidth=3, color="b", label="dend_ik")
+        axs[5, 0].plot(vec_t, vec_apical_ina, linewidth=3, color="b", label="dend_ina")
+        axs[-1, 0].set_xlabel("Time (ms)")
+        axs[0, 0].set_ylabel("V (mV)")
+        
+        axs[0, 1].plot(vec_t, vec_soma_ki, linewidth=3, color="g", label="soma_ki")
+        axs[1, 1].plot(vec_t, vec_ais_ki, linewidth=3, color="g", label="ais_ki")
+        axs[2, 1].plot(vec_t, vec_apical_ki, linewidth=3, color="g", label="dend_ki")
+        axs[3, 1].plot(vec_t, vec_soma_nai, linewidth=3, color="g", label="soma_nai")
+        axs[4, 1].plot(vec_t, vec_soma_cai, linewidth=3, color="g", label="soma_cai")
+
+        for i in range(nrows):
+            for j in range(ncols):
+                axs[i, j].legend()
+        plt.savefig(f"{nrn_type}_iclamp.svg")
+        plt.show()
 
 
 if __name__ == "__main__":
