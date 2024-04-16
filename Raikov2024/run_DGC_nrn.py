@@ -37,7 +37,7 @@ def run_iclamp(
     t_stop=1000.0,
     v_init=-75.0,
     celsius=25,
-    apical_index=119,
+    apical_index=0,
     use_coreneuron=False,
 ):
 
@@ -259,12 +259,16 @@ def main(
     h.finitialize(h.v_init)
     h.finitialize(h.v_init)
 
+    h.topology()
     h.psection(sec=list(cell.soma)[0])
     soma_sec = list(cell.soma)[0]
     apical_list = list(cell.apical)
+    prox_list = list(cell.prox)
     apical_sec = apical_list[apical_index]
     logger.info(f"distance to apical section {apical_index}: {h.distance(soma_sec(0.5), apical_sec(0.5))}")
     h.psection(sec=list(cell.apical)[apical_index])
+    logger.info(f"distance to end of proximal section: {h.distance(soma_sec(0.5), prox_list[-1](1.0))}")
+    h.psection(sec=list(cell.prox)[-1])
     h.psection(sec=list(cell.ais)[0])
     h.psection(sec=list(cell.axon)[0])
 
