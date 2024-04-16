@@ -87,7 +87,7 @@ Target namespaces:
   
 best:
   p0:
-    g_pas0: 2.75e-5
+    g_pas0: 4.0e-5
     celsius:  25.0
     nao0: 150
     ko0: 4
@@ -95,7 +95,7 @@ best:
     cm0: 1
     v_init: -80.0
     
-    prox_gbar_Na:  0.025
+    prox_gbar_Na:  0.03
     prox_gbar_fKDR: 0.016
     prox_gbar_sKDR: 0.003
     prox_gmax_KA: 0.0017
@@ -120,7 +120,7 @@ best:
     
 vclamp:
   kchan:
-    g_pas0: 2.75e-5
+    g_pas0: 2.0e-5
     celsius:  25.0
     nao0: 150
     ko0: 4
@@ -152,7 +152,7 @@ vclamp:
     axon_gbar_scale: 0.25
     
   nachan:
-    g_pas0: 2.75e-5
+    g_pas0: 2.0e-5
     celsius:  25.0
     nao0: 150
     ko0: 4
