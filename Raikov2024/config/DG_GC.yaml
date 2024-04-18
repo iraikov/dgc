@@ -120,7 +120,7 @@ best:
     
 vclamp:
   kchan:
-    g_pas0: 2.0e-5
+    g_pas0: 4.0e-5
     celsius:  25.0
     nao0: 150
     ko0: 4
@@ -152,7 +152,7 @@ vclamp:
     axon_gbar_scale: 0.25
     
   nachan:
-    g_pas0: 2.0e-5
+    g_pas0: 4.0e-5
     celsius:  25.0
     nao0: 150
     ko0: 4

@@ -951,7 +951,7 @@ proc subsets() { local i // procedure defines subsections
 
     // three subsections: soma/prox region, dendrites, AIS, and axon
 
-    proxlimit = 110 // maximum limit in microns of the proximal region
+    proxlimit = 100 // maximum limit in microns of the proximal region
 
     all = new SectionList()
     soma = new SectionList()
