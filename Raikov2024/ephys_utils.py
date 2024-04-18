@@ -253,7 +253,6 @@ def detect_spikes(T, Y, t0, t1, before_peak=50.0, spike_height=-20.0):
     # 1. take the dV/dt of the voltage trace
     # 2. measure the SD of the dV/dt for 50 ms before the AP.
     # 3. threshold = mean(dV/dt) + 2*SD(dV/dt) (Atherton and Bevan 2005).
-    dydt = np.gradient(Y_spk, T_spk)
     peak_idx = peak_idxs[0]
     T_peak = T_spk[peak_idx]
     T_before_idxs = np.argwhere(
@@ -262,18 +261,21 @@ def detect_spikes(T, Y, t0, t1, before_peak=50.0, spike_height=-20.0):
     if len(T_before_idxs) == 0:
         return N_peaks_pre, 0, None, None
     T_before_idx = T_before_idxs[0]
+    dydt = np.gradient(Y_spk, T_spk)
     mean_dydt = np.mean(dydt[T_before_idx:peak_idx+1])
     sd_dydt = np.std(dydt[T_before_idx:peak_idx+1])
     dydt_threshold = mean_dydt + 2 * sd_dydt
+    dydt_before_peak = dydt[T_before_idx:peak_idx+1]
+    Y_spk_before_peak = Y_spk[T_before_idx:peak_idx+1]
     try:
-        threshold_idx = np.argwhere(dydt[T_before_idx:peak_idx] > dydt_threshold).reshape((-1,))[0]
+        threshold_idx = np.argmin(np.abs(dydt_before_peak - dydt_threshold)).reshape((-1,))
     except:
         logger.debug(
-            f"Error in threshold computation: dydt_threshold = {dydt_threshold} dydt[T_before_idx:peak_idx] = {dydt[T_before_idx:peak_idx]} T[T_before_idx:peak_idx] = {T[T_before_idx:peak_idx]} Y[T_before_idx:peak_idx] = {Y[T_before_idx:peak_idx]} "
+            f"Error in threshold computation: dydt_threshold = {dydt_threshold} dydt[T_before_idx:peak_idx] = {dydt[T_before_idx:peak_idx]} T[T_before_idx:peak_idx] = {T[T_before_idx:peak_idx]} Y_spk[T_before_idx:peak_idx] = {Y_spk[T_before_idx:peak_idx]} "
         )
         return N_peaks_pre, 0, None, None
 
-    threshold = Y_spk[T_before_idx:peak_idx][threshold_idx]
+    threshold = Y_spk_before_peak[threshold_idx]
 
     period_idxs = np.argwhere(np.logical_and(T >= t0, T <= t1)).flat
     T = T[period_idxs]
