@@ -248,14 +248,12 @@ def detect_spikes(T, Y, t0, t1, before_peak=50.0, spike_height=-20.0):
     peak_idxs = peak_info[0]
     if len(peak_idxs) == 0:
         return N_peaks_pre, 0, None, None
-
+    
     # Determine threshold based on the following:
     # 1. take the dV/dt of the voltage trace
     # 2. measure the SD of the dV/dt for 50 ms before the AP.
     # 3. threshold = mean(dV/dt) + 2*SD(dV/dt) (Atherton and Bevan 2005).
     dydt = np.gradient(Y_spk, T_spk)
-    mean_dydt = np.mean(dydt)
-    sd_dydt = np.std(dydt)
     peak_idx = peak_idxs[0]
     T_peak = T_spk[peak_idx]
     T_before_idxs = np.argwhere(
@@ -263,8 +261,9 @@ def detect_spikes(T, Y, t0, t1, before_peak=50.0, spike_height=-20.0):
     ).reshape((-1,))
     if len(T_before_idxs) == 0:
         return N_peaks_pre, 0, None, None
-
     T_before_idx = T_before_idxs[0]
+    mean_dydt = np.mean(dydt[T_before_idx:peak_idx+1])
+    sd_dydt = np.std(dydt[T_before_idx:peak_idx+1])
     dydt_threshold = mean_dydt + 2 * sd_dydt
     try:
         threshold_idx = np.argwhere(dydt[T_before_idx:peak_idx] > dydt_threshold).reshape((-1,))[0]

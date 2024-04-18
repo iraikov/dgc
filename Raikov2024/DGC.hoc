@@ -52,6 +52,9 @@ proc parameters() {
      prox_gbkbar_CadepK = 0.0003
      prox_gskbar_CadepK = 0.0005
 
+     prox_gbar_sAHP = 0.001
+     prox_cac_sAHP = 0.025
+
      apical_gbar_Na = 0.018
 
      apical_gmax_KA_scale = 0.02
@@ -91,7 +94,9 @@ proc parameters_from_python() { localobj param_dict
     prox_glcabar_Ca = param_dict.__getitem__("prox_glcabar_Ca")
     prox_gbkbar_CadepK = param_dict.__getitem__("prox_gbkbar_CadepK")
     prox_gskbar_CadepK = param_dict.__getitem__("prox_gskbar_CadepK")
-
+    prox_gbar_sAHP = param_dict.__getitem__("prox_gbar_sAHP")
+    prox_cac_sAHP = param_dict.__getitem__("prox_cac_sAHP")
+    
     apical_gbar_Na = param_dict.__getitem__("apical_gbar_Na")
     
     apical_gmax_KA_scale = param_dict.__getitem__("apical_gmax_KA_scale")
@@ -1008,6 +1013,10 @@ forsec somaprox {// Somatic and proximal dendrite conductances
         insert CadepK_Aradi
         gbkbar_CadepK_Aradi = prox_gbkbar_CadepK
         gskbar_CadepK_Aradi = prox_gskbar_CadepK
+
+        insert sAHP
+        gbar_sAHP = prox_gbar_sAHP
+        cac_sAHP = prox_cac_sAHP
 
         insert K_conc
         insert Na_conc

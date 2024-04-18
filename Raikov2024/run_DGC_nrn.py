@@ -34,7 +34,7 @@ def run_iclamp(
     t1,
     dt=0.025,
     record_dt=0.01,
-    t_stop=1000.0,
+    t_stop=1500.0,
     v_init=-75.0,
     celsius=25,
     apical_index=0,
@@ -49,6 +49,7 @@ def run_iclamp(
     vec_apical_ica = h.Vector()
     vec_apical_ik = h.Vector()
     vec_apical_ina = h.Vector()
+    vec_soma_sAHP = h.Vector()
     vec_soma_ik = h.Vector()
     vec_soma_ina = h.Vector()
     vec_apical_cai = h.Vector()
@@ -69,6 +70,7 @@ def run_iclamp(
     #vec_apical_ica.record(apical[apical_index](0.5)._ref_ica, record_dt)
     vec_apical_ik.record(apical[apical_index](0.5)._ref_ik, record_dt)
     vec_apical_ina.record(apical[apical_index](0.5)._ref_ina, record_dt)
+    vec_soma_sAHP.record(soma[0](0.5)._ref_gk_sAHP, record_dt)
     vec_soma_ik.record(soma[0](0.5)._ref_ik, record_dt)
     vec_soma_ina.record(soma[0](0.5)._ref_ina, record_dt)
     #vec_apical_cai.record(apical[apical_index](0.5)._ref_cai, record_dt)
@@ -106,6 +108,7 @@ def run_iclamp(
         "soma_v": np.array(vec_soma_v),
         "ais_v": np.array(vec_ais_v),
         "dend_v": np.array(vec_apical_v),
+        "soma_sAHP": np.array(vec_soma_sAHP),
         "soma_ik": np.array(vec_soma_ik),
         "soma_ki": np.array(vec_soma_ki),
         "ais_ki": np.array(vec_ais_ki),
@@ -141,7 +144,7 @@ def run_iclamp(
     "--stim-amp", type=float, default=0.1, help="amplitude of stimulus current"
 )
 @click.option("--stim-start", type=float, default=500.0, help="start time of stimulus")
-@click.option("--stim-stop", type=float, default=1000.0, help="stop time of stimulus")
+@click.option("--stim-stop", type=float, default=1500.0, help="stop time of stimulus")
 @click.option(
     "--t-stop", "-t", type=float, default=2000.0, help="stop time of simulation"
 )
@@ -395,6 +398,7 @@ def main(
         vec_ais_v = iclamp_results["ais_v"]
         vec_apical_v = iclamp_results["dend_v"]
         vec_apical_ik = iclamp_results["dend_ik"]
+        vec_soma_sAHP = iclamp_results["soma_sAHP"]
         vec_soma_ik = iclamp_results["soma_ik"]
         vec_soma_ina = iclamp_results["soma_ina"]
         vec_apical_ina = iclamp_results["dend_ina"]
@@ -427,6 +431,7 @@ def main(
         axs[2, 1].plot(vec_t, vec_apical_ki, linewidth=3, color="g", label="dend_ki")
         axs[3, 1].plot(vec_t, vec_soma_nai, linewidth=3, color="g", label="soma_nai")
         axs[4, 1].plot(vec_t, vec_soma_cai, linewidth=3, color="g", label="soma_cai")
+        axs[5, 1].plot(vec_t, vec_soma_sAHP, linewidth=3, color="b", label="soma_sAHP")
 
         for i in range(nrows):
             for j in range(ncols):
