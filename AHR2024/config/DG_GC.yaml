@@ -1,0 +1,289 @@
+# Default targets from Mateos-Aparicio .. Storm, 2014.
+Celltype: DG_GC
+Template:
+  default:
+    name: DGC
+    file: DGC.hoc
+Numerics:
+    adaptive: False
+    use_coreneuron: True
+    t0: 0
+    tstop: 1500
+    dt: 0.01
+    record_dt: 0.01
+    v_init: -60.0
+Record: 
+    soma: ['V']
+    apical: ['V']
+Targets:
+  Rin:    
+    I: [-0.01]
+    I_factor: 1.0
+    upper: [210.0]
+    lower: [190.0]
+    t: [250, 750]
+  tau0:    
+    I: [-0.1]
+    upper: [35.0]
+    lower: [25.0]
+    t: [250, 750]
+  threshold: -45.0
+  V_hold:
+    val: -77
+    I : 0 
+  V_rest:
+    val: -80
+    I : 0 
+  f_I:
+    I: [100.0, 150.0, 200.0, 250.0, 300.0, 350.0]
+    I_factor: 1.0e-3
+    mean: [1.28, 3.6, 7.0, 8.84, 10.81, 13.84]
+    t: [500, 1500]
+  spike_amp:
+    upper: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+    lower: [75.0, 75.0, 75.0, 75.0, 75.0, 75.0]
+  spike_adaptation:
+    I: [400.0]
+    I_factor: 1.0e-3
+    upper: [2.3]
+    lower: [2.1]
+    t: [500, 600]
+Target namespaces:
+  Degro2022:
+    Rin:    
+      V: [-60.0, -70.0, -60.0]
+      V_factor: 1.0
+      upper: [136.9]
+      lower: [79.6]
+      t: [250, 750, 1000]
+    tau0:    
+      I: [-0.01]
+      upper: [31.4]
+      lower: [19.4]
+      t: [250, 750]
+    threshold: -41.7
+    V_hold:
+      val: -60
+      I : 0 
+    V_rest:
+      val: -64.1
+      I : 0 
+    f_I:
+      I: [250.0]
+      I_factor: 1.0e-3
+      mean: [21.6]
+      upper: [30.9]
+      lower: [12.3]
+      t: [500, 1000]
+    spike_amp:
+      upper: [79.7]
+      lower: [70.9]
+    spike_adaptation:
+      I: [250.0]
+      I_factor: 1.0e-3
+      upper: [1.8868]
+      lower: [1.33]
+      t: [500, 1000]
+  
+best:
+  p0:
+    g_pas0: 1.0e-6
+    celsius:  25.0
+    nao0: 160
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.04
+    prox_gbar_fKDR: 0.004
+    prox_gbar_sKDR: 0.001
+    prox_gmax_KA: 0.001
+    prox_gmax_KA_scale: 0.05
+    prox_gkbar_Kir: 0.00035
+
+    prox_gtcabar_Ca: 0.00015
+    prox_gncabar_Ca: 0.002
+    prox_glcabar_Ca: 0.010
+    prox_gbkbar_CadepK: 0.0003
+    prox_gskbar_CadepK: 0.0003
+    prox_gbar_sAHP: 0.0005
+    prox_cac_sAHP: 0.01
+
+    ais_gbar_nax: 0.012
+    ais_gmax_KA: 0.008
+    ais_gbar_fKDR: 0.028
+    ais_sh_nax: 2
+    ais_sha_nax: -5
+
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
+    axon_gbar_scale: 0.25
+
+    apical_gbar_Na: 0.003
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.002
+    apical_gkbar_Kir: 0.000353903
+    
+  p1:
+    g_pas0: 4.0e-5
+    celsius:  25.0
+    nao0: 160
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.029
+    prox_gbar_fKDR: 0.004
+    prox_gbar_sKDR: 0.001
+    prox_gmax_KA: 0.001
+    prox_gmax_KA_scale: 0.05
+    prox_gkbar_Kir: 0.001
+
+    prox_gtcabar_Ca: 0.00015
+    prox_gncabar_Ca: 0.002
+    prox_glcabar_Ca: 0.010
+    prox_gbkbar_CadepK: 0.0003
+    prox_gskbar_CadepK: 0.0003
+    prox_gbar_sAHP: 0.0005
+    prox_cac_sAHP: 0.008
+
+    ais_gbar_nax: 0.012
+    ais_gmax_KA: 0.008
+    ais_gbar_fKDR: 0.028
+    ais_sh_nax: 2
+    ais_sha_nax: -5
+
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
+    axon_gbar_scale: 0.25
+
+    apical_gbar_Na: 0.0025
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.0002
+    apical_gkbar_Kir: 0.002
+
+vclamp:
+  kchan:
+    g_pas0: 4.0e-5
+    celsius:  25.0
+    nao0: 150
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.0
+    prox_gbar_fKDR: 0.016
+    prox_gbar_sKDR: 0.003
+    prox_gmax_KA: 0.001
+    prox_gmax_KA_scale: 0.05
+
+    prox_gtcabar_Ca: 0.0
+    prox_gncabar_Ca: 0.0
+    prox_glcabar_Ca: 0.0
+    prox_gbkbar_CadepK: 0.0
+    prox_gskbar_CadepK: 0.0
+    prox_gbar_sAHP: 0.0
+    prox_cac_sAHP: 0.006
+
+    hillock_gbar_nax: 0.0
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
+    ais_gbar_nax: 0.0
+    ais_gmax_KA: 0.004
+    ais_gbar_fKDR: 0.028
+    ais_gbar_sAHP: 0.0
+    ais_sh_nax: 6
+    ais_sha_nax: -2
+
+    apical_gbar_Na: 0.0
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.002
+    axon_gbar_scale: 0.25
+    
+  nachan:
+    g_pas0: 4.0e-5
+    celsius:  25.0
+    nao0: 150
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.02
+    prox_gbar_fKDR: 0.0
+    prox_gbar_sKDR: 0.0
+    prox_gmax_KA: 0.0
+    prox_gmax_KA_scale: 0.0
+
+    prox_gtcabar_Ca: 0.0
+    prox_gncabar_Ca: 0.0
+    prox_glcabar_Ca: 0.0
+    prox_gbkbar_CadepK: 0.0
+    prox_gskbar_CadepK: 0.0
+    prox_gbar_sAHP: 0.0
+    prox_cac_sAHP: 0.006
+    
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.0
+    hillock_gbar_fKDR: 0.0
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
+    ais_gbar_nax: 0.018
+    ais_gmax_KA: 0.0
+    ais_gbar_fKDR: 0.0
+    ais_sh_nax: 6
+    ais_sha_nax: -2
+
+    apical_gbar_Na: 0.0005
+    apical_gmax_KA_scale: -0.03
+    apical_gmax_KA_shift: 200
+    apical_gbar_fKDR: 0.0
+
+    axon_gbar_scale: 0.25
+    
+Parameters:
+  celsius:  25.0
+  nao0: 150
+  ko0: 4
+  Ra0: 210
+  cm0: 1
+  v_init: -80.0
+  
+Space:
+  prox_gbar_Na:  [0.001, 0.1]
+  prox_gbar_fKDR: [0.001, 0.1]
+  prox_gbar_sKDR: [0.001, 0.1]
+  prox_gmax_KA: [0.0, 0.1]
+  ais_gbar_nax: [0.001, 0.1]
+  ais_gmax_KA: [0.0, 0.1]
+  ais_gmax_fKDR: [0.0, 0.1]
+  hillock_gbar_nax: [0.001, 0.1]
+  hillock_gmax_KA: [0.0, 0.1]
+  hillock_gmax_fKDR: [0.0, 0.1]
+  g_pas0: [0.0, 1.0e-4]
+  apical_gbar_Na: [0.001, 0.1]
+  axon_gbar_scale: [0.1, 1.0]
+  ais_sh_nax: [0, 20]
+  ais_sha_nax: [-10, 10]
+  hillock_sh_nax: [0, 20]
+  hillock_sha_nax: [-10, 10]
+  prox_gbar_sAHP: [0.0, 0.1]
+  
