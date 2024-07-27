@@ -46,7 +46,7 @@ template_file = None
 template = None
 
 template_name = "DGC"
-template_file = "DGC.hoc"
+template_file = "DGC_720884.hoc"
 template = load_template(template_name, template_file)
 
 toplevel_param_key = "best"
@@ -107,7 +107,6 @@ for i in range(N):
         z = imp.transfer(0.5, sec=transfer_impedance_list[j])
         print(f"transfer impedance between section {transfer_impedance_list[i]} and {transfer_impedance_list[j]} is {z}")
         transfer_impedance_matrix[j][i] = z
-
 
         
 plot_lower_tri_heatmap(transfer_impedance_matrix)

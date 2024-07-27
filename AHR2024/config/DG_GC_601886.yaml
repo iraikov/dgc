@@ -3,7 +3,7 @@ Celltype: DG_GC
 Template:
   default:
     name: DGC
-    file: DGC.hoc
+    file: DGC_601886.hoc
 Numerics:
     adaptive: False
     use_coreneuron: True
@@ -127,11 +127,11 @@ best:
     apical_gbar_Na: 0.003
     apical_gmax_KA_scale: -0.02
     apical_gmax_KA_shift: 70
-    apical_gbar_fKDR: 0.002
+    apical_gbar_fKDR: 0.0002
     apical_gkbar_Kir: 0.000353903
-    
+
   p1:
-    g_pas0: 4.0e-5
+    g_pas0: 2.0e-6
     celsius:  25.0
     nao0: 160
     ko0: 4
@@ -140,11 +140,11 @@ best:
     v_init: -80.0
     
     prox_gbar_Na:  0.029
-    prox_gbar_fKDR: 0.004
-    prox_gbar_sKDR: 0.001
+    prox_sh_Na:  10.0
+    prox_gbar_fKDR: 0.00025
+    prox_gbar_sKDR: 0.0001
     prox_gmax_KA: 0.001
     prox_gmax_KA_scale: 0.05
-    prox_gkbar_Kir: 0.001
 
     prox_gtcabar_Ca: 0.00015
     prox_gncabar_Ca: 0.002
@@ -154,7 +154,7 @@ best:
     prox_gbar_sAHP: 0.0005
     prox_cac_sAHP: 0.008
 
-    ais_gbar_nax: 0.012
+    ais_gbar_nax: 0.03
     ais_gmax_KA: 0.008
     ais_gbar_fKDR: 0.028
     ais_sh_nax: 2
@@ -168,11 +168,12 @@ best:
 
     axon_gbar_scale: 0.25
 
-    apical_gbar_Na: 0.0025
+    apical_gbar_Na: 0.005
+    apical_sh_Na: 10.0
     apical_gmax_KA_scale: -0.02
     apical_gmax_KA_shift: 70
     apical_gbar_fKDR: 0.0002
-    apical_gkbar_Kir: 0.002
+    apical_gkbar_Kir: 0.00025
 
 vclamp:
   kchan:

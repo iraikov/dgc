@@ -430,8 +430,8 @@ def main(
         nrows = 6
         ncols = 2
         fig, axs = plt.subplots(nrows, ncols)
-        axs[0, 0].plot(vec_t, vec_soma_v, linewidth=3, color="r", label="soma_v")
-        axs[0, 0].plot(vec_t, vec_ais_v, linewidth=3, color="b", label="ais_v")
+        axs[0, 0].plot(vec_t, vec_soma_v, linewidth=2, color="k", label="soma_v")
+        #axs[0, 0].plot(vec_t, vec_ais_v, linewidth=3, color="b", label="ais_v")
         axs[1, 0].plot(vec_t, vec_apical_v, linewidth=3, color="r", label="dend_v")
         axs[2, 0].plot(vec_t, vec_soma_ina, linewidth=3, color="b", label="soma_ina")
         axs[3, 0].plot(vec_t, vec_soma_ik, linewidth=3, color="b", label="soma_ik")

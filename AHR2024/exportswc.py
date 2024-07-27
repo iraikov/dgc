@@ -108,5 +108,5 @@ def export_swc(cell, sections=[("soma",1),("apical",4),("ais",7),("hillock",8),(
                     
 h.load_file("DGC.hoc")
 cell = h.DGC()
-#h.topology()
+h.topology()
 export_swc(cell)

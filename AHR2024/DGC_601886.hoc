@@ -19,6 +19,7 @@ proc init() {
        }
 
     celldef()
+    forall { psection() }
 }
 
 proc parameters() {
@@ -38,14 +39,14 @@ proc parameters() {
      // Conductance properties
 
      prox_gbar_Na = 0.03
+     prox_sh_Na = 0.0
+     
      ais_sh_nax = 0
      ais_sha_nax = 0
 
      hillock_sh_nax = 0
      hillock_sha_nax = 0
 
-     prox_gkbar_Kir = 0.000353903
-     
      prox_gbar_fKDR = .005
      prox_gbar_sKDR = .016
 
@@ -62,6 +63,7 @@ proc parameters() {
      prox_cac_sAHP = 0.025
 
      apical_gbar_Na = 0.018
+     apical_sh_Na = 0.0
 
      apical_gkbar_Kir = 0.000353903
 
@@ -95,8 +97,8 @@ proc parameters_from_python() { localobj param_dict
     g_pas0 = param_dict.__getitem__("g_pas0")
 
     prox_gbar_Na = param_dict.__getitem__("prox_gbar_Na")
+    prox_sh_Na = param_dict.__getitem__("prox_sh_Na")
 
-    prox_gkbar_Kir = param_dict.__getitem__("prox_gkbar_Kir")
     prox_gbar_fKDR = param_dict.__getitem__("prox_gbar_fKDR")
     prox_gbar_sKDR = param_dict.__getitem__("prox_gbar_sKDR")
 
@@ -112,7 +114,8 @@ proc parameters_from_python() { localobj param_dict
     prox_cac_sAHP = param_dict.__getitem__("prox_cac_sAHP")
     
     apical_gbar_Na = param_dict.__getitem__("apical_gbar_Na")
-    
+    apical_sh_Na = param_dict.__getitem__("apical_sh_Na")
+
     apical_gmax_KA_scale = param_dict.__getitem__("apical_gmax_KA_scale")
     apical_gmax_KA_shift = param_dict.__getitem__("apical_gmax_KA_shift")
     apical_gbar_fKDR = param_dict.__getitem__("apical_gbar_fKDR")
@@ -987,7 +990,7 @@ proc subsets() { local i // procedure defines subsections
 
     // subsections: soma/prox region, distal region, apical, hillock, AIS, and axon
 
-    proxlimit = 50 // maximum limit in microns of the proximal region
+    proxlimit = 80 // maximum limit in microns of the proximal region
 
     all = new SectionList()
     soma = new SectionList()
@@ -1058,6 +1061,7 @@ forsec somaprox {// Somatic and proximal dendrite conductances
 
         insert Na_Aradi
         gbar_Na_Aradi = prox_gbar_Na
+        sh_Na_Aradi = prox_sh_Na
 
 	insert fKDR // Aradi and Holmes (1999) fast and slow KDR channels
 	gbar_fKDR = prox_gbar_fKDR // g_fKDR
@@ -1067,20 +1071,6 @@ forsec somaprox {// Somatic and proximal dendrite conductances
 
         insert KA
         gmax_KA = prox_gmax_KA * prox_gmax_KA_scale
-
-        insert Kir21
-        gkbar_Kir21 = prox_gkbar_Kir
-
-		mg_i_Kir21 = 4
-		spm_i_Kir21 = 1
-		gsub_Kir21 = 0.25
-		fac_Kir21 = 0.005
-		vshiftbs_Kir21 = 0
-		vshiftbb_Kir21 = 0
-		b_Kir21 = 0.105
-		shiftmg_Kir21 = 0.5
-		cas_Kir21 = 0.142857
-		As_Kir21 = 0.2
 
         insert Ca_Aradi
         gtcabar_Ca_Aradi = prox_gtcabar_Ca
@@ -1103,6 +1093,7 @@ forsec distal {	// dendritic conductances
 
     insert Na_Aradi
     gbar_Na_Aradi = apical_gbar_Na
+    sh_Na_Aradi = apical_sh_Na
 
     insert KA   				
     gmax_KA = .01

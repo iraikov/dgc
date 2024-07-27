@@ -3,7 +3,7 @@ Celltype: DG_GC
 Template:
   default:
     name: DGC
-    file: DGC.hoc
+    file: DGC_720884.hoc
 Numerics:
     adaptive: False
     use_coreneuron: True
@@ -17,7 +17,7 @@ Record:
     apical: ['V']
 Targets:
   Rin:    
-    I: [-0.1]
+    I: [-0.01]
     I_factor: 1.0
     upper: [210.0]
     lower: [190.0]
@@ -87,39 +87,93 @@ Target namespaces:
   
 best:
   p0:
-    g_pas0: 4.0e-5
+    g_pas0: 1.0e-6
     celsius:  25.0
-    nao0: 150
+    nao0: 160
     ko0: 4
     Ra0: 210
     cm0: 1
     v_init: -80.0
     
-    prox_gbar_Na:  0.03
-    prox_gbar_fKDR: 0.016
-    prox_gbar_sKDR: 0.003
-    prox_gmax_KA: 0.0017
+    prox_gbar_Na:  0.04
+    prox_gbar_fKDR: 0.004
+    prox_gbar_sKDR: 0.001
+    prox_gmax_KA: 0.001
     prox_gmax_KA_scale: 0.05
+    prox_gkbar_Kir: 0.00035
 
     prox_gtcabar_Ca: 0.00015
     prox_gncabar_Ca: 0.002
     prox_glcabar_Ca: 0.010
     prox_gbkbar_CadepK: 0.0003
-    prox_gskbar_CadepK: 0.001
-    prox_gbar_sAHP: 0.02
-    prox_cac_sAHP: 0.006
+    prox_gskbar_CadepK: 0.0003
+    prox_gbar_sAHP: 0.0005
+    prox_cac_sAHP: 0.01
 
-    ais_gbar_nax: 0.018
+    ais_gbar_nax: 0.012
     ais_gmax_KA: 0.008
     ais_gbar_fKDR: 0.028
-    ais_sh_nax: 6
-    ais_sha_nax: -2
+    ais_sh_nax: 2
+    ais_sha_nax: -5
 
-    apical_gbar_Na: 0.001
-    apical_gmax_KA_scale: -0.03
-    apical_gmax_KA_shift: 75
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
     axon_gbar_scale: 0.25
+
+    apical_gbar_Na: 0.003
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.002
+    apical_gkbar_Kir: 0.000353903
     
+  p1:
+    g_pas0: 4.0e-5
+    celsius:  25.0
+    nao0: 160
+    ko0: 4
+    Ra0: 210
+    cm0: 1
+    v_init: -80.0
+    
+    prox_gbar_Na:  0.029
+    prox_gbar_fKDR: 0.004
+    prox_gbar_sKDR: 0.001
+    prox_gmax_KA: 0.001
+    prox_gmax_KA_scale: 0.05
+    prox_gkbar_Kir: 0.001
+
+    prox_gtcabar_Ca: 0.00015
+    prox_gncabar_Ca: 0.002
+    prox_glcabar_Ca: 0.010
+    prox_gbkbar_CadepK: 0.0003
+    prox_gskbar_CadepK: 0.0003
+    prox_gbar_sAHP: 0.0005
+    prox_cac_sAHP: 0.008
+
+    ais_gbar_nax: 0.012
+    ais_gmax_KA: 0.008
+    ais_gbar_fKDR: 0.028
+    ais_sh_nax: 2
+    ais_sha_nax: -5
+
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
+    axon_gbar_scale: 0.25
+
+    apical_gbar_Na: 0.0025
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.0002
+    apical_gkbar_Kir: 0.002
+
 vclamp:
   kchan:
     g_pas0: 4.0e-5
@@ -133,8 +187,8 @@ vclamp:
     prox_gbar_Na:  0.0
     prox_gbar_fKDR: 0.016
     prox_gbar_sKDR: 0.003
-    prox_gmax_KA: 0.0017
-    prox_gmax_KA_scale: 0.1
+    prox_gmax_KA: 0.001
+    prox_gmax_KA_scale: 0.05
 
     prox_gtcabar_Ca: 0.0
     prox_gncabar_Ca: 0.0
@@ -144,6 +198,12 @@ vclamp:
     prox_gbar_sAHP: 0.0
     prox_cac_sAHP: 0.006
 
+    hillock_gbar_nax: 0.0
+    hillock_gmax_KA: 0.004
+    hillock_gbar_fKDR: 0.012
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
+
     ais_gbar_nax: 0.0
     ais_gmax_KA: 0.004
     ais_gbar_fKDR: 0.028
@@ -152,8 +212,9 @@ vclamp:
     ais_sha_nax: -2
 
     apical_gbar_Na: 0.0
-    apical_gmax_KA_scale: -0.03
-    apical_gmax_KA_shift: 75
+    apical_gmax_KA_scale: -0.02
+    apical_gmax_KA_shift: 70
+    apical_gbar_fKDR: 0.002
     axon_gbar_scale: 0.25
     
   nachan:
@@ -179,6 +240,11 @@ vclamp:
     prox_gbar_sAHP: 0.0
     prox_cac_sAHP: 0.006
     
+    hillock_gbar_nax: 0.009
+    hillock_gmax_KA: 0.0
+    hillock_gbar_fKDR: 0.0
+    hillock_sh_nax: 2
+    hillock_sha_nax: -2
 
     ais_gbar_nax: 0.018
     ais_gmax_KA: 0.0
@@ -186,9 +252,11 @@ vclamp:
     ais_sh_nax: 6
     ais_sha_nax: -2
 
-    apical_gbar_Na: 0.001
+    apical_gbar_Na: 0.0005
     apical_gmax_KA_scale: -0.03
     apical_gmax_KA_shift: 200
+    apical_gbar_fKDR: 0.0
+
     axon_gbar_scale: 0.25
     
 Parameters:
@@ -207,10 +275,15 @@ Space:
   ais_gbar_nax: [0.001, 0.1]
   ais_gmax_KA: [0.0, 0.1]
   ais_gmax_fKDR: [0.0, 0.1]
+  hillock_gbar_nax: [0.001, 0.1]
+  hillock_gmax_KA: [0.0, 0.1]
+  hillock_gmax_fKDR: [0.0, 0.1]
   g_pas0: [0.0, 1.0e-4]
   apical_gbar_Na: [0.001, 0.1]
   axon_gbar_scale: [0.1, 1.0]
   ais_sh_nax: [0, 20]
   ais_sha_nax: [-10, 10]
+  hillock_sh_nax: [0, 20]
+  hillock_sha_nax: [-10, 10]
   prox_gbar_sAHP: [0.0, 0.1]
   
